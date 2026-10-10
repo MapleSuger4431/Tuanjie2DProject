@@ -1,0 +1,68 @@
+# Unity generated folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+ExportedObj/
+.consulo/
+# IDE
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+# 系统杂项
+sysinfo.txt
+*.lnk
+*.apk
+*.aab
+*.app
+*.unitypackage
+crashlytics-build.properties
+# Addressables
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+# U盘同步的大体积资源（严禁Git追踪；其 .meta 一并忽略，随U盘同步）
+/[Aa]ssets/Art/Images/
+/[Aa]ssets/Art/Audio/
+/[Aa]ssets/Art/Models/
+/[Aa]ssets/Art/Videos/
+/[Aa]ssets/Art/Fonts/
+# 2D项目明确不用的文件（彻底排除）
+/[Aa]ssets/**/*.fbx
+/[Aa]ssets/**/*.obj
+/[Aa]ssets/**/*.blend
+/[Aa]ssets/**/*.gltf
+/[Aa]ssets/**/*.glb
+/[Aa]ssets/**/*.dae
+/[Aa]ssets/**/*.exr
+/[Aa]ssets/**/*.hdr
+/[Aa]ssets/**/*.mp4
+/[Aa]ssets/**/*.mov
+/[Aa]ssets/**/*.webm
+/[Aa]ssets/**/NavMesh*/
+/[Aa]ssets/**/LightingData*/
+/[Aa]ssets/**/ReflectionProbe*
+# 本地工具产物
+/.codely-cli/
+/.codelyignore

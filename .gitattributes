@@ -1,0 +1,8 @@
+# 仅保留文本规范化与合并策略，不使用 Git LFS
+* text=auto eol=lf
+# 团结/Unity 文本资产合并策略（需先运行 tools\setup-git-merge-driver.ps1 注册驱动）
+*.unity merge=unityyamlmerge eol=lf
+*.scene merge=unityyamlmerge eol=lf
+*.prefab merge=unityyamlmerge eol=lf
+*.asset merge=unityyamlmerge eol=lf
+*.meta merge=unityyamlmerge eol=lf
