@@ -1,4 +1,5 @@
-﻿# 注册团结引擎 SmartMerge 合并驱动（每台机器只需运行一次）
+﻿# ★ 本文件必须以 UTF-8 with BOM 保存：Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 GBK 解码，中文注释乱码并导致语法错误。
+# 注册团结引擎 SmartMerge 合并驱动（每台机器只需运行一次）
 # 作用：让 git 在合并 .unity/.scene/.prefab/.asset/.meta 冲突时，调用 TuanjieYAMLMerge 按对象智能合并，
 #       而不是按文本行合并（后者对场景/Prefab 几乎无法人工解决）。
 # 用法：右键本文件 → 使用 PowerShell 运行。
