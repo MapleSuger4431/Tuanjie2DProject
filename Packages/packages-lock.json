@@ -128,6 +128,15 @@
       },
       "url": "https://packages.tuanjie.cn"
     },
+    "com.unity.cinemachine": {
+      "version": "2.10.7",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31"
+      },
+      "url": "https://packages.tuanjie.cn"
+    },
     "com.unity.collab-proxy": {
       "version": "2.12.4",
       "depth": 0,
@@ -197,6 +206,25 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.tuanjie.cn"
+    },
+    "com.unity.postprocessing": {
+      "version": "3.5.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.physics": "1.0.0"
+      },
+      "url": "https://packages.tuanjie.cn"
+    },
+    "com.unity.recorder": {
+      "version": "4.0.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.timeline": "1.0.0"
+      },
       "url": "https://packages.tuanjie.cn"
     },
     "com.unity.test-framework": {
