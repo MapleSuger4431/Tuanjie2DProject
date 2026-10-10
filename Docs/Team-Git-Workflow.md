@@ -13,6 +13,7 @@
 | 代码、场景、Prefab、材质、工程设置 | **Git 仓库** |
 | 图片、音频、字体、视频 | **U 盘**（不进 Git） |
 | `Library/`、`Temp/`、`Logs/`、`UserSettings/` | 引擎自动生成，已被忽略，不用管 |
+| `.codely-cli/`（Codely 扩展目录） | 本地生成、**不进 Git**，但**必须存在**（见第 4 节） |
 
 原因：大文件进 Git 会让仓库爆炸、clone 变慢；而它们本来也不适合做文本合并。
 
@@ -60,16 +61,20 @@
 
 ## 4. 一次性环境配置（每人做一次）
 
-1. 安装**团结引擎 1.8.4**（内部版本 `2022.3.62t6`，版本不一致打不开工程）。
-2. 关闭自动换行转换，避免跨系统出现"整文件都改了"的假差异：
+1. **安装 Codely**，并在其中安装 **TJGenerators（团结AI资产生成）** 扩展。
+   > 为什么是必须的：`Packages/manifest.json` 里引用了该扩展提供的本地 Unity 包 `cn.tuanjie.ai.generators`（放在 `.codely-cli/` 下，不进 Git）。缺了它，包管理器解析失败，**工程会打不开**。
+2. 安装**团结引擎 1.8.4**（内部版本 `2022.3.62t6`，版本不一致打不开工程）。
+3. 关闭自动换行转换，避免跨系统出现"整文件都改了"的假差异：
    ```
    git config --global core.autocrlf false
    ```
-3. 注册场景/Prefab 的智能合并工具（**必须做**）：
+4. 注册场景/Prefab 的智能合并工具（**必须做**）：
    > 右键 `tools\setup-git-merge-driver.ps1` → 「使用 PowerShell 运行」
 
    这个脚本会把团结引擎自带的 SmartMerge 配置到你的 Git 里，让场景/Prefab 冲突时按"对象"合并而不是按文本行硬合并。**不运行的话，一旦真冲突会直接报 `fatal: unknown merge driver`，连合并都做不了。**
-4. **不需要**安装 Git LFS。
+5. **不需要**安装 Git LFS。
+
+> 提示（TextMeshPro 中文）：TMP 默认显示中文会变方块。可以手动 `Window → TextMeshPro → Import TMP Essential Resources` 后再生成中文字体资源，也可以直接让 Codely 用 **TMPChineseFont** 技能帮你配好。
 
 ---
 
