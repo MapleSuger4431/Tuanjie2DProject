@@ -82,12 +82,7 @@ git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
 2. **只改自己负责的文件**，不确定就先问枫。
 3. **遇到冲突或看不懂的报错：不要乱点、不要强行解决**，截图发群，由枫处理。
 
-| 谁 | 负责范围 |
-| --- | --- |
-| 枫 | 主场景、ProjectSettings、Packages、输入映射、Tilemap |
-| 云 | `Test_Yun.scene` 及相关脚本 |
-| 新 | `Test_Xin.scene` 及相关脚本 |
-| 刘、吕 | U 盘资源管理与资源命名 |
+
 
 ---
 
