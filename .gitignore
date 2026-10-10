@@ -42,12 +42,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-# U盘同步的大体积资源（严禁Git追踪；其 .meta 一并忽略，随U盘同步）
-/[Aa]ssets/Art/Images/
-/[Aa]ssets/Art/Audio/
-/[Aa]ssets/Art/Models/
-/[Aa]ssets/Art/Videos/
-/[Aa]ssets/Art/Fonts/
+# U盘同步的大体积资源（严禁Git追踪；整个 Art 目录连同其 .meta 一并忽略，随U盘同步）
+/[Aa]ssets/Art/
+/[Aa]ssets/Art.meta
 # 2D项目明确不用的文件（彻底排除）
 /[Aa]ssets/**/*.fbx
 /[Aa]ssets/**/*.obj
