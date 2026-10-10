@@ -59,20 +59,70 @@
 
 ---
 
-## 4. 一次性环境配置（每人做一次）
+## 4. 第一次加入：环境准备与拉取（每人只做一次）
 
-1. **安装 Codely**，并在其中安装 **TJGenerators（团结AI资产生成）** 扩展。
-   > 为什么是必须的：`Packages/manifest.json` 里引用了该扩展提供的本地 Unity 包 `cn.tuanjie.ai.generators`（放在 `.codely-cli/` 下，不进 Git）。缺了它，包管理器解析失败，**工程会打不开**。
-2. 安装**团结引擎 1.8.4**（内部版本 `2022.3.62t6`，版本不一致打不开工程）。
-3. 关闭自动换行转换，避免跨系统出现"整文件都改了"的假差异：
-   ```
-   git config --global core.autocrlf false
-   ```
-4. 注册场景/Prefab 的智能合并工具（**必须做**）：
-   > 右键 `tools\setup-git-merge-driver.ps1` → 「使用 PowerShell 运行」
+按顺序做完下面 7 步，你就能正常开发了。
 
-   这个脚本会把团结引擎自带的 SmartMerge 配置到你的 Git 里，让场景/Prefab 冲突时按"对象"合并而不是按文本行硬合并。**不运行的话，一旦真冲突会直接报 `fatal: unknown merge driver`，连合并都做不了。**
-5. **不需要**安装 Git LFS。
+### 4.1 拿到权限
+
+- 有自己的 GitHub 账号，并**接受仓库邀请**。
+- 注意：仓库是 PUBLIC，**不邀请也能 clone**，但**推不上去**（提交时会失败）—— 别等到要提交时才发现。
+
+### 4.2 装软件
+
+| 装什么 | 要求 |
+| --- | --- |
+| 团结引擎 Hub + 引擎 | 必须是 **1.8.4**（内部版本 `2022.3.62t6`，版本不一致打不开工程） |
+| Git | 任意较新版本 |
+| **Codely + TJGenerators（团结AI资产生成）扩展** | **必须装**，理由见 4.3 |
+
+### 4.3 验证 Codely 扩展（最关键的一步）
+
+在项目目录下执行，必须返回 `True`：
+
+```
+Test-Path ".\.codely-cli\extensions\TJGenerators\Packages\cn.tuanjie.ai.generators\package.json"
+```
+
+原因：`Packages/manifest.json` 里有一行 `file:../.codely-cli/...` 指向这个扩展提供的 Unity 包，而 `.codely-cli/` **不进 Git，只由 Codely 生成**。文件不存在 → 包解析失败 → **工程打不开**。
+
+### 4.4 两条一次性 Git 配置
+
+**① 关闭自动换行转换**（避免跨系统出现"整文件都显示改了"的假差异）：
+
+```
+git config --global core.autocrlf false
+```
+
+**② 注册场景/Prefab 的智能合并工具**：右键 `tools\setup-git-merge-driver.ps1` → 「使用 PowerShell 运行」
+
+这个脚本把团结引擎自带的 SmartMerge 配到你的 Git 里，让场景/Prefab 冲突时按"对象"合并而不是按文本行硬合并。**不运行的话，一旦真冲突会直接报 `fatal: unknown merge driver`，连合并都做不了。**
+
+> 该 `.ps1` 必须保持 **UTF-8 with BOM** 保存：Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 GBK 解码，中文变乱码并直接语法报错。所以**不要用编辑器随手重存它**，一定要重存就选"UTF-8 with BOM"。
+
+> 顺带说明：**不需要**安装 Git LFS。
+
+### 4.5 克隆
+
+```
+git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
+```
+
+首次打开时 `Library/` 会重新生成（需要等几分钟），这是正常的。
+
+### 4.6 拷 U 盘资源（必须在打开工程之前）
+
+**关掉引擎 → 从 U 盘把资源拷到 `Assets/Art/Images|Audio|Models|Videos|Fonts/` → 再打开工程。**
+
+- 顺序颠倒 → 打开时一片 missing；
+- **必须连 `.meta` 一起拷** → 否则所有人的 Prefab 引用会断链（很难补救）。
+
+### 4.7 打开并自检
+
+- 用团结引擎 **1.8.4** 打开工程，等首次导入完成；
+- Console **没有红色报错**；
+- `git log --oneline` 能看到提交历史；
+- `git config --global --get merge.unityyamlmerge.driver` 有输出。
 
 > 提示（TextMeshPro 中文）：TMP 默认显示中文会变方块。可以手动 `Window → TextMeshPro → Import TMP Essential Resources` 后再生成中文字体资源，也可以直接让 Codely 用 **TMPChineseFont** 技能帮你配好。
 
@@ -185,6 +235,8 @@ git commit -m "fix: 采用我这一版的测试场景"
 | `git push` 被拒绝（rejected） | 你在 main 上直接推代码 / 落后于远程；先 `git pull`，代码改动改用分支 |
 | 场景/图片显示 missing、粉色 | U 盘资源没拷到位，或没连 `.meta` 一起拷；关引擎重拷后再打开 |
 | 合并报 `fatal: unknown merge driver` | 没运行 `tools\setup-git-merge-driver.ps1` |
+| 打开工程报 `cn.tuanjie.ai.generators ... cannot be found` | 没装 Codely 的 TJGenerators 扩展（见 4.3） |
+| 打开工程报某个 Unity 包 `cannot be found` | 该版本团结引擎不支持；改用编辑器 `Window → Package Manager` 安装（UI 只列可用版本） |
 | 改了东西但 `git status` 看不到 | 它被 `.gitignore` 忽略了（如 `Assets/Art/` 下的图），本来就不走 Git |
 | 出现 `CONFLICT` | 停手，按第 8 节处理，或截图发群 |
 | 切分支后引擎报奇怪错误 | 关引擎 → 删 `Library` → 重新打开 |
