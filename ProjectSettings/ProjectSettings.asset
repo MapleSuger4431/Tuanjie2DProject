@@ -1016,7 +1016,7 @@ PlayerSettings:
   serializedFileTypeTreeMemoryOptimization: 0
   activeHtmlChannel: -1
   stripBuiltinResources: 0
-  activeInputHandler: 0
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
