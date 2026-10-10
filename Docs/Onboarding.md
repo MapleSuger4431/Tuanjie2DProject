@@ -164,4 +164,4 @@ git push
 
 - 术语（提交/推送/拉取/分支/PR/冲突）见 `CollaborationGuide.md` 附录 B。
 - 命令速查表见 `CollaborationGuide.md` 附录 A。
-- 说明：`CollaborationGuide.md` 里写的 `Main.unity`/`Test_Yun.unity` 是沿用旧写法，**团结引擎的场景文件扩展名实际是 `.scene`**（例如 `SampleScene.scene`），以本指南为准。
+- 场景文件的扩展名是 `.scene`（例如 `Assets/Scenes/SampleScene.scene`），**不是** `.unity`。
