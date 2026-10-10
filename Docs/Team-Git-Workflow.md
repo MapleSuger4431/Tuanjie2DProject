@@ -126,6 +126,19 @@ git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
 
 > 提示（TextMeshPro 中文）：TMP 默认显示中文会变方块。可以手动 `Window → TextMeshPro → Import TMP Essential Resources` 后再生成中文字体资源，也可以直接让 Codely 用 **TMPChineseFont** 技能帮你配好。
 
+### 4.8 文本文件的编码约定（不注意会出乱码）
+
+| 文件 | 必须的编码 | 说明 |
+| --- | --- | --- |
+| `.ps1` | **UTF-8 with BOM** | Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 GBK 解码 → 中文变乱码、脚本直接语法报错 |
+| `.bat` / `.cmd` | **纯英文内容**（或 ANSI/GBK） | cmd 按系统代码页解析；**不要给 .bat 加 BOM**，否则 cmd 会把 BOM 当命令、第一行就报错 |
+| `.md` / `.cs` / `.scene` / `.prefab` / `.json` | UTF-8（有无 BOM 都行） | GitHub、VS Code、引擎都能正常识别 |
+
+两条要点：
+
+1. **不要用记事本/编辑器随手"另存" `tools\setup-git-merge-driver.ps1`**。确实要重存时，编码必须选 **UTF-8 with BOM**，否则队友运行时会报 `The string is missing the terminator` 之类的语法错误。
+2. 如果某台机器上 `git log` 里的中文提交信息显示成乱码，先在终端执行 `chcp 65001`（切到 UTF-8 代码页）再看。
+
 ---
 
 ## 5. 日常流程 A：改代码 → 走分支 + PR
