@@ -73,7 +73,7 @@
 
 | 装什么 | 要求 |
 | --- | --- |
-| 团结引擎 Hub + 引擎 | 必须是 **1.8.4**（内部版本 `2022.3.62t6`，版本不一致打不开工程） |
+| 团结引擎 Hub + 引擎 | 必须是 **1.10.4**（内部版本 `2022.3.62t16`，版本不一致打不开工程） |
 | Git | 任意较新版本 |
 | **Codely + TJGenerators（团结AI资产生成）扩展** | **必须装**，理由见 4.3 |
 
@@ -120,7 +120,7 @@ git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
 
 ### 4.7 打开并自检
 
-- 用团结引擎 **1.8.4** 打开工程，等首次导入完成；
+- 用团结引擎 **1.10.4** 打开工程，等首次导入完成；
 - Console **没有红色报错**；
 - `git log --oneline` 能看到提交历史；
 - `git config --global --get merge.unityyamlmerge.driver` 有输出。

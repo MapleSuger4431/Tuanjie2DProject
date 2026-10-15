@@ -20,7 +20,7 @@ https://github.com/MapleSuger4431/Tuanjie2DProject.git
 
 ```
 我是新加入的成员。请按 Docs/Team-Git-Workflow.md 第 4 节帮我完成首次配置，逐步汇报：
-1. 检查团结引擎是否装了 1.8.4（用 tuanjie.exe editors list-installed）
+1. 检查团结引擎是否装了 1.10.4（用 tuanjie.exe editors list-installed）
 2. 检查 .codely-cli\extensions\TJGenerators\Packages\cn.tuanjie.ai.generators\package.json 是否存在；不存在就停下，提示我需要先在 Codely 里安装 TJGenerators（团结AI资产生成）扩展
 3. 执行 git config --global core.autocrlf false
 4. 运行 tools\setup-git-merge-driver.ps1，然后验证 git config --global --get merge.unityyamlmerge.driver 有输出
