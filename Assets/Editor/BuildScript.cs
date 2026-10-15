@@ -28,8 +28,8 @@ public static class BuildScript
         Debug.Log("[BuildScript] 当前 Android 包名 = [" + appId + "]");
         if (string.IsNullOrEmpty(appId) || appId.StartsWith("com.DefaultCompany"))
         {
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.maple.tuanjie2d");
-            Debug.Log("[BuildScript] 已将 Android 包名设为 com.maple.tuanjie2d（比赛前请改成正式包名）");
+            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.maplesuger.tuanjie2d");
+            Debug.Log("[BuildScript] 已将 Android 包名设为 com.maplesuger.tuanjie2d（比赛前请改成正式包名）");
             AssetDatabase.SaveAssets();
         }
 

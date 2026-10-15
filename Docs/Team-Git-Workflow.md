@@ -103,6 +103,8 @@ git config --global core.autocrlf false
 
 > 顺带说明：**不需要**安装 Git LFS。
 
+> **要打安卓包的同学**：再右键运行一次 `tools\fix-android-ndk.ps1` —— 团结 CLI 装 android 模块时常见两种毛病（NDK 没真装上 / NDK 装深了一层），两者都表现为 `Android NDK not found`；这个脚本会检查并自动修复。
+
 ### 4.5 克隆
 
 ```
@@ -249,6 +251,9 @@ git commit -m "fix: 采用我这一版的测试场景"
 | `git push` 被拒绝（rejected） | 你在 main 上直接推代码 / 落后于远程；先 `git pull`，代码改动改用分支 |
 | 场景/图片显示 missing、粉色 | U 盘资源没拷到位，或没连 `.meta` 一起拷；关引擎重拷后再打开 |
 | 合并报 `fatal: unknown merge driver` | 没运行 `tools\setup-git-merge-driver.ps1` |
+| 打包报 `Android NDK not found`，且 NDK 目录是空的 | 模块没真正装上 → `tuanjie.exe install-modules <引擎版本> --module android-ndk` |
+| 打包报 `Android NDK not found`，但 NDK 目录里有内容 | NDK 被装深了一层（`NDK\android-ndk-rXX\`）→ 右键运行 `tools\fix-android-ndk.ps1` 自动修复 |
+| 打包报 `Package Name has not been set up correctly` | 包名不合法（每段不能以数字开头）→ 在 Player Settings 里设成 `com.xxx.yyy` 形式 |
 | 打开工程报 `cn.tuanjie.ai.generators ... cannot be found` | 没装 Codely 的 TJGenerators 扩展（见 4.3） |
 | 打开工程报某个 Unity 包 `cannot be found` | 该版本团结引擎不支持；改用编辑器 `Window → Package Manager` 安装（UI 只列可用版本） |
 | 改了东西但 `git status` 看不到 | 它被 `.gitignore` 忽略了（如 `Assets/Art/` 下的图），本来就不走 Git |

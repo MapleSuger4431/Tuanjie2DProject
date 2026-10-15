@@ -95,7 +95,21 @@ PR #<编号> 确认没问题了。请：
 
 ---
 
-## 4. U 盘资源同步
+## 4. 打包（出 APK）
+
+> 打包走**命令行**，脚本已在仓库里：`Assets/Editor/BuildScript.cs`。产物落在 `Builds/Android/`，**不进 Git**。
+
+```
+帮我打一个安卓包。请：
+1. 先确认团结引擎编辑器已关闭（没关就让我先关 —— 命令行打包和编辑器不能同时占一个工程）
+2. 用命令行打包（引擎装着 D:\develop\Unity\TuanjieEngine\<版本>\Editor\Tuanjie.exe，版本以 tuanjie.exe editors list-installed 为准）：
+   -batchmode -projectPath "<当前工程路径>" -buildTarget Android -executeMethod BuildScript.BuildAndroid -logFile "<工程父目录>\build-android.log"
+3. 用后台跑（完整打包要几分钟到几十分钟），完成后读日志给我结论：成功就说 APK 路径和大小；失败先把原因讲清楚，再问我要不要修
+4. 如果报 NDK 相关问题，先运行 tools\fix-android-ndk.ps1 再重试一次
+```
+
+> ⚠️ 当前出的是 **32 位（armeabi-v7a）+ Mono** 包，**部分新机型装不上**。要让更多手机能装：Player Settings 里把 Scripting Backend 改成 **IL2CPP**、Target Architectures 勾上 **ARM64**（打包会慢很多）。
+## 5. U 盘资源同步
 
 ```
 我要把 U 盘 <E:\Art> 里的新资源放进工程。请按 Docs/Team-Git-Workflow.md 第 7 节：
@@ -107,9 +121,9 @@ PR #<编号> 确认没问题了。请：
 
 ---
 
-## 5. 出问题了
+## 6. 出问题了
 
-### 5.1 冲突
+### 6.1 冲突
 
 ```
 出冲突了：<把报错文字或截图贴在这里>。请按 Docs/Team-Git-Workflow.md 第 8 节处理：
@@ -118,7 +132,7 @@ PR #<编号> 确认没问题了。请：
 - 拿不准就停下来，先把原因讲给我听
 ```
 
-### 5.2 其他报错
+### 6.2 其他报错
 
 ```
 <打开工程报错：An error occurred while resolving packages… / push 被拒绝 / 场景里的东西变粉 / Console 报错截图>。
@@ -128,16 +142,16 @@ PR #<编号> 确认没问题了。请：
 
 ---
 
-## 6. 仓库管理员（枫）专用
+## 7. 仓库管理员（枫）专用
 
-### 6.1 加协作者
+### 7.1 加协作者
 
 ```
 把 <GitHub用户名> 加为协作者，权限用 Write（不要给 Admin）。
 完成后列出当前协作者名单和还没接受邀请的人。
 ```
 
-### 6.2 仓库体检（每周或赛前一次）
+### 7.2 仓库体检（每周或赛前一次）
 
 ```
 帮我做一次仓库体检：
@@ -148,7 +162,7 @@ PR #<编号> 确认没问题了。请：
 发现问题先给我建议，不要直接动。
 ```
 
-### 6.3 仓库设置（一次性）
+### 7.3 仓库设置（一次性）
 
 ```
 帮我把仓库 MapleSuger4431/Tuanjie2DProject 的合并设置改成：
@@ -158,7 +172,7 @@ PR #<编号> 确认没问题了。请：
 
 ---
 
-## 7. 三条最容易犯的错
+## 8. 三条最容易犯的错
 
 1. **与项目无关的文件不要提交**：练习代码、个人笔记、IDE/编辑器的个人配置等都不进仓库。提交前先用 `git status` 过一眼要提交的内容，拿不准就先问仓库管理员。
 2. **别在已合并的分支上继续改**：Squash 合并后，分支上的原始提交并不在 main 上；复用旧分支会让 Git 重复应用改动、凭空冒冲突。**合并后删分支，从最新 main 重新开。**

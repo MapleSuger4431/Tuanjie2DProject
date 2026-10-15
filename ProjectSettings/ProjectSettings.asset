@@ -210,7 +210,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.maple.tuanjie2d
+    Android: com.maplesuger.tuanjie2d
     Standalone: com.DefaultCompany.2DProject
   buildNumber:
     Standalone: 0
