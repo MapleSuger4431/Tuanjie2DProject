@@ -67,6 +67,86 @@ MonoBehaviour:
     m_Key: SettingsLanguage
     m_Metadata:
       m_Items: []
+  - m_Id: 21014896435200
+    m_Key: LevelSelectTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823808
+    m_Key: LevelName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823809
+    m_Key: LevelSelectBack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823810
+    m_Key: LevelLocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823811
+    m_Key: LevelNoStar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823812
+    m_Key: LevelBestRecord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823813
+    m_Key: LevelNoRecord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823814
+    m_Key: LevelDetailEnter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823815
+    m_Key: LevelDetailCancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34251654291456
+    m_Key: LevelBackToSelect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46840731918336
+    m_Key: LevelRestart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589715845120
+    m_Key: LevelClearTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233728
+    m_Key: LevelClearTime
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233729
+    m_Key: LevelFailTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233730
+    m_Key: LevelResultRetry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233731
+    m_Key: LevelResultBackToSelect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156672
+    m_Key: LevelResultSteps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156673
+    m_Key: LevelResultTime
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156674
+    m_Key: LevelResultPieces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53566625538048
+    m_Key: LevelFinishBuilding
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -8,8 +8,8 @@ namespace Game.Core
     /// 全游戏文本统一存于 GameText 字符串表（zh-CN / en，Localization Tables 窗口可编辑），
     /// <see cref="Key" /> 枚举提供编译期键名；<see cref="Get" /> 同步取值（表未加载时短暂等待）。
     /// <para>
-    /// 语言状态与持久化仍归 <see cref="GameSettings" />：SetLanguage 保存后切换包的 SelectedLocale
-    /// 并广播 <see cref="OnLanguageChanged" />，已打开的界面订阅后整体刷新。
+    /// 语言状态归 <see cref="Game.Model.SettingsModel" />：改值后由 <c>SettingsService</c>
+    /// 切换包的 SelectedLocale 并广播 <see cref="OnLanguageChanged" />，已打开的界面订阅后整体刷新。
     /// </para>
     /// </summary>
     public static class Localization
@@ -30,6 +30,58 @@ namespace Game.Core
             SettingsSfx,
             SettingsMusic,
             SettingsLanguage,
+
+            // ---- 选关场景 ----
+            LevelSelectTitle,
+            LevelName,
+            LevelSelectBack,
+            LevelLocked,
+            LevelNoStar,
+            LevelBestRecord,
+            LevelNoRecord,
+            LevelDetailEnter,
+            LevelDetailCancel,
+
+            /// <summary>关卡详情「最短用时」（{0} = mm:ss.d）。</summary>
+            LevelBestTime,
+
+            /// <summary>关卡详情「上次用时」（{0} = mm:ss.d）。</summary>
+            LevelLastTime,
+
+            // ---- 关卡场景内 ----
+            /// <summary>关卡内「返回选关」按钮。</summary>
+            LevelBackToSelect,
+
+            /// <summary>关卡内「重新开始本关」按钮。</summary>
+            LevelRestart,
+
+            /// <summary>关卡内「铺路完成」按钮：停表并锁定放置，进入「选偏好 → Play」的待运行阶段。</summary>
+            LevelFinishBuilding,
+
+            // ---- 关卡结算 ----
+            /// <summary>通关成功结算面板标题。</summary>
+            LevelClearTitle,
+
+            /// <summary>通关失败结算面板标题。</summary>
+            LevelFailTitle,
+
+            /// <summary>结算面板「重玩此关」按钮。</summary>
+            LevelResultRetry,
+
+            /// <summary>结算面板「回到选关界面」按钮。</summary>
+            LevelResultBackToSelect,
+
+            /// <summary>通关成功的用时行（{0} = mm:ss.d）；只有通关页显示，失败页不记时间。</summary>
+            LevelClearTime,
+
+            /// <summary>通关成功且刷新最短纪录时的用时行（{0} = mm:ss.d）。</summary>
+            LevelClearTimeNewRecord,
+
+            /// <summary>结算面板成绩行「步数」（{0} = 步数）。</summary>
+            LevelResultSteps,
+
+            /// <summary>结算面板成绩行「已用方块」（{0} = 已用，{1} = 上限）。</summary>
+            LevelResultPieces,
         }
 
         /// <summary>语言切换事件：GameSettings.SetLanguage 保存后触发，已打开的界面应整体刷新文本。</summary>
@@ -45,7 +97,19 @@ namespace Game.Core
             return op.WaitForCompletion();
         }
 
-        /// <summary>由 GameSettings.SetLanguage 在保存后调用，广播语言切换。</summary>
+        /// <summary>
+        /// 取带占位符的文本：表值按 Smart Format 写（如「第 {0} 关」），args 依次填位。
+        /// 表未加载时 WaitForCompletion 短暂等待。
+        /// </summary>
+        public static string Get(Key key, params object[] args)
+        {
+            var op = args == null || args.Length == 0
+                ? LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString())
+                : LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString(), args);
+            return op.WaitForCompletion();
+        }
+
+        /// <summary>由 SettingsService 在语言切换后调用，广播语言切换。</summary>
         public static void RaiseLanguageChanged()
         {
             OnLanguageChanged?.Invoke();

@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 2331115520
-    m_Localized: New Game
+    m_Localized: Start Game
     m_Metadata:
       m_Items: []
   - m_Id: 2381447168
@@ -81,6 +81,102 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2385641482
     m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014896435200
+    m_Localized: Select Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823808
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823809
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823810
+    m_Localized: Locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823811
+    m_Localized: ---
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823812
+    m_Localized: "Best \u2605{0}  Time {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823813
+    m_Localized: No Record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823814
+    m_Localized: Enter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014904823815
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34251654291456
+    m_Localized: Back to Levels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46840731918336
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589715845120
+    m_Localized: Level Clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233728
+    m_Localized: 'Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233729
+    m_Localized: Level Failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233730
+    m_Localized: Retry Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51589724233731
+    m_Localized: Back to Levels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156672
+    m_Localized: 'Steps: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156673
+    m_Localized: 'Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51606128156674
+    m_Localized: 'Pieces Used: {0}/{1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52630012289024
+    m_Localized: Finish Path
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53566625538048
+    m_Localized: Finish Path
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61839315558400
+    m_Localized: 'Best Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61839328141312
+    m_Localized: 'Last Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61857317511168
+    m_Localized: "Time: {0}  \u2605 New Record!"
     m_Metadata:
       m_Items: []
   references:
