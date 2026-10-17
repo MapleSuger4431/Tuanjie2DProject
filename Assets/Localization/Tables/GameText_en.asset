@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 2331115520
-    m_Localized: New Game
+    m_Localized: Start Game
     m_Metadata:
       m_Items: []
   - m_Id: 2381447168
@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2385641472
-    m_Localized: Help
+    m_Localized: Instructions
     m_Metadata:
       m_Items: []
   - m_Id: 2385641473
@@ -35,7 +35,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2385641474
-    m_Localized: Quit
+    m_Localized: Quit Game
     m_Metadata:
       m_Items: []
   - m_Id: 2385641475
