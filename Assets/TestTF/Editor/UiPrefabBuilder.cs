@@ -52,36 +52,42 @@ public static class UiPrefabBuilder
         var nodesRoot = NewRect("NodesRoot", root.transform);
         Stretch(nodesRoot, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.85f));
 
-        // 左上：返回主菜单按钮（占位视觉）
+        // 左上：返回主菜单按钮（圆形图标位，AI 生成的返回图标到位后自动绑 sprite）
         var back = NewRect("BackButton", root.transform);
         back.anchorMin = back.anchorMax = new Vector2(0f, 1f);
         back.pivot = new Vector2(0.5f, 0.5f);
-        back.sizeDelta = new Vector2(170f, 56f);
-        back.anchoredPosition = new Vector2(115f, -50f);
-        back.gameObject.AddComponent<Image>().color = new Color(0.35f, 0.38f, 0.45f);
+        back.sizeDelta = new Vector2(120f, 120f);
+        back.anchoredPosition = new Vector2(96f, -64f);
+        var backImg = back.gameObject.AddComponent<Image>();
+        var backSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/TestTF/UI/Resources/BackIcon.png");
+        if (backSprite != null) { backImg.sprite = backSprite; backImg.preserveAspect = true; }
+        else backImg.color = new Color(0.24f, 0.46f, 0.62f);
         var backBtn = back.gameObject.AddComponent<Button>();
         var backText = NewRect("Text", back);
         Stretch(backText);
         var backTmp = backText.gameObject.AddComponent<TextMeshProUGUI>();
-        backTmp.text = "BACK";
-        backTmp.fontSize = 30f;
+        backTmp.text = backSprite != null ? "" : "BACK";
+        backTmp.fontSize = 28f;
         backTmp.alignment = TextAlignmentOptions.Center;
         backTmp.color = Color.white;
         backTmp.raycastTarget = false;
 
-        // 右上：设置按钮（占位视觉）
+        // 右上：设置按钮（美术图标 SettingsIcon，圆形贴图）
         var settings = NewRect("SettingsButton", root.transform);
         settings.anchorMin = settings.anchorMax = new Vector2(1f, 1f);
         settings.pivot = new Vector2(0.5f, 0.5f);
-        settings.sizeDelta = new Vector2(170f, 56f);
-        settings.anchoredPosition = new Vector2(-115f, -50f);
-        settings.gameObject.AddComponent<Image>().color = new Color(0.35f, 0.38f, 0.45f);
+        settings.sizeDelta = new Vector2(120f, 120f);
+        settings.anchoredPosition = new Vector2(-96f, -64f);
+        var settingsImg = settings.gameObject.AddComponent<Image>();
+        var settingsSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/TestTF/UI/Resources/SettingsIcon.png");
+        if (settingsSprite != null) { settingsImg.sprite = settingsSprite; settingsImg.preserveAspect = true; }
+        else settingsImg.color = new Color(0.35f, 0.38f, 0.45f);
         var settingsBtn = settings.gameObject.AddComponent<Button>();
         var settingsText = NewRect("Text", settings);
         Stretch(settingsText);
         var settingsTmp = settingsText.gameObject.AddComponent<TextMeshProUGUI>();
-        settingsTmp.text = "SETTINGS";
-        settingsTmp.fontSize = 30f;
+        settingsTmp.text = settingsSprite != null ? "" : "SETTINGS";
+        settingsTmp.fontSize = 28f;
         settingsTmp.alignment = TextAlignmentOptions.Center;
         settingsTmp.color = Color.white;
         settingsTmp.raycastTarget = false;
