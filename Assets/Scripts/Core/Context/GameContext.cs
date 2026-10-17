@@ -6,5 +6,6 @@ public sealed class GameContext : AbstractContext<GameContext>
     {
         // 注册 Model——默认按最低档（Quick）：直接注册具体类，不建接口
         // RegisterModel(new PlayerModel());
+        RegisterModel(new LevelSelectModel());   // 选关系统（TestTF）
     }
 }
