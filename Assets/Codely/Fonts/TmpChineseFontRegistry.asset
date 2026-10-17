@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82da41a935c547eaaad547345906e391, type: 3}
+  m_Name: TmpChineseFontRegistry
+  m_EditorClassIdentifier: 
+  designated: {fileID: 11400000, guid: c38e0dbb315c54d4b8abed4a4c618f8d, type: 2}
+  previous: {fileID: 0}
+  useAsDefaultFont: 0
