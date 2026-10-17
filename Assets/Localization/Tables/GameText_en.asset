@@ -215,6 +215,11 @@ MonoBehaviour:
     m_Localized: "Time: {0}  \u2605 New Record!"
     m_Metadata:
       m_Items: []
+  - m_Id: 86053879799808
+    m_Localized: "Left click to place\u3000R to rotate 90\xB0 clockwise\u3000Scroll
+      to zoom\u3000Right drag to pan"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

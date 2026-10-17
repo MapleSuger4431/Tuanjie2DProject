@@ -11,8 +11,8 @@ namespace Game.Board
     /// <summary>
     /// 棋盘运行时常驻面板（挂 UIRoot 的层画布下，自身不带 Canvas）：
     /// 上下白板占位 + 右侧操作面板，面板上方预告下一块。全部数据来自 Model 的 ObservableValue。
-    /// 右侧中下部是运行控制区：用时 / 状态 / Play 按钮 / 方向优先级排序列表。
-    /// 优先级列表在铺路阶段可自由调序（↑↓ 或点选置顶），点 Play 后锁定为只读展示。
+    /// 右侧中下部是运行控制区：用时 / 状态 / 铺路完成与 Play 按钮。
+    /// AI 没有方向偏好可调——它出生朝固定方向一路直行，转向全靠铺在格子上的箭头。
     /// </summary>
     public sealed class BoardRuntimePanel : AesirBasePanelViewController<BoardContext>
     {
@@ -24,6 +24,16 @@ namespace Game.Board
         [SerializeField] Text timeText;
         [SerializeField] Text hintText;
 
+        [Header("棋盘外框")]
+        [Tooltip("包裹棋盘的装饰外框；未回填时现场创建一个。位置由 BoardScreenLayout 按视口矩形驱动")]
+        [SerializeField] Image boardFrame;
+
+        [Tooltip("外框贴图（1024×1024 的镂空边框，中间透明）")]
+        [SerializeField] Sprite boardFrameSprite;
+
+        /// <summary>现场创建外框时用的节点名。</summary>
+        const string BoardFrameName = "BoardFrame";
+
         [Header("运行控制")]
         [Tooltip("铺路完成按钮；未回填时自动在 Play 按钮左侧创建（两者并排等分原 Play 按钮的宽度）")]
         [SerializeField] Button finishBuildingButton;
@@ -31,13 +41,9 @@ namespace Game.Board
         [SerializeField] Button playButton;
         [SerializeField] Text playButtonLabel;
         [SerializeField] Text aiStateText;
-        [SerializeField] RectTransform priorityRoot;
-
-        [Header("优先级行配色")]
-        [SerializeField] Color rowColor = new Color(0.88f, 0.88f, 0.93f, 1f);
-        [SerializeField] Color rowLockedColor = new Color(0.80f, 0.80f, 0.86f, 1f);
-        [SerializeField] Color rowTextColor = new Color(0.13f, 0.12f, 0.18f, 1f);
+        [Header("现场创建按钮的配色")]
         [SerializeField] Color buttonColor = new Color(0.98f, 0.98f, 1f, 1f);
+        [SerializeField] Color buttonTextColor = new Color(0.13f, 0.12f, 0.18f, 1f);
 
         [Tooltip("铺路完成按钮底色（现场创建时才用；与绿色 Play 区分，避免看不出是按钮）")]
         [SerializeField] Color finishButtonColor = new Color(0.98f, 0.83f, 0.42f, 1f);
@@ -66,18 +72,16 @@ namespace Game.Board
         BoardModel _board;
         BoardTimeModel _time;
         BoardRunModel _run;
-        AiPreferenceModel _preference;
 
         /// <summary>结算事件是否已经挂过：同一面板实例被反复 Show 时避免重复订阅导致弹出多个结算面板。</summary>
         bool _resultHooked;
-
-        /// <summary>优先级列表的四行，创建一次后反复复用（避免重建堆积）。</summary>
-        readonly List<PriorityRow> _rows = new List<PriorityRow>();
 
         protected override void OnInit()
         {
             GameFonts.Apply(transform);
             StretchToScreen();
+
+            EnsureBoardFrame();
 
             EnsureBackButton();
             if (backButton != null)
@@ -99,6 +103,8 @@ namespace Game.Board
                 finishBuildingButton.onClick.RemoveAllListeners();
                 finishBuildingButton.onClick.AddListener(OnFinishBuildingClicked);
             }
+
+            EnsureHintText();
 
             Localization.OnLanguageChanged += ApplyLocalization;
             ApplyLocalization();
@@ -196,7 +202,7 @@ namespace Game.Board
             GameFonts.Apply(restartButton.transform);
         }
 
-        /// <summary>铺路完成：停表并锁定放置，把方向优先级的调整权交给玩家（这段时间不计用时）。</summary>
+        /// <summary>铺路完成：停表并锁定放置，等玩家点 Play（这段时间不计用时）。</summary>
         void OnFinishBuildingClicked() => _run?.CompleteBuilding();
 
         /// <summary>
@@ -247,6 +253,69 @@ namespace Game.Board
             GameFonts.Apply(finishBuildingButton.transform);
         }
 
+        /// <summary>
+        /// 棋盘外框：一张中间镂空的边框图，由 BoardScreenLayout 铺满棋盘视口矩形，把整块棋盘围起来。
+        /// 两个必须：raycastTarget 关掉（它盖在棋盘上方，参与射线就会把放置与平移全挡掉），
+        /// 层级压到最底（右侧操作区与上下白板都在它之上，外框不会盖住它们）。
+        /// </summary>
+        void EnsureBoardFrame()
+        {
+            if (boardFrame == null)
+            {
+                var existing = transform.Find(BoardFrameName);
+                if (existing != null) boardFrame = existing.GetComponent<Image>();
+            }
+
+            if (boardFrame == null)
+            {
+                var frameObject = new GameObject(BoardFrameName, typeof(RectTransform));
+                var rect = frameObject.transform as RectTransform;
+                rect.SetParent(transform, false);
+                rect.localScale = Vector3.one;
+                boardFrame = frameObject.AddComponent<Image>();
+                rect.SetAsFirstSibling();
+            }
+
+            boardFrame.raycastTarget = false;
+            boardFrame.preserveAspect = true;
+            boardFrame.color = Color.white;
+            if (boardFrame.sprite == null && boardFrameSprite != null) boardFrame.sprite = boardFrameSprite;
+        }
+
+        /// <summary>
+        /// 操作提示行挂在**底部白板**里（下半部分那条空白），显示放置 / 旋转 / 缩放 / 平移。
+        /// 预制体没回填时在 BottomBar 下现场创建一条；已有节点则只补字体，不覆写它自己的位置。
+        /// </summary>
+        void EnsureHintText()
+        {
+            var parent = bottomBar != null ? bottomBar : rightPanel;
+            if (parent == null) return;
+
+            const string name = "HintText";
+            var existing = parent.Find(name);
+            if (hintText == null)
+            {
+                hintText = existing != null
+                    ? existing.GetComponent<Text>()
+                    : CreateText(name, parent, 34, buttonTextColor, TextAnchor.MiddleCenter);
+            }
+
+            if (hintText == null) return;
+
+            if (existing == null)
+            {
+                // 现场创建的才铺满底部白板：预制体里配好的位置不在这里动
+                var rect = hintText.rectTransform;
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = new Vector2(-48f, 0f);
+            }
+
+            GameFonts.Apply(hintText.transform);
+        }
+
         void ApplyLocalization()
         {
             if (backButtonLabel != null)
@@ -255,6 +324,8 @@ namespace Game.Board
                 restartButtonLabel.text = Localization.Get(Localization.Key.LevelRestart);
             if (finishBuildingButtonLabel != null)
                 finishBuildingButtonLabel.text = Localization.Get(Localization.Key.LevelFinishBuilding);
+            if (hintText != null)
+                hintText.text = Localization.Get(Localization.Key.LevelBoardHint);
         }
 
         protected override void OnShow(object payload)
@@ -267,13 +338,13 @@ namespace Game.Board
             {
                 layout.RegisterCanvas(GetComponentInParent<Canvas>());
                 layout.RegisterBars(topBar, bottomBar, rightPanel);
+                layout.RegisterFrame(boardFrame != null ? (RectTransform)boardFrame.transform : null);
             }
 
             _piece = this.GetModel<PieceModel>();
             _board = this.GetModel<BoardModel>();
             _time = this.GetModel<BoardTimeModel>();
             _run = this.GetModel<BoardRunModel>();
-            _preference = this.GetModel<AiPreferenceModel>();
 
             if (playButton != null)
             {
@@ -306,13 +377,6 @@ namespace Game.Board
                     .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             }
 
-            _preference.OrderChanged.AddListener(RebuildPriorityRows)
-                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
-            _preference.Locked.AddListenerAndInvoke(_ => RebuildPriorityRows())
-                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
-
-            if (hintText != null)
-                hintText.text = "左键放置当前方块　滚轮缩放棋盘　右键平移";
         }
 
         void OnPlayClicked()
@@ -399,7 +463,7 @@ namespace Game.Board
             // 重来 / 重新开始会回到铺路阶段：此时必须收起结算面板，否则它压在棋盘上挡住放置
             if (!settled) HideResultPanels();
 
-            // 流程是「铺路完成 → 选偏好 → Play」：铺路阶段只有前者可点，Play 要等铺路完成才解锁。
+            // 流程是「铺路完成 → Play」：铺路阶段只有前者可点，Play 要等铺路完成才解锁。
             // 结算后两个按钮一起收起（不再变「重来」），重开一律走右上角「重新开始」与结算面板。
             if (finishBuildingButton != null)
             {
@@ -421,10 +485,10 @@ namespace Game.Board
             switch (phase)
             {
                 case BoardRunModel.Phase.Building:
-                    aiStateText.text = "AI 待命 · 起点";
+                    aiStateText.text = $"AI 待命 · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
                     break;
                 case BoardRunModel.Phase.Ready:
-                    aiStateText.text = "已铺路完成 · 计时暂停，调好方向后点 Play";
+                    aiStateText.text = "已铺路完成 · 计时暂停，点 Play 出发";
                     break;
                 case BoardRunModel.Phase.Running:
                     aiStateText.text = $"AI 行进中 · 第 {steps} 步";
@@ -438,84 +502,6 @@ namespace Game.Board
             }
         }
 
-        /// <summary>
-        /// 按偏好顺序刷新四行排序列表；锁定时隐藏调序按钮。
-        /// 行是**复用**的：MonoBehaviour.Destroy 延迟到帧末生效，若每次重建都先 Destroy 再新建，
-        /// 同一帧内多次触发（顺序变更 + 锁定变更）会让旧行尚未消失、新行已加入，行数成倍堆积。
-        /// </summary>
-        void RebuildPriorityRows()
-        {
-            if (priorityRoot == null || _preference == null) return;
-
-            EnsureRows();
-
-            var count = _preference.Count;
-            var locked = _preference.Locked.Value;
-
-            for (var i = 0; i < _rows.Count; i++)
-            {
-                var row = _rows[i];
-                var visible = i < count;
-                row.root.gameObject.SetActive(visible);
-                if (!visible) continue;
-
-                var index = i;
-                row.label.text = $"{i + 1}. {MoveDirectionInfo.DisplayName(_preference.At(i))}";
-                row.background.color = locked ? rowLockedColor : rowColor;
-                row.upButton.gameObject.SetActive(!locked && i > 0);
-                row.downButton.gameObject.SetActive(!locked && i < count - 1);
-
-                row.upButton.onClick.RemoveAllListeners();
-                row.upButton.onClick.AddListener(() => _preference.MoveUp(index));
-                row.downButton.onClick.RemoveAllListeners();
-                row.downButton.onClick.AddListener(() => _preference.MoveDown(index));
-            }
-
-            GameFonts.Apply(priorityRoot);
-        }
-
-        void EnsureRows()
-        {
-            var total = MoveDirectionInfo.Count;
-
-            while (_rows.Count < total)
-                _rows.Add(CreateRow(_rows.Count, total));
-
-            for (var i = _rows.Count - 1; i >= total; i--)
-            {
-                Destroy(_rows[i].root.gameObject);
-                _rows.RemoveAt(i);
-            }
-        }
-
-        PriorityRow CreateRow(int index, int total)
-        {
-            var rowObject = new GameObject($"Row_{index}", typeof(RectTransform));
-            var rowRect = rowObject.transform as RectTransform;
-            rowRect.SetParent(priorityRoot, false);
-            rowRect.localScale = Vector3.one;
-
-            // 行按序号在容器里均分高度：第 index 行占 [1-(index+1)/total, 1-index/total]
-            float top = 1f - index / (float)total;
-            float bottom = 1f - (index + 1f) / total;
-            rowRect.anchorMin = new Vector2(0f, bottom);
-            rowRect.anchorMax = new Vector2(1f, top);
-            rowRect.offsetMin = new Vector2(0f, 4f);
-            rowRect.offsetMax = new Vector2(0f, -4f);
-
-            var background = rowObject.AddComponent<Image>();
-            background.color = rowColor;
-
-            var label = CreateText("Label", rowRect, 30, rowTextColor, TextAnchor.MiddleLeft);
-            SetAnchors(label.rectTransform, new Vector2(0f, 0f), new Vector2(0.52f, 1f),
-                new Vector2(20f, 0f), new Vector2(0f, 0f));
-
-            var upButton = CreateButton("Up", rowRect, "↑", new Vector2(0.56f, 0.12f), new Vector2(0.77f, 0.88f));
-            var downButton = CreateButton("Down", rowRect, "↓", new Vector2(0.80f, 0.12f), new Vector2(0.99f, 0.88f));
-
-            return new PriorityRow(rowRect, background, label, upButton, downButton);
-        }
-
         Button CreateButton(string name, RectTransform parent, string label, Vector2 anchorMin, Vector2 anchorMax)
         {
             var buttonObject = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
@@ -527,7 +513,7 @@ namespace Game.Board
             var image = buttonObject.GetComponent<Image>();
             image.color = buttonColor;
 
-            var text = CreateText("Text", rect, 28, rowTextColor, TextAnchor.MiddleCenter);
+            var text = CreateText("Text", rect, 28, buttonTextColor, TextAnchor.MiddleCenter);
             SetAnchors(text.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             text.text = label;
 
@@ -573,22 +559,5 @@ namespace Game.Board
             rect.localScale = Vector3.one;
         }
 
-        readonly struct PriorityRow
-        {
-            public readonly RectTransform root;
-            public readonly Image background;
-            public readonly Text label;
-            public readonly Button upButton;
-            public readonly Button downButton;
-
-            public PriorityRow(RectTransform root, Image background, Text label, Button upButton, Button downButton)
-            {
-                this.root = root;
-                this.background = background;
-                this.label = label;
-                this.upButton = upButton;
-                this.downButton = downButton;
-            }
-        }
     }
 }

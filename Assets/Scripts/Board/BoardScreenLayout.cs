@@ -16,6 +16,9 @@ namespace Game.Board
         [SerializeField] RectTransform bottomBar;
         [SerializeField] RectTransform rightPanel;
 
+        [Tooltip("包裹棋盘的装饰外框；RectTransform 完全由本布局按视口矩形驱动")]
+        [SerializeField] RectTransform boardFrame;
+
         [Tooltip("所有留白与占位尺寸的基准分辨率")]
         [SerializeField] Vector2 designResolution = new Vector2(1920f, 1080f);
 
@@ -23,8 +26,14 @@ namespace Game.Board
         [SerializeField] float reserveTop = 100f;
         [SerializeField] float reserveBottom = 100f;
 
-        [Tooltip("右侧 UI 区宽度（1920 下 572 = 1920 - 100 - 65%屏宽）")]
+        [Tooltip("棋盘可用区右侧至少保留的宽度：参与「最大正方形」计算，实际面板只会更宽")]
         [SerializeField] float reserveRight = 572f;
+
+        [Tooltip("棋盘视口相对可用区最大正方形的每边内缩像素（1920 下 60 → 边长 880 缩到 760）")]
+        [SerializeField] float boardInset = 60f;
+
+        [Tooltip("棋盘视口右缘到右侧面板左缘的间距")]
+        [SerializeField] float boardToPanelGap = 0f;
 
         /// <summary>设计分辨率到当前屏幕的等比缩放系数。</summary>
         public float UiScale { get; private set; } = 1f;
@@ -45,6 +54,9 @@ namespace Game.Board
             rightPanel = right;
         }
 
+        /// <summary>由 BoardRuntimePanel 在显示时注册棋盘外框（位置由本布局驱动）。</summary>
+        public void RegisterFrame(RectTransform frame) => boardFrame = frame;
+
         /// <summary>按当前屏幕尺寸重算缩放系数、占位白板尺寸与操作空间矩形。</summary>
         public void Recompute()
         {
@@ -55,10 +67,6 @@ namespace Game.Board
                 ? canvas.scaleFactor
                 : Mathf.Min(Screen.width / designResolution.x, Screen.height / designResolution.y);
 
-            ApplyTopBar(topBar, reserveTop);
-            ApplyBottomBar(bottomBar, reserveBottom);
-            ApplyRightPanel(rightPanel, reserveRight, reserveTop, reserveBottom);
-
             float left = paddingLeft * UiScale;
             float bottom = reserveBottom * UiScale;
             float right = reserveRight * UiScale;
@@ -67,9 +75,16 @@ namespace Game.Board
             float availableWidth = Mathf.Max(Screen.width - left - right, 1f);
             float availableHeight = Mathf.Max(Screen.height - bottom - top, 1f);
 
-            // 棋盘是正方形，蒙板（棋盘视口）也取正方形：缩放为 1 时正好铺满整块棋盘，不留两侧底板
-            float side = Mathf.Min(availableWidth, availableHeight);
+            // 棋盘是正方形：先取可用区最大正方形，再整体内缩 boardInset，
+            // 缩出来的四周不再空着——外框贴着缩后的视口，右侧那条空白直接归 RightPanel。
+            float inset = Mathf.Max(boardInset, 0f) * UiScale;
+            float side = Mathf.Max(Mathf.Min(availableWidth, availableHeight) - inset * 2f, 1f);
             OperationRect = new Rect(left, bottom + (availableHeight - side) * 0.5f, side, side);
+
+            ApplyTopBar(topBar, reserveTop);
+            ApplyBottomBar(bottomBar, reserveBottom);
+            ApplyRightPanel(rightPanel, OperationRect.xMax, boardToPanelGap * UiScale, reserveTop, reserveBottom);
+            ApplyFrame(boardFrame, OperationRect);
         }
 
         static void ApplyTopBar(RectTransform bar, float height)
@@ -92,14 +107,38 @@ namespace Game.Board
             bar.sizeDelta = new Vector2(0f, height);
         }
 
-        static void ApplyRightPanel(RectTransform panel, float width, float top, float bottom)
+        /// <summary>
+        /// 右侧面板不再是固定宽度：左缘贴着棋盘视口右缘（再加一点间距），一路铺到屏幕右边，
+        /// 于是棋盘缩小腾出来的那条空白直接归 UI，不会被空着。
+        /// 左缘按屏幕像素归一化成 anchor，与棋盘视口共用同一套坐标，缩放屏幕上也不会错位。
+        /// </summary>
+        static void ApplyRightPanel(RectTransform panel, float boardRightPixel, float gapPixel, float top, float bottom)
         {
             if (panel == null) return;
-            panel.anchorMin = new Vector2(1f, 0f);
+
+            float left = Mathf.Clamp01((boardRightPixel + Mathf.Max(gapPixel, 0f)) / Mathf.Max(Screen.width, 1f));
+            panel.anchorMin = new Vector2(left, 0f);
             panel.anchorMax = Vector2.one;
             panel.pivot = new Vector2(1f, 0.5f);
-            panel.offsetMin = new Vector2(-width, bottom);
+            panel.offsetMin = new Vector2(0f, bottom);
             panel.offsetMax = new Vector2(0f, -top);
+        }
+
+        /// <summary>
+        /// 棋盘外框：精确铺满视口矩形。anchor 由屏幕像素归一化而来，
+        /// 与 BoardCameraFitter 的 pixelRect 同一坐标系，外框恰好把整块棋盘围住。
+        /// </summary>
+        static void ApplyFrame(RectTransform frame, Rect rect)
+        {
+            if (frame == null) return;
+
+            float w = Mathf.Max(Screen.width, 1f);
+            float h = Mathf.Max(Screen.height, 1f);
+            frame.anchorMin = new Vector2(rect.xMin / w, rect.yMin / h);
+            frame.anchorMax = new Vector2(rect.xMax / w, rect.yMax / h);
+            frame.pivot = new Vector2(0.5f, 0.5f);
+            frame.offsetMin = Vector2.zero;
+            frame.offsetMax = Vector2.zero;
         }
     }
 }

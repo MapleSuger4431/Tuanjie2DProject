@@ -15,7 +15,7 @@ using UnityEngine.UI;
 ///    按钮底图与品牌切片（棋盘距离键控抠图），主菜单资产不引用沙盒 Assets/Test
 /// 2. 生成 Assets/Resources/UIPrefabs/MainMenuPanel.prefab、MenuHelpPanel.prefab 与 MenuSettingsPanel.prefab
 ///    （按 Assets/Arts/封面设计图/封面全局.png 复刻：AI 抠图成品 封面背景.png 铺底（装饰边框与全部 UI 已抠除），品牌区切片徽章/标题/EDGE GRID/分隔线/标语分层，
-///    四按钮右下锚点 x=-155、y=502/379/257/134（开始=横幅底图、说明/设置=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
+///    四按钮右下锚点 + 右中支点、右边缘距屏幕右缘 70px、y=502/379/257/134（开始=横幅底图、说明/设置=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
 ///    标题图按语言切换（中文 pieces/title.png「边际棋盘」、英文 pieces/title_en.png「Marginal Chessboard」，由 MainMenuPanel.ApplyLocalization 运行时换图并重算尺寸），
 ///    操作说明弹窗 760×560 + 全屏蒙版，设置面板 860×680）
 /// 3. 生成 Assets/Scenes/MainMenu.scene（主相机 + MainMenuBoot，Additive 方式不扰动当前打开场景）
@@ -58,6 +58,18 @@ public static class MainMenuBuilder
 
     /// <summary>英文标题图（Marginal Chessboard，两行字，语言切英文时替换中文标题）。</summary>
     const string TitleEnPath = PiecesFolder + "/title_en.png";
+
+    /// <summary>按钮右边缘到屏幕右缘的间距（设计分辨率 1920×1080）。</summary>
+    const float ButtonRightMargin = 70f;
+
+    /// <summary>次级按钮宽度（开始按钮是略宽的横幅 459，两者右缘对齐故共用同一中轴）。</summary>
+    const float ButtonWidth = 441f;
+
+    /// <summary>
+    /// 右侧一整列（品牌区五切片 + 四按钮）的统一中轴，取按钮列中轴：
+    /// 屏幕 x = 1920 - ButtonRightMargin - ButtonWidth / 2 = 1629.5，换算成相对屏幕中心的锚点偏移 = +669.5。
+    /// </summary>
+    const float RightColumnCenterX = 669.5f;
 
     /// <summary>
     /// 按钮底图在总览图上的搜索区（图像坐标 top-left origin 的 x1,y1,x2,y2 + 九宫格边框）。
@@ -391,27 +403,31 @@ public static class MainMenuBuilder
         bgImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(MenuBackground);
         bgImage.raycastTarget = false;
 
-        // Branding：设计图右列品牌区抠图切片（徽章→标题→EDGE GRID→分隔线→标语），居中锚点按设计比例摆放
+        // Branding：设计图右列品牌区抠图切片（徽章→标题→EDGE GRID→分隔线→标语）
+        // 五个切片与下方按钮列共用同一条中轴 RightColumnCenterX：设计图上品牌区各元素中轴一致（x≈292.6），
+        // 早先按各自包围盒手填中心（540~611）导致整列歪斜，故统一取按钮列中轴
         var brandingRt = CreateRect(root, "Branding");
         Stretch(brandingRt);
-        CreatePieceImage(brandingRt, "Emblem", "emblem", new Vector2(593f, 380f), new Vector2(441f, 160f));
-        var titleImage = CreatePieceImage(brandingRt, "Title", "title", new Vector2(540f, 266f), new Vector2(589f, 137f));
-        CreatePieceImage(brandingRt, "EdgeGrid", "edgegrid", new Vector2(576f, 163f), new Vector2(503f, 34f));
-        CreatePieceImage(brandingRt, "Divider", "divider", new Vector2(611f, 126f), new Vector2(367f, 10f));
-        CreatePieceImage(brandingRt, "Slogan", "slogan", new Vector2(567f, 69f), new Vector2(510f, 53f));
+        CreatePieceImage(brandingRt, "Emblem", "emblem", new Vector2(RightColumnCenterX, 380f), new Vector2(441f, 160f));
+        var titleImage = CreatePieceImage(brandingRt, "Title", "title", new Vector2(RightColumnCenterX, 266f), new Vector2(589f, 137f));
+        CreatePieceImage(brandingRt, "EdgeGrid", "edgegrid", new Vector2(RightColumnCenterX, 163f), new Vector2(503f, 34f));
+        CreatePieceImage(brandingRt, "Divider", "divider", new Vector2(RightColumnCenterX, 126f), new Vector2(367f, 10f));
+        CreatePieceImage(brandingRt, "Slogan", "slogan", new Vector2(RightColumnCenterX, 69f), new Vector2(510f, 53f));
 
-        // Buttons 容器 + 四按钮（右缘与设计图按钮列对齐 x=-155；无字键控抠图底图 + Text 标签；锚点右下，Y 正值向上）
+        // Buttons 容器 + 四按钮（右缘距屏幕右缘 ButtonRightMargin + 右中支点，与品牌区共用 RightColumnCenterX；
+        // 无字键控抠图底图 + Text 标签；玩法说明/设置/退出左端各带一枚同风格图标）
         var startSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BtnStartPath);
         var plaqueSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BtnPlaquePath);
         var quitSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BtnQuitPath);
         var bookIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_book.png");
+        var settingsIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_settings.png");
         var exitIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_exit.png");
         var buttonsRt = CreateRect(root, "Buttons");
         Stretch(buttonsRt);
-        var newGame = CreateButton(buttonsRt, "BtnNewGame", "开始游戏", new Vector2(-155f, 502f), startSprite, new Vector2(459f, 98f), null);
-        var help = CreateButton(buttonsRt, "BtnHelp", "玩法说明", new Vector2(-155f, 379f), plaqueSprite, new Vector2(441f, 70f), bookIcon);
-        var settings = CreateButton(buttonsRt, "BtnSettings", "设置", new Vector2(-155f, 257f), plaqueSprite, new Vector2(441f, 70f), null);
-        var quit = CreateButton(buttonsRt, "BtnQuit", "退出游戏", new Vector2(-155f, 134f), quitSprite, new Vector2(441f, 70f), exitIcon);
+        var newGame = CreateButton(buttonsRt, "BtnNewGame", "开始游戏", new Vector2(-ButtonRightMargin, 502f), startSprite, new Vector2(459f, 98f), null);
+        var help = CreateButton(buttonsRt, "BtnHelp", "玩法说明", new Vector2(-ButtonRightMargin, 379f), plaqueSprite, new Vector2(ButtonWidth, 70f), bookIcon);
+        var settings = CreateButton(buttonsRt, "BtnSettings", "设置", new Vector2(-ButtonRightMargin, 257f), plaqueSprite, new Vector2(ButtonWidth, 70f), settingsIcon);
+        var quit = CreateButton(buttonsRt, "BtnQuit", "退出游戏", new Vector2(-ButtonRightMargin, 134f), quitSprite, new Vector2(ButtonWidth, 70f), exitIcon);
 
         var panel = root.gameObject.AddComponent<MainMenuPanel>();
         var so = new SerializedObject(panel);
@@ -457,51 +473,17 @@ public static class MainMenuBuilder
         cardBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
         cardBg.raycastTarget = false;
 
-        var titleRt = CreateRect(contentRt, "Title");
-        titleRt.anchorMin = new Vector2(0.5f, 0.5f);
-        titleRt.anchorMax = new Vector2(0.5f, 0.5f);
-        titleRt.anchoredPosition = new Vector2(0f, 257f);
-        titleRt.sizeDelta = new Vector2(520f, 64f);
-        var title = titleRt.gameObject.AddComponent<Text>();
-        title.text = "操作说明";
-        title.fontSize = 40;
-        title.alignment = TextAnchor.MiddleCenter;
-        title.color = new Color32(62, 32, 100, 255);
-        title.font = GetLegacyFont();
+        var title = MakeText(contentRt, "Title", "操作说明", new Vector2(0f, 257f), new Vector2(520f, 64f), 40,
+            TextAnchor.MiddleCenter, new Color32(62, 32, 100, 255));
 
-        // BtnClose：右上角 ×
-        var closeRt = CreateRect(contentRt, "BtnClose");
-        closeRt.anchorMin = new Vector2(0.5f, 0.5f);
-        closeRt.anchorMax = new Vector2(0.5f, 0.5f);
-        closeRt.anchoredPosition = new Vector2(290f, 135f);
-        closeRt.sizeDelta = new Vector2(52f, 52f);
-        var closeImage = closeRt.gameObject.AddComponent<Image>();
-        closeImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-        closeImage.type = Image.Type.Sliced;
-        var closeButton = closeRt.gameObject.AddComponent<Button>();
-        closeButton.targetGraphic = closeImage;
+        // Body：操作说明正文。
+        // 正文矩形（620×290）与右上角 × 有重叠：Text 的射线判定用的是整个文字框而非字形，
+        // 一旦它开着 raycastTarget 且排在 × 之后绘制，点 × 就会静默命中正文、面板关不掉。
+        var body = MakeText(contentRt, "Body", "鼠标移动：预览拼块落点\n鼠标左键：放置当前拼块\nR：旋转拼块\nZ：撤销上一次铺设\nSpace：出发，AI 开始寻路\n\n铺得越快、路线越巧，通关评价越高。",
+            new Vector2(0f, 8f), new Vector2(620f, 290f), 30, TextAnchor.UpperLeft, new Color32(238, 235, 228, 255));
 
-        var closeTextRt = CreateRect(closeRt, "Text");
-        Stretch(closeTextRt);
-        var closeText = closeTextRt.gameObject.AddComponent<Text>();
-        closeText.text = "×";
-        closeText.fontSize = 30;
-        closeText.alignment = TextAnchor.MiddleCenter;
-        closeText.color = new Color32(50, 50, 50, 255);
-        closeText.font = GetLegacyFont();
-
-        // Body：操作说明正文
-        var bodyRt = CreateRect(contentRt, "Body");
-        bodyRt.anchorMin = new Vector2(0.5f, 0.5f);
-        bodyRt.anchorMax = new Vector2(0.5f, 0.5f);
-        bodyRt.anchoredPosition = new Vector2(0f, 8f);
-        bodyRt.sizeDelta = new Vector2(620f, 290f);
-        var body = bodyRt.gameObject.AddComponent<Text>();
-        body.text = "鼠标移动：预览拼块落点\n鼠标左键：放置当前拼块\nR：旋转拼块\nZ：撤销上一次铺设\nSpace：出发，AI 开始寻路\n\n铺得越快、路线越巧，通关评价越高。";
-        body.fontSize = 30;
-        body.alignment = TextAnchor.UpperLeft;
-        body.color = new Color32(238, 235, 228, 255);
-        body.font = GetLegacyFont();
+        // BtnClose：右上角 ×。建在 Body 之后，保证最后绘制、始终压在正文之上。
+        var closeButton = MakeCenterButton(contentRt, "BtnClose", "×", new Vector2(290f, 135f), new Vector2(52f, 52f), 30, false);
 
         var panel = root.gameObject.AddComponent<MenuHelpPanel>();
         var so = new SerializedObject(panel);
@@ -714,7 +696,7 @@ public static class MainMenuBuilder
                 failures.Add("主菜单按钮底图（无字键控抠图成品）缺失，勿删除或改名");
             }
 
-            foreach (var piece in new[] { "emblem", "title", "edgegrid", "divider", "slogan", "icon_book", "icon_exit" })
+            foreach (var piece in new[] { "emblem", "title", "edgegrid", "divider", "slogan", "icon_book", "icon_settings", "icon_exit" })
             {
                 if (AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/" + piece + ".png") == null)
                 {
@@ -839,12 +821,15 @@ public static class MainMenuBuilder
         return image;
     }
 
-    /// <summary>主菜单按钮（设计图底图 + 白色居中文字 + 可选左侧图标），右下锚点，尺寸由调用方指定。</summary>
+    /// <summary>主菜单按钮（设计图底图 + 白色居中文字 + 可选左侧图标），右下锚点 + 右中支点，尺寸由调用方指定。</summary>
     static Button CreateButton(Transform parent, string name, string label, Vector2 anchoredPosition, Sprite baseSprite, Vector2 size, Sprite iconSprite)
     {
         var rt = CreateRect(parent, name);
         rt.anchorMin = new Vector2(1f, 0f);
         rt.anchorMax = new Vector2(1f, 0f);
+        // 支点取右中：anchoredPosition.x 直接表示按钮右边缘到屏幕右缘的距离，
+        // 宽窄不同的按钮（开始横幅 459 / 其余 441）共用同一个 x 即右端对齐，不会伸出屏幕被裁掉
+        rt.pivot = new Vector2(1f, 0.5f);
         rt.anchoredPosition = anchoredPosition;
         rt.sizeDelta = size;
 

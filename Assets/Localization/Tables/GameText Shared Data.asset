@@ -159,6 +159,10 @@ MonoBehaviour:
     m_Key: LevelClearTimeNewRecord
     m_Metadata:
       m_Items: []
+  - m_Id: 86053879799808
+    m_Key: LevelBoardHint
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

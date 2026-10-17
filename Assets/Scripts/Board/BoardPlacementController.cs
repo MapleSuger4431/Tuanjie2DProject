@@ -10,6 +10,7 @@ namespace Game.Board
 {
     /// <summary>
     /// 鼠标交互：悬停格对齐方块包围盒左上角显示虚影，左键点击把当前方块覆盖到棋盘格，随后换新方块。
+    /// R 键把当前这块整块顺时针旋转 90°（每格状态跟着各自那一格走），绕包围盒中心原地转，落点始终夹在棋盘内。
     /// 输入一律走 Input System（本工程 activeInputHandler=2，旧 Input.* 运行时会抛异常）。
     /// 放置成功瞬间经 <see cref="AudioModule" /> 播放一次放置音效。
     /// </summary>
@@ -33,6 +34,10 @@ namespace Game.Board
         GameInputActions.BoardActions _input;
         bool _inputReady;
 
+        // 旋转补偿：整块绕包围盒中心转（俄罗斯方块手感），而不是绕左上角甩出去。换块即清零
+        Vector2Int _anchorOffset;
+        TilePiece _offsetPiece;
+
         // UI 遮挡检测复用同一份数据，避免每帧分配
         readonly List<RaycastResult> _uiRaycasts = new List<RaycastResult>();
         PointerEventData _uiPointerEvent;
@@ -47,7 +52,23 @@ namespace Game.Board
             _fitter = GetComponent<BoardCameraFitter>();
             _camera = Camera.main;
             _input = GameInput.Instance.Board;
+            // 旋转是「一次按下转一次」的离散动作，走 performed 回调而不是 Update 轮询：
+            // 轮询要正好赶上按下那一帧才读得到 WasPressedThisFrame，事件驱动不会漏（与 Zoom / ResetView 同套写法）
+            _input.Rotate.performed += OnRotatePerformed;
             _inputReady = true;
+        }
+
+        void OnDestroy()
+        {
+            if (_inputReady) _input.Rotate.performed -= OnRotatePerformed;
+        }
+
+        /// <summary>R 键：只在铺路阶段可转，运行 / 结算阶段棋盘已锁定。</summary>
+        void OnRotatePerformed(InputAction.CallbackContext context)
+        {
+            if (_run != null && !_run.IsBuilding) return;
+
+            RotatePiece();
         }
 
         void Update()
@@ -61,7 +82,16 @@ namespace Game.Board
                 return;
             }
 
+            // R 键旋转由 Start 里订阅的 Rotate.performed 驱动（不在这里轮询）
             var piece = _piece.Current.Value;
+
+            // 换块就丢掉上一块的旋转补偿，否则偏移会带到新块上
+            if (!ReferenceEquals(_offsetPiece, piece))
+            {
+                _offsetPiece = piece;
+                _anchorOffset = Vector2Int.zero;
+            }
+
             if (!_inputReady || piece == null || piece.Shape == null)
             {
                 _ghost?.Hide();
@@ -91,7 +121,7 @@ namespace Game.Board
                 return;
             }
 
-            var anchor = ScreenToCell(screen);
+            var anchor = ResolveAnchor(ScreenToCell(screen), piece);
             bool valid = _board.CanCover(anchor, piece);
             _ghost?.Show(anchor, piece, valid);
 
@@ -108,6 +138,45 @@ namespace Game.Board
             if (placeSfx == null) return;
 
             AudioModule.PlaySfx(placeSfx, placeSfxVolume);
+        }
+
+        /// <summary>
+        /// 整块顺时针转 90°（每格状态跟着走）。转完把落点补偿半格差，让块绕包围盒中心原地转，
+        /// 而不是以左上角为轴甩出去——横条转竖条时尤其明显。
+        /// </summary>
+        void RotatePiece()
+        {
+            var before = _piece.Current.Value;
+            if (before == null) return;
+
+            var beforeBounds = before.Bounds;
+
+            _piece.RotateCurrent();
+
+            var after = _piece.Current.Value;
+            if (after == null) return;
+
+            // 中心不动：包围盒从 (w,h) 变成 (h,w)，左上角要挪 (w-h)/2 与 (h-w)/2 格（取整到最近格）
+            var afterBounds = after.Bounds;
+            _anchorOffset += new Vector2Int(
+                Mathf.RoundToInt((beforeBounds.x - afterBounds.x) * 0.5f),
+                Mathf.RoundToInt((beforeBounds.y - afterBounds.y) * 0.5f));
+
+            _offsetPiece = after;
+        }
+
+        /// <summary>
+        /// 落点 = 鼠标所在格（对齐方块包围盒左上角）加上本块的旋转补偿，再整体夹回棋盘内：
+        /// 贴边旋转（横条转竖条）或贴边放置时，块不会被甩到界外。虚影与实际落点都取这里的结果，所见即所落。
+        /// </summary>
+        Vector2Int ResolveAnchor(Vector2Int cell, TilePiece piece)
+        {
+            var bounds = piece.Bounds;
+            var maxX = Mathf.Max(0, _board.Width - bounds.x);
+            var maxY = Mathf.Max(0, _board.Height - bounds.y);
+
+            var target = cell + _anchorOffset;
+            return new Vector2Int(Mathf.Clamp(target.x, 0, maxX), Mathf.Clamp(target.y, 0, maxY));
         }
 
         /// <summary>

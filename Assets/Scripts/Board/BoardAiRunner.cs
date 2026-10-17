@@ -24,8 +24,11 @@ namespace Game.Board
         [Tooltip("相对格子尺寸的缩放")]
         [SerializeField, Range(0.2f, 1.5f)] float aiScale = 0.72f;
 
-        [Tooltip("使用预制体时，角色高度相当于几个格子")]
-        [SerializeField, Range(0.5f, 3f)] float actorHeightInCells = 1.6f;
+        [Tooltip("使用预制体时，角色高度相当于几个格子（原 1.6 格缩小 0.7 倍 = 1.12）")]
+        [SerializeField, Range(0.2f, 3f)] float actorHeightInCells = 1.12f;
+
+        [Tooltip("角色相对格心向下偏移多少个格子高度（正值 = 往下）：脚踩格子下半部，不再正贴格心")]
+        [SerializeField, Range(-1f, 1f)] float actorOffsetInCells = 0.2f;
 
         [Tooltip("渲染层级，需高于棋盘格才能在格子上可见")]
         [SerializeField] int sortingOrder = 5;
@@ -137,7 +140,12 @@ namespace Game.Board
         Vector3 CellToLocal(Vector2Int cell)
         {
             if (_grid == null) return Vector3.zero;
-            return _grid.CellToLocal(cell);
+
+            // 锚点自格心下移：偏移按格子高度取，跟着格子尺寸一起缩放。
+            // 吸附与补间都走这里，两种移动方式的落点才不会差半格。
+            var local = _grid.CellToLocal(cell);
+            local.y -= _grid.CellSize * actorOffsetInCells;
+            return local;
         }
 
         void BuildActor()
