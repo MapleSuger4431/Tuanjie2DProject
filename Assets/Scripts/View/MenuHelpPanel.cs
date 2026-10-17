@@ -9,8 +9,9 @@ namespace Game.View
     /// 操作说明弹窗（面板形态，与 MainMenuPanel 同构：RectTransform 根、无 Canvas，
     /// 挂载于 UIRoot 的 Popup 层 Canvas 之下）。
     /// <para>
-    /// 经 <c>UIModule.Show&lt;MenuHelpPanel&gt;((object)"操作说明", UIPaths.MenuHelpPanel)</c> 打开，
-    /// payload 传入标题。支持关闭按钮与点击蒙版双通道关闭。
+    /// 经 <c>UIModule.Show&lt;MenuHelpPanel&gt;(UIPaths.MenuHelpPanel)</c> 打开；
+    /// 标题/正文由本地化接管（<see cref="Game.Core.Localization" />），语言切换时即时刷新。
+    /// 支持关闭按钮与点击蒙版双通道关闭。
     /// 面板没有 UIModule 的蒙版调度（那是窗口专属），蒙版直接用面板自身的
     /// 全屏 Mask 子物体（Image 拦截射线 + Button 承接点击）实现模态与关闭。
     /// </para>
@@ -50,14 +51,29 @@ namespace Game.View
                     maskButton.onClick.AddListener(HideSelf);
                 }
             }
+
+            // 标题/正文由本地化接管：订阅语言切换（打开中切语言也即时刷新），初始化即应用一次
+            Localization.OnLanguageChanged += ApplyLocalization;
+            ApplyLocalization();
         }
 
-        protected override void OnShow(object payload)
+        protected override void OnDestroy()
         {
-            base.OnShow(payload);
-            if (payload != null && titleText != null)
+            Localization.OnLanguageChanged -= ApplyLocalization;
+            base.OnDestroy();
+        }
+
+        /// <summary>按当前语言刷新标题与正文。</summary>
+        void ApplyLocalization()
+        {
+            if (titleText != null)
             {
-                titleText.text = payload.ToString();
+                titleText.text = Localization.Get(Localization.Key.HelpTitle);
+            }
+
+            if (contentText != null)
+            {
+                contentText.text = Localization.Get(Localization.Key.HelpBody);
             }
         }
     }

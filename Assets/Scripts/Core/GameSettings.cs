@@ -103,12 +103,54 @@ namespace Game.Core
             PlayerPrefs.Save();
         }
 
-        /// <summary>设置界面语言（中文 / English）。</summary>
+        /// <summary>
+        /// 把持久化的语言应用到 Unity Localization（注册 Locale 资产进可用语言 + 选中持久化语言）。
+        /// 主菜单 OnInit 调用；包初始化未完成时在完成回调里补应用。幂等。
+        /// </summary>
+        public static void ApplyLoadedLocale()
+        {
+            var init = UnityEngine.Localization.Settings.LocalizationSettings.InitializationOperation;
+            if (init.IsDone)
+            {
+                ApplyLocaleNow();
+                return;
+            }
+
+            init.Completed += _ => ApplyLocaleNow();
+        }
+
+        static void ApplyLocaleNow()
+        {
+            var zh = Resources.Load<UnityEngine.Localization.Locale>("Locales/zh-CN");
+            var en = Resources.Load<UnityEngine.Localization.Locale>("Locales/en");
+            var available = UnityEngine.Localization.Settings.LocalizationSettings.AvailableLocales;
+            if (zh != null && available.GetLocale(zh.Identifier) == null)
+            {
+                available.AddLocale(zh);
+            }
+
+            if (en != null && available.GetLocale(en.Identifier) == null)
+            {
+                available.AddLocale(en);
+            }
+
+            var id = new UnityEngine.Localization.LocaleIdentifier(CurrentLanguage == Language.Chinese ? "zh-CN" : "en");
+            var locale = available.GetLocale(id);
+            if (locale != null && UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != locale)
+            {
+                UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale = locale;
+            }
+        }
+
+        /// <summary>设置界面语言（中文 / English）：保存后切换 Unity Localization 的 SelectedLocale 并广播，全游戏已打开的界面即时刷新文本。</summary>
         public static void SetLanguage(Language language)
         {
             CurrentLanguage = language;
             PlayerPrefs.SetInt(KeyLanguage, (int)language);
             PlayerPrefs.Save();
+
+            ApplyLoadedLocale();
+            Localization.RaiseLanguageChanged();
         }
     }
 }

@@ -2,12 +2,15 @@
   "dependencies": {
     "cn.tuanjie.ai.generators": "file:../.codely-cli/extensions/TJGenerators/Packages/cn.tuanjie.ai.generators",
     "cn.tuanjie.codely.bridge": "1.0.87-exp.2",
+    "cn.tuanjie.codely.tmp-chinese-text": "file:../.codely-cli/extensions/TMPChineseText/Packages/cn.tuanjie.codely.tmp-chinese-text",
+    "cn.tuanjie.create.ui": "file:../.codely-cli/extensions/TJUIBuilder/Packages/cn.tuanjie.create.ui",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.rider": "3.0.40",
     "com.unity.ide.visualstudio": "2.0.28",
     "com.unity.inputsystem": "1.14.4-t4",
+    "com.unity.localization": "1.5.3",
     "com.unity.test-framework": "1.1.33",
     "com.unity.textmeshpro": "3.0.10",
     "com.unity.timeline": "1.8.12",
@@ -42,7 +45,6 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "cn.tuanjie.codely.tmp-chinese-text": "file:../.codely-cli/extensions/TMPChineseText/Packages/cn.tuanjie.codely.tmp-chinese-text"
+    "com.unity.modules.xr": "1.0.0"
   }
 }
