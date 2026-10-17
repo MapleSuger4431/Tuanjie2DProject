@@ -2,7 +2,9 @@
     "name": "Sunset.Test.Editor",
     "rootNamespace": "Sunset.Test.Editor",
     "references": [
-        "Sunset.Test"
+        "Sunset.Test",
+        "Runestone.AesirArchitecture",
+        "Runestone.AesirModules"
     ],
     "includePlatforms": [
         "Editor"
