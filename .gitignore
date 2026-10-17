@@ -61,6 +61,13 @@ crashlytics-build.properties
 /[Aa]ssets/**/NavMesh*/
 /[Aa]ssets/**/LightingData*/
 /[Aa]ssets/**/ReflectionProbe*
-# 本地工具产物
-/.codely-cli/
+# 本地工具产物（extensions 与 skills 需随仓库上传，仅忽略其余本地产物）
+/.codely-cli/*
+!/.codely-cli/extensions/
+!/.codely-cli/skills/
 /.codelyignore
+# Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
+_ReSharper.*
+*.DotSettings.user
+# 兜底：Assets 下的 .meta 必须提交，防止上方规则误伤（Assets/Art/ 整目录忽略，不受此影响）
+!/[Aa]ssets/**/*.meta
