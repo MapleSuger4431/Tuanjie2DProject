@@ -40,6 +40,9 @@ public static class MainMenuBuilder
     /// <summary>退出按钮底图（胶囊造型，底部烘焙投影已根除），九宫格圆角段已配。</summary>
     const string BtnQuitPath = "Assets/Arts/UI组件/按钮底图_退出_无字.png";
 
+    /// <summary>弹窗/设置面板背景：操作说明.png（深紫华丽金框+顶部浅色牌匾，2048×2048 方图带透明边距，Simple 全幅）。</summary>
+    const string PanelBgPath = "Assets/Arts/UI组件/操作说明.png";
+
     /// <summary>UI 切片总览图源路径（原 16bit RGB 无 alpha；2026-10-18 起背景已整图键控为透明、子精灵即取即用，EnsureMenuArt 的棋盘键控切片随之停用）。</summary>
     const string SheetSource = "Assets/Arts/UI组件/imageb52c1134c728.png";
 
@@ -411,7 +414,7 @@ public static class MainMenuBuilder
         SavePrefab(root.gameObject, PanelPrefabPath);
     }
 
-    /// <summary>生成操作说明弹窗预制体（MenuHelpPanel：全屏蒙版 + 760×560 内容卡 + × 关闭）。</summary>
+    /// <summary>生成操作说明弹窗预制体（MenuHelpPanel：全屏蒙版 + 950×950 操作说明.png 背景 + 顶部牌匾标题 + 浅色正文 + × 关闭）。</summary>
     public static void BuildMenuHelpPanel()
     {
         var root = new GameObject("MenuHelpPanel", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -430,31 +433,31 @@ public static class MainMenuBuilder
         contentRt.anchorMin = new Vector2(0.5f, 0.5f);
         contentRt.anchorMax = new Vector2(0.5f, 0.5f);
         contentRt.anchoredPosition = Vector2.zero;
-        contentRt.sizeDelta = new Vector2(760f, 560f);
+        contentRt.sizeDelta = new Vector2(950f, 950f);
 
         var cardBgRt = CreateRect(contentRt, "Background");
         Stretch(cardBgRt);
         var cardBg = cardBgRt.gameObject.AddComponent<Image>();
-        cardBg.color = new Color(0.93f, 0.94f, 0.96f, 1f);
+        cardBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
         cardBg.raycastTarget = false;
 
         var titleRt = CreateRect(contentRt, "Title");
         titleRt.anchorMin = new Vector2(0.5f, 0.5f);
         titleRt.anchorMax = new Vector2(0.5f, 0.5f);
-        titleRt.anchoredPosition = new Vector2(0f, 226f);
-        titleRt.sizeDelta = new Vector2(600f, 56f);
+        titleRt.anchoredPosition = new Vector2(0f, 257f);
+        titleRt.sizeDelta = new Vector2(520f, 64f);
         var title = titleRt.gameObject.AddComponent<Text>();
         title.text = "操作说明";
-        title.fontSize = 44;
+        title.fontSize = 40;
         title.alignment = TextAnchor.MiddleCenter;
-        title.color = new Color32(50, 50, 50, 255);
+        title.color = new Color32(62, 32, 100, 255);
         title.font = GetLegacyFont();
 
         // BtnClose：右上角 ×
         var closeRt = CreateRect(contentRt, "BtnClose");
         closeRt.anchorMin = new Vector2(0.5f, 0.5f);
         closeRt.anchorMax = new Vector2(0.5f, 0.5f);
-        closeRt.anchoredPosition = new Vector2(330f, 226f);
+        closeRt.anchoredPosition = new Vector2(290f, 135f);
         closeRt.sizeDelta = new Vector2(52f, 52f);
         var closeImage = closeRt.gameObject.AddComponent<Image>();
         closeImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
@@ -475,13 +478,13 @@ public static class MainMenuBuilder
         var bodyRt = CreateRect(contentRt, "Body");
         bodyRt.anchorMin = new Vector2(0.5f, 0.5f);
         bodyRt.anchorMax = new Vector2(0.5f, 0.5f);
-        bodyRt.anchoredPosition = new Vector2(0f, -50f);
-        bodyRt.sizeDelta = new Vector2(660f, 420f);
+        bodyRt.anchoredPosition = new Vector2(0f, 8f);
+        bodyRt.sizeDelta = new Vector2(620f, 290f);
         var body = bodyRt.gameObject.AddComponent<Text>();
         body.text = "鼠标移动：预览拼块落点\n鼠标左键：放置当前拼块\nR：旋转拼块\nZ：撤销上一次铺设\nSpace：出发，AI 开始寻路\n\n铺得越快、路线越巧，通关评价越高。";
         body.fontSize = 30;
         body.alignment = TextAnchor.UpperLeft;
-        body.color = new Color32(50, 50, 50, 255);
+        body.color = new Color32(238, 235, 228, 255);
         body.font = GetLegacyFont();
 
         var panel = root.gameObject.AddComponent<MenuHelpPanel>();
@@ -496,7 +499,7 @@ public static class MainMenuBuilder
         SavePrefab(root.gameObject, HelpPrefabPath);
     }
 
-    /// <summary>生成设置面板预制体（MenuSettingsPanel：全屏蒙版 + 860×680 内容卡：分辨率档位 / 音效音乐滑条 / 中英文语言）。</summary>
+    /// <summary>生成设置面板预制体（MenuSettingsPanel：全屏蒙版 + 1050×1050 操作说明.png 背景：分辨率档位 / 音效音乐滑条 / 中英文语言）。</summary>
     public static void BuildMenuSettingsPanel()
     {
         var root = new GameObject("MenuSettingsPanel", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -514,37 +517,37 @@ public static class MainMenuBuilder
         contentRt.anchorMin = new Vector2(0.5f, 0.5f);
         contentRt.anchorMax = new Vector2(0.5f, 0.5f);
         contentRt.anchoredPosition = Vector2.zero;
-        contentRt.sizeDelta = new Vector2(860f, 680f);
+        contentRt.sizeDelta = new Vector2(1050f, 1050f);
 
         var cardBgRt = CreateRect(contentRt, "Background");
         Stretch(cardBgRt);
         var cardBg = cardBgRt.gameObject.AddComponent<Image>();
-        cardBg.color = new Color(0.93f, 0.94f, 0.96f, 1f);
+        cardBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
         cardBg.raycastTarget = false;
 
-        var title = MakeText(contentRt, "Title", "设置", new Vector2(0f, 296f), new Vector2(420f, 56f), 44, TextAnchor.MiddleCenter);
-        var closeButton = MakeCenterButton(contentRt, "BtnClose", "×", new Vector2(392f, 298f), new Vector2(52f, 52f), 30, false);
+        var title = MakeText(contentRt, "Title", "设置", new Vector2(0f, 284f), new Vector2(440f, 60f), 42, TextAnchor.MiddleCenter);
+        var closeButton = MakeCenterButton(contentRt, "BtnClose", "×", new Vector2(330f, 145f), new Vector2(52f, 52f), 30, false);
 
         // 分辨率行：◀ 档位值 ▶
-        var resRow = MakeRow(contentRt, "ResolutionRow", 170f);
-        var resRowLabel = MakeText(resRow, "RowLabel", "分辨率", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight);
+        var resRow = MakeRow(contentRt, "ResolutionRow", 145f);
+        var resRowLabel = MakeText(resRow, "RowLabel", "分辨率", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
         var resPrev = MakeCenterButton(resRow, "BtnPrev", "<", new Vector2(-70f, 0f), new Vector2(52f, 48f), 30, false);
-        var resValue = MakeText(resRow, "Value", "1920 × 1080", new Vector2(60f, 0f), new Vector2(240f, 48f), 30, TextAnchor.MiddleCenter);
+        var resValue = MakeText(resRow, "Value", "1920 × 1080", new Vector2(60f, 0f), new Vector2(240f, 48f), 30, TextAnchor.MiddleCenter, new Color32(235, 235, 245, 255));
         var resNext = MakeCenterButton(resRow, "BtnNext", ">", new Vector2(195f, 0f), new Vector2(52f, 48f), 30, false);
 
         // 音效行（滑条 x=115，与行标签保持间隙不压字）
-        var sfxRow = MakeRow(contentRt, "SfxRow", 70f);
-        var sfxLabel = MakeText(sfxRow, "RowLabel", "音效", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight);
+        var sfxRow = MakeRow(contentRt, "SfxRow", 55f);
+        var sfxLabel = MakeText(sfxRow, "RowLabel", "音效", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
         var sfxSlider = MakeVolumeSlider(sfxRow);
 
         // 音乐行
-        var musicRow = MakeRow(contentRt, "MusicRow", -30f);
-        var musicLabel = MakeText(musicRow, "RowLabel", "音乐", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight);
+        var musicRow = MakeRow(contentRt, "MusicRow", -35f);
+        var musicLabel = MakeText(musicRow, "RowLabel", "音乐", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
         var musicSlider = MakeVolumeSlider(musicRow);
 
         // 语言行（Transition.None，选中色由 MenuSettingsPanel 运行时写 Image.color）
-        var langRow = MakeRow(contentRt, "LanguageRow", -150f);
-        var langLabel = MakeText(langRow, "RowLabel", "语言", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight);
+        var langRow = MakeRow(contentRt, "LanguageRow", -125f);
+        var langLabel = MakeText(langRow, "RowLabel", "语言", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
         var chineseButton = MakeCenterButton(langRow, "BtnChinese", "中文", new Vector2(-10f, 0f), new Vector2(160f, 52f), 30, true);
         var englishButton = MakeCenterButton(langRow, "BtnEnglish", "English", new Vector2(190f, 0f), new Vector2(160f, 52f), 26, true);
 
@@ -844,7 +847,7 @@ public static class MainMenuBuilder
     }
 
     /// <summary>设置面板文本：居中锚点，深灰，不拦截射线。</summary>
-    static Text MakeText(Transform parent, string name, string text, Vector2 pos, Vector2 size, int fontSize, TextAnchor align)
+    static Text MakeText(Transform parent, string name, string text, Vector2 pos, Vector2 size, int fontSize, TextAnchor align, Color32? color = null)
     {
         var rt = CreateRect(parent, name);
         rt.anchorMin = new Vector2(0.5f, 0.5f);
@@ -855,7 +858,7 @@ public static class MainMenuBuilder
         t.text = text;
         t.fontSize = fontSize;
         t.alignment = align;
-        t.color = new Color32(50, 50, 50, 255);
+        t.color = color ?? new Color32(50, 50, 50, 255);
         t.raycastTarget = false;
         t.font = GetLegacyFont();
         return t;
@@ -914,7 +917,7 @@ public static class MainMenuBuilder
         var fillRt = CreateRect(fillAreaRt, "Fill");
         Stretch(fillRt);
         var fill = fillRt.gameObject.AddComponent<Image>();
-        fill.color = new Color(0.35f, 0.55f, 0.85f, 1f);
+        fill.color = new Color(0.45f, 0.65f, 0.95f, 1f);
         fill.raycastTarget = false;
 
         var handleAreaRt = CreateRect(sliderRt, "Handle Slide Area");
