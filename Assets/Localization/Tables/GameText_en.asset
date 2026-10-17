@@ -179,6 +179,42 @@ MonoBehaviour:
     m_Localized: "Time: {0}  \u2605 New Record!"
     m_Metadata:
       m_Items: []
+  - m_Id: 66852951678976
+    m_Localized: 'Best Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66852968456192
+    m_Localized: 'Last Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66852968456193
+    m_Localized: "Time: {0}  \u2605 New Record!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68128234004480
+    m_Localized: 'Best Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68128238198784
+    m_Localized: 'Last Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68128238198785
+    m_Localized: "Time: {0}  \u2605 New Record!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68426130251776
+    m_Localized: 'Best Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68426138640384
+    m_Localized: 'Last Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68451262521344
+    m_Localized: "Time: {0}  \u2605 New Record!"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

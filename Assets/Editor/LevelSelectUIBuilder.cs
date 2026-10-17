@@ -95,6 +95,11 @@ namespace Game.Editor
             foreach (var entry in entries) table.AddEntry(entry.key, entry.value);
 
             EditorUtility.SetDirty(table);
+
+            // 键名（m_Key）存在 Shared Data 资产里：不一起标脏则新键不落盘，
+            // 域重载/重新进 Play 后运行时报 "No translation found for '<key>'"（2026-10-18 实测踩坑）
+            var shared = table.SharedData;
+            if (shared != null) EditorUtility.SetDirty(shared);
         }
 
         // ---------- 选关大地图面板（Panel 形态：根不带 Canvas） ----------

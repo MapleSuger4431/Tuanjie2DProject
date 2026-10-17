@@ -204,6 +204,11 @@ namespace Game.Editor
             }
 
             EditorUtility.SetDirty(table);
+
+            // 键名（m_Key）存在 Shared Data 资产里：只标脏 StringTable 时新键不会真正落盘，
+            // 域重载/重新进 Play 后运行时就报 "No translation found for '<key>'"
+            var shared = table.SharedData;
+            if (shared != null) EditorUtility.SetDirty(shared);
         }
 
         // ---------- 工具 ----------
