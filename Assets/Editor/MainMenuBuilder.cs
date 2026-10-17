@@ -16,6 +16,7 @@ using UnityEngine.UI;
 /// 2. 生成 Assets/Resources/UIPrefabs/MainMenuPanel.prefab、MenuHelpPanel.prefab 与 MenuSettingsPanel.prefab
 ///    （按 Assets/Arts/封面设计图/封面全局.png 复刻：AI 抠图成品 封面背景.png 铺底（装饰边框与全部 UI 已抠除），品牌区切片徽章/标题/EDGE GRID/分隔线/标语分层，
 ///    四按钮右下锚点 x=-155、y=502/379/257/134（开始=横幅底图、说明/设置=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
+///    标题图按语言切换（中文 pieces/title.png「边际棋盘」、英文 pieces/title_en.png「Marginal Chessboard」，由 MainMenuPanel.ApplyLocalization 运行时换图并重算尺寸），
 ///    操作说明弹窗 760×560 + 全屏蒙版，设置面板 860×680）
 /// 3. 生成 Assets/Scenes/MainMenu.scene（主相机 + MainMenuBoot，Additive 方式不扰动当前打开场景）
 /// 4. 把 MainMenu.scene 登记进 Build Settings（Bootstrap 保持 index 0）
@@ -51,6 +52,12 @@ public static class MainMenuBuilder
 
     /// <summary>品牌区抠图切片落位目录。</summary>
     const string PiecesFolder = "Assets/Art/MainMenu/pieces";
+
+    /// <summary>中文标题图（边际棋盘，与 PiecesFolder 下其它品牌切片同源）。</summary>
+    const string TitleZhPath = PiecesFolder + "/title.png";
+
+    /// <summary>英文标题图（Marginal Chessboard，两行字，语言切英文时替换中文标题）。</summary>
+    const string TitleEnPath = PiecesFolder + "/title_en.png";
 
     /// <summary>
     /// 按钮底图在总览图上的搜索区（图像坐标 top-left origin 的 x1,y1,x2,y2 + 九宫格边框）。
@@ -388,7 +395,7 @@ public static class MainMenuBuilder
         var brandingRt = CreateRect(root, "Branding");
         Stretch(brandingRt);
         CreatePieceImage(brandingRt, "Emblem", "emblem", new Vector2(593f, 380f), new Vector2(441f, 160f));
-        CreatePieceImage(brandingRt, "Title", "title", new Vector2(540f, 266f), new Vector2(589f, 137f));
+        var titleImage = CreatePieceImage(brandingRt, "Title", "title", new Vector2(540f, 266f), new Vector2(589f, 137f));
         CreatePieceImage(brandingRt, "EdgeGrid", "edgegrid", new Vector2(576f, 163f), new Vector2(503f, 34f));
         CreatePieceImage(brandingRt, "Divider", "divider", new Vector2(611f, 126f), new Vector2(367f, 10f));
         CreatePieceImage(brandingRt, "Slogan", "slogan", new Vector2(567f, 69f), new Vector2(510f, 53f));
@@ -411,6 +418,9 @@ public static class MainMenuBuilder
         so.FindProperty("layer").intValue = (int)UILayer.Normal;
         so.FindProperty("destroyOnHide").boolValue = true;
         so.FindProperty("backgroundImage").objectReferenceValue = bgImage;
+        so.FindProperty("titleImage").objectReferenceValue = titleImage;
+        so.FindProperty("titleSpriteZh").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(TitleZhPath);
+        so.FindProperty("titleSpriteEn").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(TitleEnPath);
         so.FindProperty("newGameButton").objectReferenceValue = newGame;
         so.FindProperty("helpButton").objectReferenceValue = help;
         so.FindProperty("settingsButton").objectReferenceValue = settings;
@@ -678,7 +688,8 @@ public static class MainMenuBuilder
         else
         {
             var so = new SerializedObject(panelPrefab);
-            foreach (var field in new[] { "backgroundImage", "newGameButton", "helpButton", "settingsButton", "quitButton" })
+            foreach (var field in new[]
+                     { "backgroundImage", "titleImage", "titleSpriteZh", "titleSpriteEn", "newGameButton", "helpButton", "settingsButton", "quitButton" })
             {
                 if (so.FindProperty(field).objectReferenceValue == null)
                 {
@@ -806,13 +817,13 @@ public static class MainMenuBuilder
     }
 
     /// <summary>品牌区切片图：按目标框内接（保持切片纵横比），居中锚点，不拦截射线。</summary>
-    static void CreatePieceImage(Transform parent, string objName, string pieceName, Vector2 center, Vector2 targetSize)
+    static Image CreatePieceImage(Transform parent, string objName, string pieceName, Vector2 center, Vector2 targetSize)
     {
         var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/" + pieceName + ".png");
         if (sprite == null)
         {
             Debug.LogError($"[MainMenuBuilder] 缺少切片 {pieceName}.png，无法布置品牌区");
-            return;
+            return null;
         }
 
         var rt = CreateRect(parent, objName);
@@ -825,6 +836,7 @@ public static class MainMenuBuilder
         var image = rt.gameObject.AddComponent<Image>();
         image.sprite = sprite;
         image.raycastTarget = false;
+        return image;
     }
 
     /// <summary>主菜单按钮（设计图底图 + 白色居中文字 + 可选左侧图标），右下锚点，尺寸由调用方指定。</summary>

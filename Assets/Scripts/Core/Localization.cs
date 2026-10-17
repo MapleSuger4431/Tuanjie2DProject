@@ -58,6 +58,9 @@ namespace Game.Core
             /// <summary>关卡内「铺路完成」按钮：停表并锁定放置，进入「选偏好 → Play」的待运行阶段。</summary>
             LevelFinishBuilding,
 
+            /// <summary>关卡内操作提示行：放置 / 旋转 / 缩放 / 平移。</summary>
+            LevelBoardHint,
+
             // ---- 关卡结算 ----
             /// <summary>通关成功结算面板标题。</summary>
             LevelClearTitle,
@@ -89,6 +92,16 @@ namespace Game.Core
 
         /// <summary>字符串表集名（Assets/Localization/Tables/GameText）。</summary>
         const string TableName = "GameText";
+
+        /// <summary>
+        /// 当前语言代码（如 zh-CN / en），取自 Unity Localization 的 SelectedLocale；未初始化时为空串。
+        /// 供需要按语言切换的美术资源（如标题图）判定。
+        /// </summary>
+        public static string LanguageCode =>
+            LocalizationSettings.SelectedLocale != null ? LocalizationSettings.SelectedLocale.Identifier.Code : string.Empty;
+
+        /// <summary>当前语言是否为中文（zh-*）；非中文一律走英文资源。</summary>
+        public static bool IsChinese => LanguageCode.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>按当前语言取文本（Unity Localization 字符串表；表未加载时 WaitForCompletion 短暂等待）。</summary>
         public static string Get(Key key)
