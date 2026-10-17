@@ -1,0 +1,17 @@
+{
+    "name": "Sunset.Test",
+    "rootNamespace": "Sunset.Test",
+    "references": [
+        "Runestone.AesirArchitecture",
+        "Runestone.AesirModules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
