@@ -269,11 +269,12 @@ MonoBehaviour:
   rightPanel: {fileID: 0}
   boardFrame: {fileID: 0}
   designResolution: {x: 1920, y: 1080}
-  paddingLeft: 100
-  reserveTop: 100
-  reserveBottom: 100
-  reserveRight: 572
-  boardInset: 60
+  paddingLeft: 40
+  reserveTop: 56
+  reserveBottom: 48
+  rightPanelRatio: 0.4
+  boardInset: 0
+  frameInnerRatio: 0.8867
   boardToPanelGap: 0
 --- !u!224 &37447556
 RectTransform:
@@ -7215,7 +7216,7 @@ MonoBehaviour:
   layout: {fileID: 37447552}
   maxZoom: 3
   minVisibleCells: 10
-  boardMarginPixels: 20
+  boardMarginPixels: 6
   zoomStep: 1.1
 --- !u!114 &1376239729
 MonoBehaviour:

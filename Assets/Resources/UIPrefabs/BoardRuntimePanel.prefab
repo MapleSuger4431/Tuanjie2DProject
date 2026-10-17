@@ -925,7 +925,7 @@ MonoBehaviour:
   timeText: {fileID: 4685402222814741167}
   hintText: {fileID: 4302882935065582467}
   boardFrame: {fileID: 0}
-  boardFrameSprite: {fileID: 21300000, guid: d8599831a7c274b528b6e1b6736cc791, type: 3}
+  boardFrameSprite: {fileID: 21300000, guid: 0fff6dd6e4c1948dc960abbfbf931981, type: 3}
   finishBuildingButton: {fileID: 0}
   finishBuildingButtonLabel: {fileID: 0}
   playButton: {fileID: 4379930978100452965}

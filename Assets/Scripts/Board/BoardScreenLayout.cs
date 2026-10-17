@@ -3,7 +3,8 @@ using UnityEngine;
 namespace Game.Board
 {
     /// <summary>
-    /// 屏幕布局真源：用 UI 白板占位上下与右侧，剩下的左侧正方形就是棋盘的独立操作空间。
+    /// 屏幕布局真源：右侧面板按屏宽比例占位，左边剩下的整块（外框 + 棋盘）恒为 1 - rightPanelRatio。
+    /// 外框贴着左侧可用区的最大正方形铺满，棋盘视口取外框的透明内区，两者同心——棋盘落在框正中。
     /// 所有尺寸以 designResolution（1920×1080）为单位书写，按 UiScale 等比缩放到当前屏幕。
     /// UI 已接入 Aesir UIRoot：画布与三块白板由 BoardRuntimePanel 显示时注册进来
     /// （场景序列化引用仅作回退），缩放系数直接取 UI 根画布的 scaleFactor，保证 UI 与棋盘视口同一真源。
@@ -22,15 +23,19 @@ namespace Game.Board
         [Tooltip("所有留白与占位尺寸的基准分辨率")]
         [SerializeField] Vector2 designResolution = new Vector2(1920f, 1080f);
 
-        [SerializeField] float paddingLeft = 100f;
-        [SerializeField] float reserveTop = 100f;
-        [SerializeField] float reserveBottom = 100f;
+        [SerializeField] float paddingLeft = 40f;
+        [SerializeField] float reserveTop = 56f;
+        [SerializeField] float reserveBottom = 48f;
 
-        [Tooltip("棋盘可用区右侧至少保留的宽度：参与「最大正方形」计算，实际面板只会更宽")]
-        [SerializeField] float reserveRight = 572f;
+        [Tooltip("右侧操作面板占用的屏宽比例；左侧剩下的整块（外框 + 棋盘）就是 1 - 该比例")]
+        [SerializeField] float rightPanelRatio = 0.4f;
 
-        [Tooltip("棋盘视口相对可用区最大正方形的每边内缩像素（1920 下 60 → 边长 880 缩到 760）")]
-        [SerializeField] float boardInset = 60f;
+        [Tooltip("外框相对可用区最大正方形的每边内缩像素")]
+        [SerializeField] float boardInset = 0f;
+
+        [Tooltip("外框贴图的透明内区占整幅图的比例：1024 的图内框 908 → 0.8867。" +
+                 "棋盘视口按它从外框内缩，于是棋盘正好落在外框正中，装饰带围在外圈而不是压住最外圈格子")]
+        [SerializeField] float frameInnerRatio = 0.8867f;
 
         [Tooltip("棋盘视口右缘到右侧面板左缘的间距")]
         [SerializeField] float boardToPanelGap = 0f;
@@ -38,8 +43,11 @@ namespace Game.Board
         /// <summary>设计分辨率到当前屏幕的等比缩放系数。</summary>
         public float UiScale { get; private set; } = 1f;
 
-        /// <summary>棋盘操作空间（当前屏幕像素，左下原点）：可用矩形内最大的**正方形**，靠左垂直居中。</summary>
+        /// <summary>棋盘操作空间（当前屏幕像素，左下原点）：外框内的透明区域，与外框同心。</summary>
         public Rect OperationRect { get; private set; }
+
+        /// <summary>外框矩形（当前屏幕像素，左下原点）：可用区内最大的正方形，把棋盘整块围在正中。</summary>
+        public Rect FrameRect { get; private set; }
 
         void LateUpdate() => Recompute();
 
@@ -69,22 +77,30 @@ namespace Game.Board
 
             float left = paddingLeft * UiScale;
             float bottom = reserveBottom * UiScale;
-            float right = reserveRight * UiScale;
             float top = reserveTop * UiScale;
 
-            float availableWidth = Mathf.Max(Screen.width - left - right, 1f);
-            float availableHeight = Mathf.Max(Screen.height - bottom - top, 1f);
+            // 右侧面板按屏宽比例占位：左边剩下的整块（外框 + 棋盘）恒为 1 - rightPanelRatio
+            float boardAreaRight = Mathf.Clamp(
+                Screen.width * (1f - Mathf.Clamp01(rightPanelRatio)), left + 1f, Screen.width);
 
-            // 棋盘是正方形：先取可用区最大正方形，再整体内缩 boardInset，
-            // 缩出来的四周不再空着——外框贴着缩后的视口，右侧那条空白直接归 RightPanel。
+            float areaWidth = Mathf.Max(boardAreaRight - left, 1f);
+            float areaHeight = Mathf.Max(Screen.height - bottom - top, 1f);
+            var areaCenter = new Vector2(left + areaWidth * 0.5f, bottom + areaHeight * 0.5f);
+
+            // 外框：可用区内最大的正方形，居中在左侧区域里
             float inset = Mathf.Max(boardInset, 0f) * UiScale;
-            float side = Mathf.Max(Mathf.Min(availableWidth, availableHeight) - inset * 2f, 1f);
-            OperationRect = new Rect(left, bottom + (availableHeight - side) * 0.5f, side, side);
+            float frameSide = Mathf.Max(Mathf.Min(areaWidth, areaHeight) - inset * 2f, 1f);
+            FrameRect = new Rect(
+                areaCenter.x - frameSide * 0.5f, areaCenter.y - frameSide * 0.5f, frameSide, frameSide);
+
+            // 棋盘视口 = 外框的透明内区，与外框同心：棋盘落在框正中，装饰带围在最外圈
+            float side = Mathf.Max(frameSide * Mathf.Clamp01(frameInnerRatio), 1f);
+            OperationRect = new Rect(areaCenter.x - side * 0.5f, areaCenter.y - side * 0.5f, side, side);
 
             ApplyTopBar(topBar, reserveTop);
             ApplyBottomBar(bottomBar, reserveBottom);
-            ApplyRightPanel(rightPanel, OperationRect.xMax, boardToPanelGap * UiScale, reserveTop, reserveBottom);
-            ApplyFrame(boardFrame, OperationRect);
+            ApplyRightPanel(rightPanel, boardAreaRight, boardToPanelGap * UiScale, reserveTop, reserveBottom);
+            ApplyFrame(boardFrame, FrameRect);
         }
 
         static void ApplyTopBar(RectTransform bar, float height)
@@ -108,9 +124,8 @@ namespace Game.Board
         }
 
         /// <summary>
-        /// 右侧面板不再是固定宽度：左缘贴着棋盘视口右缘（再加一点间距），一路铺到屏幕右边，
-        /// 于是棋盘缩小腾出来的那条空白直接归 UI，不会被空着。
-        /// 左缘按屏幕像素归一化成 anchor，与棋盘视口共用同一套坐标，缩放屏幕上也不会错位。
+        /// 右侧面板左缘按 rightPanelRatio 归一化成 anchor，与外框共用同一套屏幕像素坐标，
+        /// 缩放屏幕上也不会错位；左边剩下的整块就是外框 + 棋盘。
         /// </summary>
         static void ApplyRightPanel(RectTransform panel, float boardRightPixel, float gapPixel, float top, float bottom)
         {
