@@ -1,6 +1,7 @@
-# Test 沙盒（本地测试项目）
+# Test/Sunset 沙盒（个人测试区）
 
-本文件夹是**隔离沙盒**：所有测试脚本、场景、预制体、材质都放这里，不影响主工程。
+本文件夹（`Assets/Test/Sunset`）是**隔离沙盒**：所有测试脚本、场景、预制体、材质都放这里，不影响主工程。
+Test 下如需他人测试区，请各自建 `Assets/Test/<名字>/` 并放自己的 asmdef，互不覆盖。
 
 ## 隔离保证
 
@@ -20,12 +21,13 @@
 ## 目录约定
 
 ```
-Assets/Test/
-├── Sunset.Test.asmdef        运行时程序集（本文件夹全部运行时脚本，含 Sunset/ 等子目录）
-├── Scenes/                   测试场景
-├── Art/                      测试用图片素材（占位图等）
-├── Scripts/                  运行时测试脚本（命名空间建议 Sunset.Test.*）
-└── Editor/                   仅编辑器脚本（程序集 Sunset.Test.Editor）
+Assets/Test/Sunset/            ← 本沙盒根
+├── Sunset.Test.asmdef         运行时程序集（覆盖 Sunset 子树全部运行时脚本）
+├── README.md                  本说明
+├── Scenes/                    测试场景（LoginUI / SettingsTest）
+├── Art/                       测试用图片素材（占位图等）
+├── Scripts/                   运行时测试脚本（命名空间建议 Sunset.Test.*）
+└── Editor/                    仅编辑器脚本（程序集 Sunset.Test.Editor）
 ```
 
 **UI 预制体例外**：按项目 Resources 资产管理约定，UI 预制体统一存放于 `Assets/Resources/UIPrefabs/`（不在本沙盒内），
