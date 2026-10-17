@@ -197,6 +197,18 @@ git push
 2. **拷贝前必须关闭引擎**，拷贝完成后再打开。
 3. **顺序：先拷资源，再打开工程**。反过来打开时就是一片 missing。
 
+**推荐用脚本做**（上面三条它会自动检查）：
+
+```
+# 推送（工程 -> U 盘）
+.\tools\sync-art.ps1 -Direction Push -UsbRoot "F:\2DProject_资产"
+
+# 拉取（U 盘 -> 工程）
+.\tools\sync-art.ps1 -Direction Pull -UsbRoot "F:\2DProject_资产"
+```
+
+也可以直接**右键 `tools\sync-art.ps1` → 使用 PowerShell 运行**，按提示输入方向。它会：① 发现引擎还开着 → 直接拦住；② 发现某个资源缺 `.meta` → 报错拦住并指出是哪个文件；③ 同步完列出文件清单。`UsbRoot` 换成你自己的 U 盘路径即可。
+
 补充：
 
 - 新增美术资源**不要走分支**（资源不在 Git 里，分支对它没意义）：由管理资源的人直接更新并通知全员同步 U 盘。
