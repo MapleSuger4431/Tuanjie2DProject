@@ -64,6 +64,9 @@ crashlytics-build.properties
 !/.codely-cli/extensions/
 !/.codely-cli/skills/
 /.codelyignore
+/.codely/clipboard/
+# 本地验证截图/录屏产物（不上传仓库）
+/screenshots/
 # Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
 _ReSharper.*
 *.DotSettings.user
