@@ -575,6 +575,114 @@ namespace Game.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Board"",
+            ""id"": ""6b71e5a4-93f2-4c08-b0d7-51a9c3e47f26"",
+            ""actions"": [
+                {
+                    ""name"": ""Point"",
+                    ""type"": ""Value"",
+                    ""id"": ""1f0d4c8b-7e26-4a93-9f15-8c2b60d74a37"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Place"",
+                    ""type"": ""Button"",
+                    ""id"": ""a47c92e1-5b38-4d60-8a24-3f7e1c09b5d2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pan"",
+                    ""type"": ""Button"",
+                    ""id"": ""d38b6f05-2c91-4e7a-b4d8-9a05e7c21f64"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Value"",
+                    ""id"": ""5e2a7d34-8f60-4b19-92c7-6d0b4fa83e15"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ResetView"",
+                    ""type"": ""Button"",
+                    ""id"": ""c90d5b17-4a38-4e62-91f0-2b7c8d36e5a9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7c4e1a92-0637-4d58-9b2a-f51e8c7306d4"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b8f63d1-9a45-4c07-8e39-07d5a1b62c48"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Place"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f61c07b9-3e28-4a5d-90b4-6c8e2f57d103"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""93a5e280-71b6-4fd4-8c15-0b3d76a9e482"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d07b6f8-2a13-4e95-b7c6-81f5d09e237a"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetView"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -590,12 +698,20 @@ namespace Game.Input
             m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
             m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
             m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
+            // Board
+            m_Board = asset.FindActionMap("Board", throwIfNotFound: true);
+            m_Board_Point = m_Board.FindAction("Point", throwIfNotFound: true);
+            m_Board_Place = m_Board.FindAction("Place", throwIfNotFound: true);
+            m_Board_Pan = m_Board.FindAction("Pan", throwIfNotFound: true);
+            m_Board_Zoom = m_Board.FindAction("Zoom", throwIfNotFound: true);
+            m_Board_ResetView = m_Board.FindAction("ResetView", throwIfNotFound: true);
         }
 
         ~@GameInputActions()
         {
             UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, GameInputActions.Player.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, GameInputActions.UI.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Board.enabled, "This will cause a leak and performance issues, GameInputActions.Board.Disable() has not been called.");
         }
 
         /// <summary>
@@ -914,6 +1030,146 @@ namespace Game.Input
         /// Provides a new <see cref="UIActions" /> instance referencing this action map.
         /// </summary>
         public UIActions @UI => new UIActions(this);
+
+        // Board
+        private readonly InputActionMap m_Board;
+        private List<IBoardActions> m_BoardActionsCallbackInterfaces = new List<IBoardActions>();
+        private readonly InputAction m_Board_Point;
+        private readonly InputAction m_Board_Place;
+        private readonly InputAction m_Board_Pan;
+        private readonly InputAction m_Board_Zoom;
+        private readonly InputAction m_Board_ResetView;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Board".
+        /// </summary>
+        public struct BoardActions
+        {
+            private @GameInputActions m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public BoardActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Board/Point".
+            /// </summary>
+            public InputAction @Point => m_Wrapper.m_Board_Point;
+            /// <summary>
+            /// Provides access to the underlying input action "Board/Place".
+            /// </summary>
+            public InputAction @Place => m_Wrapper.m_Board_Place;
+            /// <summary>
+            /// Provides access to the underlying input action "Board/Pan".
+            /// </summary>
+            public InputAction @Pan => m_Wrapper.m_Board_Pan;
+            /// <summary>
+            /// Provides access to the underlying input action "Board/Zoom".
+            /// </summary>
+            public InputAction @Zoom => m_Wrapper.m_Board_Zoom;
+            /// <summary>
+            /// Provides access to the underlying input action "Board/ResetView".
+            /// </summary>
+            public InputAction @ResetView => m_Wrapper.m_Board_ResetView;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Board; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="BoardActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(BoardActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="BoardActions" />
+            public void AddCallbacks(IBoardActions instance)
+            {
+                if (instance == null || m_Wrapper.m_BoardActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_BoardActionsCallbackInterfaces.Add(instance);
+                @Point.started += instance.OnPoint;
+                @Point.performed += instance.OnPoint;
+                @Point.canceled += instance.OnPoint;
+                @Place.started += instance.OnPlace;
+                @Place.performed += instance.OnPlace;
+                @Place.canceled += instance.OnPlace;
+                @Pan.started += instance.OnPan;
+                @Pan.performed += instance.OnPan;
+                @Pan.canceled += instance.OnPan;
+                @Zoom.started += instance.OnZoom;
+                @Zoom.performed += instance.OnZoom;
+                @Zoom.canceled += instance.OnZoom;
+                @ResetView.started += instance.OnResetView;
+                @ResetView.performed += instance.OnResetView;
+                @ResetView.canceled += instance.OnResetView;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="BoardActions" />
+            private void UnregisterCallbacks(IBoardActions instance)
+            {
+                @Point.started -= instance.OnPoint;
+                @Point.performed -= instance.OnPoint;
+                @Point.canceled -= instance.OnPoint;
+                @Place.started -= instance.OnPlace;
+                @Place.performed -= instance.OnPlace;
+                @Place.canceled -= instance.OnPlace;
+                @Pan.started -= instance.OnPan;
+                @Pan.performed -= instance.OnPan;
+                @Pan.canceled -= instance.OnPan;
+                @Zoom.started -= instance.OnZoom;
+                @Zoom.performed -= instance.OnZoom;
+                @Zoom.canceled -= instance.OnZoom;
+                @ResetView.started -= instance.OnResetView;
+                @ResetView.performed -= instance.OnResetView;
+                @ResetView.canceled -= instance.OnResetView;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="BoardActions.UnregisterCallbacks(IBoardActions)" />.
+            /// </summary>
+            /// <seealso cref="BoardActions.UnregisterCallbacks(IBoardActions)" />
+            public void RemoveCallbacks(IBoardActions instance)
+            {
+                if (m_Wrapper.m_BoardActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="BoardActions.AddCallbacks(IBoardActions)" />
+            /// <seealso cref="BoardActions.RemoveCallbacks(IBoardActions)" />
+            /// <seealso cref="BoardActions.UnregisterCallbacks(IBoardActions)" />
+            public void SetCallbacks(IBoardActions instance)
+            {
+                foreach (var item in m_Wrapper.m_BoardActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_BoardActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="BoardActions" /> instance referencing this action map.
+        /// </summary>
+        public BoardActions @Board => new BoardActions(this);
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
         /// </summary>
@@ -978,6 +1234,49 @@ namespace Game.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnClick(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Board" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="BoardActions.AddCallbacks(IBoardActions)" />
+        /// <seealso cref="BoardActions.RemoveCallbacks(IBoardActions)" />
+        public interface IBoardActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "Point" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPoint(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Place" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPlace(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Pan" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPan(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnZoom(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ResetView" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnResetView(InputAction.CallbackContext context);
         }
     }
 }

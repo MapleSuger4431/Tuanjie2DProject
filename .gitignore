@@ -64,13 +64,13 @@ crashlytics-build.properties
 !/.codely-cli/extensions/
 !/.codely-cli/skills/
 /.codelyignore
-/.codely/clipboard/
-# 本地验证截图/录屏产物（不上传仓库）
+# Codely 本地运行时产物（剪贴板缓存 / 引擎桥接心跳，不入库）
+/.codely/
+/.com-unity-codely.json
+# Codely 录屏验证产物（工程根的 screenshots/，不入库）
 /screenshots/
 # Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
 _ReSharper.*
 *.DotSettings.user
 # 兜底：Assets 下的 .meta 必须提交，防止上方规则误伤
 !/[Aa]ssets/**/*.meta
-# 例外：.pdb 本体已被忽略，其 .meta 一并忽略，避免孤儿 meta 入库
-/[Aa]ssets/**/*.pdb.meta

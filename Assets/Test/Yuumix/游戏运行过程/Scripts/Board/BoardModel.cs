@@ -19,6 +19,12 @@ namespace GameRuntimeTest.Board
         /// <summary>最高难度尺寸上限。</summary>
         public const int MaxSize = 20;
 
+        /// <summary>最小棋盘（10×10）的方块上限。</summary>
+        public const int MinPieces = 30;
+
+        /// <summary>最大棋盘（20×20）的方块上限。</summary>
+        public const int MaxPieces = 50;
+
         [SerializeField] int width = MinSize;
         [SerializeField] int height = MinSize;
 
@@ -28,6 +34,10 @@ namespace GameRuntimeTest.Board
 
         public int Width => width;
         public int Height => height;
+
+        /// <summary>本关方块上限：随棋盘边长线性插值（10×10→30 块，20×20→50 块，每 +1 边长 +2）。</summary>
+        public int PieceLimit =>
+            MinPieces + (Mathf.Max(width, height) - MinSize) * (MaxPieces - MinPieces) / (MaxSize - MinSize);
 
         /// <summary>起点：左下角。</summary>
         public Vector2Int StartCell => Vector2Int.zero;

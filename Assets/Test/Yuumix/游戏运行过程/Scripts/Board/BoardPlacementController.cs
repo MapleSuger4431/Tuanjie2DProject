@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Game.Input;
 using Runestone.AesirArchitecture;
 
 namespace GameRuntimeTest.Board
@@ -20,6 +23,14 @@ namespace GameRuntimeTest.Board
         BoardCameraFitter _fitter;
         Camera _camera;
 
+        // 鼠标位置与左键放置走 Input Action（GameInputActions 的 Board 表）
+        GameInputActions.BoardActions _input;
+        bool _inputReady;
+
+        // UI 遮挡检测复用同一份数据，避免每帧分配
+        readonly List<RaycastResult> _uiRaycasts = new List<RaycastResult>();
+        PointerEventData _uiPointerEvent;
+
         void Start()
         {
             _board = this.GetModel<BoardModel>();
@@ -28,24 +39,32 @@ namespace GameRuntimeTest.Board
             _ghost = GetComponent<TileGhostView>();
             _fitter = GetComponent<BoardCameraFitter>();
             _camera = Camera.main;
+            _input = GameInput.Instance.Board;
+            _inputReady = true;
         }
 
         void Update()
         {
             if (_board == null || _piece == null || _grid == null) return;
 
-            var mouse = Mouse.current;
             var shape = _piece.Current.Value;
-            if (mouse == null || shape == null)
+            if (!_inputReady || shape == null)
             {
                 _ghost?.Hide();
                 return;
             }
 
-            var screen = mouse.position.ReadValue();
+            var screen = _input.Point.ReadValue<Vector2>();
 
             // 棋盘是独立视口：鼠标在视口之外不显示虚影、不接受放置
             if (_fitter != null && !_fitter.ContainsScreenPoint(screen))
+            {
+                _ghost?.Hide();
+                return;
+            }
+
+            // 鼠标压在运行时 UI 上：这次点击归 UI 消费，不预览也不放置
+            if (IsPointerBlockedByUI(screen))
             {
                 _ghost?.Hide();
                 return;
@@ -62,8 +81,25 @@ namespace GameRuntimeTest.Board
             bool valid = _board.CanCover(anchor, shape);
             _ghost?.Show(anchor, shape, valid ? GhostColor(shape.Color) : invalidColor);
 
-            if (mouse.leftButton.wasPressedThisFrame && _board.TryCover(anchor, shape))
+            if (_input.Place.WasPressedThisFrame() && _board.TryCover(anchor, shape))
                 _piece.RollNew();
+        }
+
+        /// <summary>
+        /// 鼠标是否被运行时的 UI 挡住：走 EventSystem 的 UI 射线（与点击事件同一套判定），
+        /// 命中任何可交互 UI 图形（含弹窗蒙版）即视为 UI 占用，不依赖鼠标是否移动过。
+        /// </summary>
+        bool IsPointerBlockedByUI(Vector2 screenPosition)
+        {
+            var eventSystem = EventSystem.current;
+            if (eventSystem == null) return false;
+
+            if (_uiPointerEvent == null) _uiPointerEvent = new PointerEventData(eventSystem);
+            _uiPointerEvent.position = screenPosition;
+
+            _uiRaycasts.Clear();
+            eventSystem.RaycastAll(_uiPointerEvent, _uiRaycasts);
+            return _uiRaycasts.Count > 0;
         }
 
         Color GhostColor(Color shapeColor) =>

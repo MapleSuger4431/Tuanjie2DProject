@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Game.Input;
 
 namespace GameRuntimeTest.Board
 {
@@ -26,6 +27,10 @@ namespace GameRuntimeTest.Board
         BoardGridView _grid;
         float _zoom = 1f;
 
+        // 鼠标控制一律走 Input Action（GameInputActions 的 Board 表），不再直接读 Mouse.current
+        GameInputActions.BoardActions _input;
+        bool _inputReady;
+
         // 平移状态：_panOffset 是相机相对「棋盘几何中心」的世界偏移；拖拽时内容跟手，故相机反向走
         Vector2 _panOffset;
         bool _panning;
@@ -50,34 +55,49 @@ namespace GameRuntimeTest.Board
             if (layout == null) layout = FindObjectOfType<BoardScreenLayout>();
         }
 
+        void OnEnable()
+        {
+            _input = GameInput.Instance.Board;
+            // 滚轮与中键是「一次一格」的离散输入：走 performed 回调，避免轮询读到残留的 delta 值
+            _input.Zoom.performed += OnZoomPerformed;
+            _input.ResetView.performed += OnResetViewPerformed;
+            _inputReady = true;
+        }
+
+        void OnDisable()
+        {
+            if (!_inputReady) return;
+
+            _input.Zoom.performed -= OnZoomPerformed;
+            _input.ResetView.performed -= OnResetViewPerformed;
+            _inputReady = false;
+        }
+
         void LateUpdate()
         {
-            ReadZoomInput();
             ReadPanInput();
             Apply();
         }
 
-        void ReadZoomInput()
+        void OnZoomPerformed(InputAction.CallbackContext context)
         {
-            var mouse = Mouse.current;
-            if (mouse == null) return;
-
-            float scroll = mouse.scroll.ReadValue().y;
+            float scroll = context.ReadValue<Vector2>().y;
             if (Mathf.Abs(scroll) < 0.01f) return;
 
             float factor = scroll > 0f ? zoomStep : 1f / zoomStep;
             SetZoom(_zoom * factor);
         }
 
+        void OnResetViewPerformed(InputAction.CallbackContext context) => ResetPan();
+
         /// <summary>右键在棋盘视口内按住拖拽 = 平移视野；拖出视口也继续跟手，松开结束。</summary>
         void ReadPanInput()
         {
-            var mouse = Mouse.current;
-            if (mouse == null) return;
+            if (!_inputReady) return;
 
-            if (mouse.rightButton.wasPressedThisFrame)
+            if (_input.Pan.WasPressedThisFrame())
             {
-                var start = mouse.position.ReadValue();
+                var start = _input.Point.ReadValue<Vector2>();
                 // 起点必须在棋盘视口内，避免右侧 UI 区域的右键误触发平移
                 if (ContainsScreenPoint(start))
                 {
@@ -88,14 +108,14 @@ namespace GameRuntimeTest.Board
 
             if (!_panning) return;
 
-            if (mouse.rightButton.isPressed)
+            if (_input.Pan.IsPressed())
             {
-                var now = mouse.position.ReadValue();
+                var now = _input.Point.ReadValue<Vector2>();
                 _panOffset -= ScreenDeltaToWorld(now - _panLastScreen);
                 _panLastScreen = now;
             }
 
-            if (mouse.rightButton.wasReleasedThisFrame) _panning = false;
+            if (_input.Pan.WasReleasedThisFrame()) _panning = false;
         }
 
         /// <summary>屏幕像素位移换算成世界位移：视口高度对应 2*orthoSize。</summary>
