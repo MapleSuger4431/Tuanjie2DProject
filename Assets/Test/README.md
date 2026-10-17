@@ -23,7 +23,10 @@
 Assets/Test/
 ├── Sunset.Test.asmdef        运行时程序集（本文件夹全部运行时脚本，含 Sunset/ 等子目录）
 ├── Scenes/                   测试场景
-├── Prefabs/                  测试预制体（LoginPanel.prefab 等）
+├── Art/                      测试用图片素材（占位图等）
 ├── Scripts/                  运行时测试脚本（命名空间建议 Sunset.Test.*）
 └── Editor/                   仅编辑器脚本（程序集 Sunset.Test.Editor）
 ```
+
+**UI 预制体例外**：按项目 Resources 资产管理约定，UI 预制体统一存放于 `Assets/Resources/UIPrefabs/`（不在本沙盒内），
+加载走 UIModule 的 path 参数（如 `UIModule.Show<LoginPanel>("UIPrefabs/LoginPanel")`），注册表未命中时自动经 ResourcesUILoader 加载并注册。

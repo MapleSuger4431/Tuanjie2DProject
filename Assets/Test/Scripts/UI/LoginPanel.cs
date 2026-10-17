@@ -54,9 +54,13 @@ namespace Sunset.Test.UI
                 Debug.Log("[LoginPanel] 继续游戏：读取存档（占位逻辑，后续接入存档系统）");
             });
 
+            // 说明内容：经 UIModule 打开操作说明弹窗（面板形态，Popup 层）；payload 传入标题，
+            // path 指向 Resources/UIPrefabs/HelpPanel，注册表未命中时自动经 ResourcesUILoader 加载注册。
+            // (object) 强转避免字符串字面量命中 Show<T>(string path) 重载——否则标题文本会被当作资源路径
             helpButton.onClick.AddListener(() =>
             {
-                Debug.Log("[LoginPanel] 说明内容：打开说明面板（占位逻辑，后续接入说明界面）");
+                Debug.Log("[LoginPanel] 说明内容：打开操作说明弹窗");
+                UIModule.Show<HelpPanel>((object)"操作说明", "UIPrefabs/HelpPanel");
             });
 
             quitButton.onClick.AddListener(() =>
