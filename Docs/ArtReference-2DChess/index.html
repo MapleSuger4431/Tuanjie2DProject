@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2D 棋盘类独立游戏 · 美术风格参考集</title>
+<style>
+  :root {
+    --bg: #16161e; --card: #1e1e28; --border: #2c2c3a;
+    --text: #d8d8e3; --muted: #8a8a9e; --accent: #e07850;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 48px; }
+  header h1 { font-size: 2rem; letter-spacing: 0.05em; }
+  header p { color: var(--muted); margin-top: 8px; font-size: 0.95rem; }
+  .toc {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 28px; margin-bottom: 48px;
+  }
+  .toc h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--accent); }
+  .toc ol { padding-left: 22px; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+  .toc .tag {
+    display: inline-block; font-size: 0.75rem; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 99px;
+    padding: 1px 10px; margin-left: 8px;
+  }
+  .game {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 32px; margin-bottom: 40px;
+  }
+  .game h2 { font-size: 1.4rem; margin-bottom: 4px; }
+  .game .meta { color: var(--muted); font-size: 0.88rem; margin-bottom: 18px; }
+  .game .meta a { color: var(--accent); text-decoration: none; }
+  .game .meta a:hover { text-decoration: underline; }
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .shots img {
+    width: 100%; border-radius: 8px; border: 1px solid var(--border); display: block;
+  }
+  .facts { list-style: none; }
+  .facts li { padding: 6px 0 6px 0; border-top: 1px dashed var(--border); font-size: 0.95rem; }
+  .facts li:first-child { border-top: none; }
+  .facts b { color: var(--accent); font-weight: 600; }
+  @media (max-width: 720px) { .shots { grid-template-columns: 1fr; } }
+  footer {
+    text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>2D 棋盘类独立游戏 · 美术风格参考集</h1>
+  <p>调研日期 2026-10-17 · 共 8 款，全部为 2D 棋盘（国际象棋变体）游戏 · 截图来自各游戏 Steam 商店页</p>
+</header>
+
+<nav class="toc">
+  <h2>目录（8 款均为 2D 棋盘游戏）</h2>
+  <ol>
+    <li><a href="#g1">Shotgun King: The Final Checkmate</a><span class="tag">暗黑像素 + CRT</span></li>
+    <li><a href="#g2">Pawnbarian</a><span class="tag">扁平矢量 + 怪诞手绘</span></li>
+    <li><a href="#g3">The Ouroboros King</a><span class="tag">单色剪影 + 古典排版</span></li>
+    <li><a href="#g4">King of the Bridge</a><span class="tag">像素 × 手绘涂鸦</span></li>
+    <li><a href="#g5">Chessplosion</a><span class="tag">街机像素 + 扁平背景</span></li>
+    <li><a href="#g6">5D Chess With Multiverse Time Travel</a><span class="tag">扁平矢量 + 伪 3D</span></li>
+    <li><a href="#g7">Chess Survivors</a><span class="tag">暗调像素 + bloom</span></li>
+    <li><a href="#g8">Chessformer</a><span class="tag">描边扁平卡通</span></li>
+  </ol>
+</nav>
+
+<section class="game" id="g1">
+  <h2>1. Shotgun King: The Final Checkmate</h2>
+  <div class="meta">PUNKCAKE Delicieux · 2022 · <a href="https://store.steampowered.com/app/1972440/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/Shotgun_King_The_Final_Checkmate_1.jpg" alt="Shotgun King 截图1">
+    <img src="images/Shotgun_King_The_Final_Checkmate_2.jpg" alt="Shotgun King 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>复古像素 + CRT 后处理（扫描线、暗角、边缘色差），文字/棋盘/UI 吃同一层滤镜，暗黑哥特基调。</li>
+    <li><b>配色：</b>深靛蓝底 + 奶油白×淡紫棋盘，只有品红作高亮信号色（HP、楼层），约 8–12 色有限色板。</li>
+    <li><b>棋盘：</b>标准 8×8，浅色格角部"针脚"白点 + 底边缝线装饰，微装饰注入手工诡异感。</li>
+    <li><b>棋子：</b>黑描边 + 白填充极简剪影，靠外轮廓识别；招牌是"身上插剑的国王"——一处破坏性细节讲完叙事。</li>
+    <li><b>UI：</b>细线框 HUD + 等宽像素字体；空心方框表示未解锁槽位（空框占位法）。</li>
+    <li><b>可学：</b>低成本氛围三件套；单一点缀色做信息层级；小尺寸下轮廓优先于细节。</li>
+  </ul>
+</section>
+
+<section class="game" id="g2">
+  <h2>2. Pawnbarian</h2>
+  <div class="meta">j4nw · 2021 · <a href="https://store.steampowered.com/app/1142080/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/Pawnbarian_1.jpg" alt="Pawnbarian 截图1">
+    <img src="images/Pawnbarian_2.jpg" alt="Pawnbarian 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>扁平矢量插画 + 轮廓微手绘抖动，气质像暗色调奇幻桌游说明书。</li>
+    <li><b>配色即信息：</b>珊瑚红 = 敌方/污染/危险，白 = 玩家，暖黄 = 资源——颜色直接是玩法编码。</li>
+    <li><b>棋盘：</b>约 6×5 小棋盘；污染格用品红色相偏移叠加；<b>攻击范围用格子四角的红色爪痕角标标记</b>，而非整格涂满。</li>
+    <li><b>棋子：</b>棋形剪影 + 怪诞脸谱（独眼哥布林、獠牙兽面）混搭，辨识度与角色感兼得；选中态 = 白色光晕圈。</li>
+    <li><b>UI：</b>图鉴式排版：衬线小 caps 标题 + 斜体风味文本 + 彩色关键词；状态全靠极简小图标。</li>
+    <li><b>可学：</b>语义化配色教科书；角标编码范围；字体层级代替框线分区。</li>
+  </ul>
+</section>
+
+<section class="game" id="g3">
+  <h2>3. The Ouroboros King</h2>
+  <div class="meta">Oriol Cosp Games · 2023 · <a href="https://store.steampowered.com/app/2096510/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/The_Ouroboros_King_1.jpg" alt="The Ouroboros King 截图1">
+    <img src="images/The_Ouroboros_King_2.jpg" alt="The Ouroboros King 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>扁平矢量 + 单色剪影图标 + 纹章学语言，"中世纪手稿 × 现代极简"。</li>
+    <li><b>配色：</b>低饱和蓝灰×浅灰紫双色调；<b>全局只有红色一种强调色</b>，专用于交互（选中描边、可走格红点）。</li>
+    <li><b>棋盘：</b>8×8 平涂，刻意压低格子对比度让棋盘"退后"；径向渐变暗角聚光。</li>
+    <li><b>棋子：</b>核心技法是<b>反色描边</b>——白子黑边、黑子白边，任何底色上轮廓都清晰，棋类可读性的通用答案。</li>
+    <li><b>UI：</b>单色剪影图标 + 古典衬线字体/老式数字字形，年代感靠排版而非装饰。</li>
+    <li><b>可学：</b>反色描边法；单点强调色策略；古今混搭的字体气质。</li>
+  </ul>
+</section>
+
+<section class="game" id="g4">
+  <h2>4. King of the Bridge</h2>
+  <div class="meta">Finn Schuuring · 2024 · <a href="https://store.steampowered.com/app/2523120/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/King_of_the_Bridge_1.jpg" alt="King of the Bridge 截图1">
+    <img src="images/King_of_the_Bridge_2.jpg" alt="King of the Bridge 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>像素骨架 + 手绘灵魂——粗黑描边故意歪斜不规整，马克笔涂鸦感，怪诞又亲切。</li>
+    <li><b>配色：</b>深墨绿底 + 奶油米黄"做旧纸面"，橙红仅给强调文字；背景叠低对比纹理（波浪线/圆点）增加织物质感。</li>
+    <li><b>棋盘：</b>装饰镶嵌格——深格做"绿底+内嵌浅框"的画框效果，四角星形徽记，整盘棋像一块拼布。</li>
+    <li><b>棋子：</b>拟人化表情棋子（眯眼笑脸的王、头顶 Zzz 的睡觉棋子），表情符号直接传达状态，零文字。</li>
+    <li><b>UI：</b>规则说明包装成<b>一本摊开的怪诞手绘规则书</b>（书脊折痕、简笔画走法图解），教程本身就是风格与幽默的载体。</li>
+    <li><b>可学：</b>统一粗黑描边的剪贴画整体感；UI 叙事化；像素+手绘折中避免僵硬。</li>
+  </ul>
+</section>
+
+<section class="game" id="g5">
+  <h2>5. Chessplosion</h2>
+  <div class="meta">C.T. Matthews · 2021 · <a href="https://store.steampowered.com/app/1571220/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/Chessplosion_1.jpg" alt="Chessplosion 截图1">
+    <img src="images/Chessplosion_2.jpg" alt="Chessplosion 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>像素前景 + 扁平矢量背景混搭——背景是暖橙渐变上铺半透明棋子剪影，战斗区干净跳出。</li>
+    <li><b>配色：</b>暖橙 vs 冷灰温度对冲；酒红 + 金黄双线描边做"皇家棋盘"仪式感；红敌/白我/黑陷阱/金强调。</li>
+    <li><b>棋盘：</b>带厚度的实体"画框"（暗红外框 + 金描边 + 投影）；<b>用纹理编码格子功能</b>——人字形箭头格=单向通道、纯黑格=陷阱。</li>
+    <li><b>棋子：</b>棋子符号拟怪化 + 椭圆底座阴影；危险弹丸是<b>带 bloom 发光的红色像素块</b>，无光棋子 vs 发光威胁，视线自动聚焦。</li>
+    <li><b>UI：</b>圆角面板底部一道暗边做伪 3D 厚度；像素小地图；金描边与棋盘呼应。</li>
+    <li><b>可学：</b>像素+bloom 低成本造能量威胁；纹理编码功能格；画框式边框提升仪式感。</li>
+  </ul>
+</section>
+
+<section class="game" id="g6">
+  <h2>6. 5D Chess With Multiverse Time Travel</h2>
+  <div class="meta">Conor Petersen / Thunkspace · 2020 · <a href="https://store.steampowered.com/app/1349230/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/5D_Chess_With_Multiverse_Time_Travel_1.jpg" alt="5D Chess 截图1">
+    <img src="images/5D_Chess_With_Multiverse_Time_Travel_2.jpg" alt="5D Chess 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>扁平矢量图标 + <b>伪 3D 舞台</b>——多张棋盘做成倾斜悬浮的圆角卡片（白边框+投影），零 3D 建模成本做出纵深。</li>
+    <li><b>配色：</b>莫兰迪中性灰 + 米/褐棋盘，唯一跳色是紫色品牌色；状态格用半透明灰绿/淡黄叠加，不破坏格纹。</li>
+    <li><b>棋盘：</b>多棋盘并排的"平行视图"，<b>跨棋盘的粗白箭头</b>把"平行时间线"抽象机制直接画成空间关系线——顶级信息设计。</li>
+    <li><b>棋子：</b>Unicode 象棋字形式的圆润单色剪影，白子加深描边保证可读。</li>
+    <li><b>UI：</b>胶囊按钮 + 衬线字体，极简界面靠衬线字贴合"象棋=古典"主题；禁用/激活态用明度区分。</li>
+    <li><b>可学：</b>2D 素材搭 3D 舞台；跨面板箭头做信息可视化；衬线字体点睛。</li>
+  </ul>
+</section>
+
+<section class="game" id="g7">
+  <h2>7. Chess Survivors</h2>
+  <div class="meta">2023 · <a href="https://store.steampowered.com/app/2065000/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/Chess_Survivors_1.jpg" alt="Chess Survivors 截图1">
+    <img src="images/Chess_Survivors_2.jpg" alt="Chess Survivors 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>复古像素 × 现代光效（bloom、glow、径向渐变），怀旧但不廉价。</li>
+    <li><b>配色：</b>深紫/靛蓝低饱和铺底 + 径向渐变压暗四周形成舞台聚光；亮暖色和自发光冷白只给"重要信息"。</li>
+    <li><b>棋盘：</b><b>不规则缺角边界</b>打破矩形死板感；无网格线，靠色块明度差分格；交互区用虚线框（绿=移动范围、白=放置点）。</li>
+    <li><b>棋子：</b>同一符号两种状态——橙红<b>实体</b>（高光+投影）vs 白色<b>发光灵体</b>（剪影+径向光晕），一套语言传达阵营/状态差异。</li>
+    <li><b>UI：</b>与游戏世界共用像素网格和字体；选中反馈多重叠加（绿圆圈+数字+高亮格）零歧义。</li>
+    <li><b>可学：</b>暗背景+自发光焦点；同符号多状态设计；虚线系统做交互反馈。</li>
+  </ul>
+</section>
+
+<section class="game" id="g8">
+  <h2>8. Chessformer</h2>
+  <div class="meta">Robert Alvarez · 2022 · <a href="https://store.steampowered.com/app/1701190/">Steam 页面</a></div>
+  <div class="shots">
+    <img src="images/Chessformer_1.jpg" alt="Chessformer 截图1">
+    <img src="images/Chessformer_2.jpg" alt="Chessformer 截图2">
+  </div>
+  <ul class="facts">
+    <li><b>风格：</b>扁平矢量 + 粗黑描边 + 全圆角"贴纸式"卡通，没有任何尖角，玩具化质感。</li>
+    <li><b>配色：</b>低饱和大地色（驼/赭）棋盘 + 高饱和草绿路径做视觉主角；蓝 vs 玫红阵营对立。背景退后、信息前冲。</li>
+    <li><b>棋盘：</b>多层叠加——底层格纹 + 上层绿色"管道/电路"路径网络，端点做成箭头/U 形暗示方向；菱形格=目标、圆点=已访问，<b>零文字符号系统</b>。</li>
+    <li><b>棋子：</b>棋形极简剪影，平涂单色 + 粗黑描边，保留特征轮廓（城垛、王冠），远看可辨。</li>
+    <li><b>UI：</b>圆角按钮与棋子共用同一套语法（蓝底+黑描边+纯黑几何图标），无文字标签。</li>
+    <li><b>可学：</b>统一描边串起所有层级；"图形即说明书"；饱和度分层建信息层级。</li>
+  </ul>
+</section>
+
+<footer>
+  截图版权归各开发商所有，仅供本地学习参考 · 配套文字版分析见《2D棋盘独立游戏-美术风格参考.md》
+</footer>
+</div>
+</body>
+</html>
