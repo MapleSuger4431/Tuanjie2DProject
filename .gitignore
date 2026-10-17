@@ -64,6 +64,9 @@ crashlytics-build.properties
 !/.codely-cli/extensions/
 !/.codely-cli/skills/
 /.codelyignore
+# Codely 本地运行时产物（剪贴板缓存 / 引擎桥接心跳，不入库）
+/.codely/
+/.com-unity-codely.json
 # Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
 _ReSharper.*
 *.DotSettings.user
