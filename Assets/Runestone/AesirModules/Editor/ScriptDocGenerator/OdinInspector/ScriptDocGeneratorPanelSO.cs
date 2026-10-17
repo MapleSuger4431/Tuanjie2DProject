@@ -1,0 +1,715 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.Serialization;
+using Sirenix.Utilities;
+using Sirenix.Utilities.Editor;
+using UnityEditor;
+using UnityEngine;
+
+namespace Runestone.AesirModules.ScriptDocGenerator.Editor
+{
+    /// <summary>
+    /// ScriptDocGenerator 可视化操作面板类
+    /// </summary>
+    public class ScriptDocGeneratorPanelSO : SerializedScriptableObject
+    {
+        public enum TypeSource
+        {
+            SingleType,
+            MultipleTypes,
+            SingleAssembly,
+            MultipleAssemblies
+        }
+
+        const string DefaultTypesCacheSoFolderPath =
+            ScriptDocGeneratorPaths.PanelConfigFolderPath + "/TypeCache";
+
+        const string NoneAssembly = "None Assembly";
+
+        static readonly string ConfigName = typeof(ScriptDocGeneratorPanelSO).GetNiceFullName();
+
+        static ValueDropdownList<string> _currentDomainAssemblies;
+
+        static ScriptDocGeneratorPanelSO _instance;
+
+        [PropertyOrder(90)]
+        [SerializeField]
+        [LabelText("调试检查模式")]
+        [Tooltip("仅当需要检查类型分析的中间产物 TypeData（即单个成员的解析结果）时才开启，日常生成文档无需开启。\n" +
+                 "开启后窗口会渲染类型分析的中间产物（完整成员树），可展开检查每一个成员的解析结果；\n" + "程序集模式下分析的类足够多时，整图渲染会明显拖慢窗口。")]
+        bool debugInspectionMode;
+
+        [PropertyOrder(2)]
+        [SerializeField]
+        string docFolderPath;
+
+        [PropertyOrder(10)]
+        [SerializeField]
+        DocGeneratorSettingsSO docGeneratorSettings;
+
+        [PropertyOrder(20)]
+        [SerializeField]
+        TypeSource typeSource;
+
+        [PropertyOrder(25)]
+        [SerializeField]
+        MonoScript selectedMonoScript;
+
+        [PropertyOrder(25)]
+        [OdinSerialize]
+        Type _targetType;
+
+        [PropertyOrder(25)]
+        [SerializeField]
+        TypesCacheSO typesCache;
+
+        [PropertyOrder(25)]
+        [SerializeField]
+        MonoScript[] selectedMonoScriptArray;
+
+        [PropertyOrder(25)]
+        [OdinSerialize]
+        List<Type> _temporaryTypes = new List<Type>();
+
+        [PropertyOrder(25)]
+        [SerializeField]
+        string typesCacheSOFolderPath = DefaultTypesCacheSoFolderPath;
+
+        [PropertyOrder(35)]
+        [SerializeField]
+        string targetAssemblyFullName;
+
+        [PropertyOrder(35)]
+        [SerializeField]
+        List<string> selectedAssemblyFullNames = new List<string>();
+
+        bool _hasFinishedAnalyze;
+        bool _isCustomizingSaveConfig;
+
+        [NonSerialized]
+        [ShowInInspector]
+        [PropertyOrder(96)]
+        ITypeData _typeData;
+
+        [NonSerialized]
+        [ShowInInspector]
+        [PropertyOrder(96)]
+        List<ITypeData> _typeDataList;
+
+        public static string DefaultDocFolderPath => ScriptDocGeneratorPaths.DefaultDocFolderPath;
+
+        /// <summary>
+        /// 面板单例访问。解析结果按域缓存：缺失资产的解析会执行 CreateAsset 与 AssetDatabase.Refresh，
+        /// 每次都重新解析会把这类重操作带进绘制回调等高频路径。
+        /// </summary>
+        public static ScriptDocGeneratorPanelSO Instance
+        {
+            get
+            {
+                if (_instance)
+                {
+                    return _instance;
+                }
+
+                _instance =
+                    ScriptDocGeneratorEditorUtility
+                        .GetOrCreateEditorScriptableObject<ScriptDocGeneratorPanelSO>(ConfigName,
+                            ScriptDocGeneratorPaths.PanelConfigFolderPath, "ScriptDocGenerator");
+                return _instance;
+            }
+        }
+
+        public Type TargetType
+        {
+            get => _targetType;
+            set => _targetType = value;
+        }
+
+        public TypeSource TypeSourceProperty
+        {
+            get => typeSource;
+            set => typeSource = value;
+        }
+
+        public List<Type> TemporaryTypes
+        {
+            get => _temporaryTypes;
+            set => _temporaryTypes = value;
+        }
+
+        bool IsSingleType => typeSource == TypeSource.SingleType;
+        bool IsMultipleType => typeSource == TypeSource.MultipleTypes;
+        bool IsSingleAssembly => typeSource == TypeSource.SingleAssembly;
+        bool IsMultipleAssemblies => typeSource == TypeSource.MultipleAssemblies;
+
+        bool ShowSaveFolderPath => IsMultipleType && _isCustomizingSaveConfig && !typesCache;
+        bool CanShowTemporaryTypes => IsMultipleType && !typesCache;
+
+        bool CanShowGenerateButton => _hasFinishedAnalyze && ((IsSingleType && _typeData != null) ||
+                                                              (IsMultipleType && _typeDataList is
+                                                                  { Count: > 0 }) ||
+                                                              (IsSingleAssembly && _typeDataList is
+                                                                  { Count: > 0 }) || (IsMultipleAssemblies &&
+                                                                  _typeDataList is { Count: > 0 }));
+
+        bool IsNeedTypeAnalysisDataList => IsMultipleType || IsSingleAssembly || IsMultipleAssemblies;
+
+        /// <summary>单类型模式下是否渲染分析中间结果（调试检查模式 + 单类型模式同时满足）。</summary>
+        /// <remarks>
+        /// 条件必须合并为单个 ShowIf 使用：Odin 对同一成员的多个 ShowIf 是 OR 语义
+        /// （任一条件满足即显示），此前"调试开关 + 模式"两个 ShowIf 并挂导致模式条件恒真时
+        /// 列表无视调试开关直接显示。
+        /// </remarks>
+        bool ShowSingleTypeAnalysisData => debugInspectionMode && IsSingleType;
+
+        /// <summary>列表型模式下是否渲染分析中间结果（调试检查模式 + 多类型/单程序集/多程序集模式同时满足）</summary>
+        bool ShowListTypeAnalysisData => debugInspectionMode && IsNeedTypeAnalysisDataList;
+
+        /// <summary>程序集模式下渲染整图的性能警告（仅调试检查模式显示）</summary>
+        bool ShowAssemblyDebugWarning => debugInspectionMode && (IsSingleAssembly || IsMultipleAssemblies);
+
+        /// <summary>调试检查模式未开启时的使用指引（何时才需要开启）</summary>
+        bool ShowDebugModeUsageHint => !debugInspectionMode;
+
+        /// <summary>调试检查模式开启后的功能说明（可以看到什么、怎么用）</summary>
+        bool ShowDebugModeEnabledHint => debugInspectionMode;
+
+        void OnEnable()
+        {
+            // 只清理跨域重载后必然失效的分析态（Type 引用与进度标志），保留用户配置
+            // （输出路径/生成器/类型来源/缓存资源等经序列化持久化，重置走"重置所有配置"按钮）
+            ResetHasFinishedAnalyzed();
+            ResetTypeAnalysisData();
+        }
+
+        [PropertyOrder(-5)]
+        [Title("脚本文档生成工具")]
+        [InfoBox("用户提供一个 Type 类型的值，分析 Type 数据，选择合适的文档生成器，一键生成对应的文档。默认提供中文 API 文档生成器，可以自定义适合项目的生成器。",
+            InfoMessageType.None)]
+        [Button("重置所有配置", ButtonSizes.Small)]
+        public void ResetToDefault()
+        {
+            ResetDocFolderPath();
+            ResetDocGeneratorSettingSO();
+            ResetTypeSource();
+            ResetSelectedMonoScript();
+            ResetSingleType();
+            ResetTypesCacheSO();
+            ResetSelectedMonoScriptArray();
+            ResetTemporaryTypes();
+            ResetTypesCacheSOFolderPath();
+            ResetIsCustomizingSaveConfig();
+            ResetSingleAssemblyFullName();
+            ResetSelectedAssemblyFullNames();
+            ResetHasFinishedAnalyzed();
+            ResetTypeAnalysisData();
+            ResetDebugInspectionMode();
+        }
+
+        public static event Action<ToastPosition, SdfIconType, string, Color, float> ToastRequested;
+
+        [PropertyOrder(50)]
+        [Title("分析按钮")]
+        [Button("基于当前模式执行类型分析", ButtonSizes.Large, Style = ButtonStyle.Box,
+            Icon = SdfIconType.FileEarmarkPlus)]
+        public void AnalyzeType()
+        {
+            PerformAnalyzeType();
+        }
+
+        [PropertyOrder(70)]
+        [ShowIf("CanShowGenerateButton")]
+        [Title("生成按钮")]
+        [Button("基于解析结果和文档生成器生成 Markdown 文档", ButtonSizes.Large, Style = ButtonStyle.Box,
+            Icon = SdfIconType.FileEarmarkPlus)]
+        public void GenerateDoc()
+        {
+            PerformGenerateDoc();
+        }
+
+        string GetDocGeneratorTitle()
+        {
+            var title = "文档生成器设置";
+            if (docGeneratorSettings &&
+                docGeneratorSettings.GetType() == typeof(DefaultScriptingAPISettingsSO))
+            {
+                title += " - [当前选择: 中文 API Markdown 文档]";
+            }
+            else if (docGeneratorSettings &&
+                     docGeneratorSettings.GetType() == typeof(ZensicalScriptingAPISettingsSO))
+            {
+                title += " - [当前选择: Zensical API Markdown 文档]";
+            }
+
+            return title;
+        }
+
+        string GetTypeSourceEnumLabelText()
+        {
+            var text = "类型来源模式";
+            switch (typeSource)
+            {
+                case TypeSource.SingleType:
+                    text += " - [当前选择: 单类型模式]";
+                    break;
+                case TypeSource.MultipleTypes:
+                    text += " - [当前选择: 多类型模式]";
+                    break;
+                case TypeSource.SingleAssembly:
+                    text += " - [当前选择: 单程序集模式]";
+                    break;
+                case TypeSource.MultipleAssemblies:
+                    text += " - [当前选择: 多程序集模式]";
+                    break;
+            }
+
+            return text;
+        }
+
+        void OnSelectedMonoScriptChanged()
+        {
+            if (selectedMonoScript)
+            {
+                _targetType = selectedMonoScript.GetClass();
+                AesirModulesDebug.Log(AesirModulesDebug.ScriptDocGeneratorTag,
+                    "识别到 Type: " + _targetType + "，已更新 TargetType");
+            }
+        }
+
+        void OnSelectedMonoScriptArrayChanged()
+        {
+            if (selectedMonoScriptArray.Length > 0)
+            {
+                var types = selectedMonoScriptArray.Distinct().Select(x => x.GetClass()).ToList();
+                _temporaryTypes.AddRange(types);
+                var distinctTypes = _temporaryTypes.Distinct().ToList();
+                _temporaryTypes = distinctTypes;
+            }
+        }
+
+        void DrawTemporaryTypesTitleBarGUI()
+        {
+            var image = SdfIcons.CreateTransparentIconTexture(SdfIconType.SaveFill, Color.white, 24, 24, 0);
+            var content = new GUIContent(" 保存为SO资源 ", image,
+                "保存为 " + nameof(TypesCacheSO) + " 资源到 " + typesCacheSOFolderPath);
+            var filePathWithExtension = typesCacheSOFolderPath + "/" + nameof(TypesCacheSO) + ".asset";
+            if (_temporaryTypes.Count > 0 && SirenixEditorGUI.ToolbarButton(content))
+            {
+                var so = CreateInstance<TypesCacheSO>();
+                ScriptDocGeneratorEditorUtility.EnsureDirectoryExists(typesCacheSOFolderPath);
+                so.Types = _temporaryTypes;
+                ProjectWindowUtil.CreateAsset(so, filePathWithExtension);
+                ScriptDocGeneratorEditorUtility.PingAndSelectAsset(filePathWithExtension);
+                AesirModulesDebug.Log(AesirModulesDebug.ScriptDocGeneratorTag, "请更改资源名称，避免下次生成时覆盖内容");
+            }
+
+            var image2 = SdfIcons.CreateTransparentIconTexture(SdfIconType.GearFill, Color.white, 24, 24, 0);
+            var content2 = new GUIContent(" 自定义资源存储位置 ", image2, "当前路径为 " + typesCacheSOFolderPath);
+            if (_isCustomizingSaveConfig)
+            {
+                return;
+            }
+
+            if (SirenixEditorGUI.ToolbarButton(content2))
+            {
+                _isCustomizingSaveConfig = true;
+            }
+        }
+
+        void CompleteConfig()
+        {
+            _isCustomizingSaveConfig = false;
+        }
+
+        static ValueDropdownList<string> GetAssemblyNameToFullName()
+        {
+            if (_currentDomainAssemblies is { Count: > 0 })
+            {
+                return _currentDomainAssemblies;
+            }
+
+            // 只列项目脚本程序集（含 Packages 源码程序集）：引擎模块与预编译 DLL 不存在项目源码，
+            // 全域罗列会产生数百项无效下拉项
+            _currentDomainAssemblies = new ValueDropdownList<string>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => ScriptAssemblyFilter.IsScriptAssembly(assembly))
+                .OrderBy(assembly => assembly.GetName().Name, StringComparer.Ordinal);
+            foreach (var assembly in assemblies)
+            {
+                _currentDomainAssemblies.Add(assembly.GetName().Name, assembly.FullName);
+            }
+
+            return _currentDomainAssemblies;
+        }
+
+        void PerformAnalyzeType()
+        {
+            switch (typeSource)
+            {
+                case TypeSource.SingleType:
+                    if (_targetType == null)
+                    {
+                        AesirModulesDebug.LogError(AesirModulesDebug.ScriptDocGeneratorTag, "请选择有效的目标类型");
+                        return;
+                    }
+
+                    _typeData = ScriptDocGeneratorUtility.AnalyzeSingleType(_targetType);
+                    break;
+                case TypeSource.MultipleTypes:
+                    if (!typesCache && _temporaryTypes.Count <= 0)
+                    {
+                        AesirModulesDebug.LogError(AesirModulesDebug.ScriptDocGeneratorTag,
+                            "设置有效的 Type 对象列表或者设置 TypeCacheSO 资源");
+                        return;
+                    }
+
+                    _typeDataList = typesCache
+                        ? ScriptDocGeneratorUtility.AnalyzeMultipleTypes(typesCache)
+                        : ScriptDocGeneratorUtility.AnalyzeMultipleTypes(_temporaryTypes);
+
+                    break;
+                case TypeSource.SingleAssembly:
+                    if (targetAssemblyFullName is null or NoneAssembly)
+                    {
+                        AesirModulesDebug.LogError(AesirModulesDebug.ScriptDocGeneratorTag,
+                            "请选择目标程序集，不能为 " + NoneAssembly);
+                        return;
+                    }
+
+                    _typeDataList = ScriptDocGeneratorUtility.AnalyzeSingleAssembly(targetAssemblyFullName);
+                    break;
+                case TypeSource.MultipleAssemblies:
+                    if (selectedAssemblyFullNames is not { Count: > 0 })
+                    {
+                        AesirModulesDebug.LogError(AesirModulesDebug.ScriptDocGeneratorTag, "请选择至少一个目标程序集");
+                        return;
+                    }
+
+                    selectedAssemblyFullNames.RemoveAll(string.IsNullOrEmpty);
+                    selectedAssemblyFullNames.RemoveAll(name => name == NoneAssembly);
+                    if (selectedAssemblyFullNames.Count == 0)
+                    {
+                        AesirModulesDebug.LogError(AesirModulesDebug.ScriptDocGeneratorTag,
+                            "请选择有效的目标程序集，不能为 " + NoneAssembly);
+                        return;
+                    }
+
+                    _typeDataList =
+                        ScriptDocGeneratorUtility.AnalyzeMultipleAssemblies(selectedAssemblyFullNames);
+                    break;
+            }
+
+            _hasFinishedAnalyze = true;
+            ToastRequested?.Invoke(ToastPosition.BottomRight, SdfIconType.CheckCircleFill, "分析完成，生成按钮已启用",
+                Color.green, 4f);
+        }
+
+        void PerformGenerateDoc()
+        {
+            if (!Directory.Exists(docFolderPath))
+            {
+                if (!EditorUtility.DisplayDialog("自动路径补全提示", "当前的文档导出路径不存在，是否自动生成文件夹路径？", "确认", "取消"))
+                {
+                    return;
+                }
+
+                ScriptDocGeneratorEditorUtility.EnsureDirectoryExists(docFolderPath);
+            }
+
+            switch (typeSource)
+            {
+                case TypeSource.SingleType:
+                    ScriptDocGeneratorUtility.GenerateSingleTypeDoc(_typeData, docGeneratorSettings,
+                        docFolderPath);
+                    break;
+                case TypeSource.MultipleTypes:
+                case TypeSource.SingleAssembly:
+                case TypeSource.MultipleAssemblies:
+                    ScriptDocGeneratorUtility.GenerateMultipleTypeDocs(_typeDataList, docGeneratorSettings,
+                        docFolderPath);
+                    break;
+            }
+
+            _hasFinishedAnalyze = false;
+        }
+
+        class ScriptDocGeneratorPanelAttributeProcessor : OdinAttributeProcessor<ScriptDocGeneratorPanelSO>
+        {
+            public override void ProcessChildMemberAttributes(InspectorProperty parentProperty,
+                MemberInfo member,
+                List<Attribute> attributes)
+            {
+                if (member.Name == nameof(docFolderPath))
+                {
+                    attributes.Add(new TitleAttribute("生成脚本文档的目标文件夹路径 [可拖拽]"));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new FolderPathAttribute
+                    {
+                        AbsolutePath = true
+                    });
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetDocFolderPath),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetDocFolderPath)));
+                }
+
+                if (member.Name == nameof(docGeneratorSettings))
+                {
+                    attributes.Add(new TitleAttribute("$" + nameof(GetDocGeneratorTitle)));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetDocGeneratorSettingSO),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetDocGeneratorSettingSO)));
+                    attributes.Add(new InlineEditorAttribute(InlineEditorObjectFieldModes.Foldout));
+                }
+
+                if (member.Name == nameof(typeSource))
+                {
+                    attributes.Add(new TitleAttribute("$" + nameof(GetTypeSourceEnumLabelText)));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetTypeSource),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(
+                        new CustomContextMenuAttribute("Reset To Default", nameof(ResetTypeSource)));
+                    attributes.Add(new EnumPagingAttribute());
+                }
+
+                if (member.Name == nameof(selectedMonoScript))
+                {
+                    attributes.Add(new TitleAttribute("$" + nameof(_singleTypeDataLabel)));
+                    attributes.Add(new ShowIfAttribute(nameof(IsSingleType)));
+                    attributes.Add(new LabelWidthAttribute(270));
+                    attributes.Add(new LabelTextAttribute("拖拽 Script 文件到此处，自动识别类型: "));
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetSelectedMonoScript),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetSelectedMonoScript)));
+                    attributes.Add(new OnValueChangedAttribute(nameof(OnSelectedMonoScriptChanged)));
+                }
+
+                if (member.Name == nameof(_targetType))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(IsSingleType)));
+                    attributes.Add(new LabelWidthAttribute(130));
+                    attributes.Add(new LabelTextAttribute("手动选择 Type: "));
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetSingleType),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(
+                        new CustomContextMenuAttribute("Reset To Default", nameof(ResetSingleType)));
+                }
+
+                if (member.Name == nameof(typesCache))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(IsMultipleType)));
+                    attributes.Add(new TitleAttribute("目标 Types 列表配置"));
+                    attributes.Add(new InfoBoxAttribute("TypesConfigSO 不为空时，会强制覆盖 Type 列表"));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new AssetSelectorAttribute
+                    {
+                        FlattenTreeView = true
+                    });
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetTypesCacheSO),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetTypesCacheSO)));
+                }
+
+                if (member.Name == nameof(selectedMonoScriptArray))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(IsMultipleType)));
+                    attributes.Add(new LabelWidthAttribute(270));
+                    attributes.Add(new LabelTextAttribute("拖拽多个 Script 文件到此处，自动识别类型: "));
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetSelectedMonoScriptArray),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetSelectedMonoScriptArray)));
+                    attributes.Add(new OnValueChangedAttribute(nameof(OnSelectedMonoScriptArrayChanged)));
+                }
+
+                if (member.Name == nameof(_temporaryTypes))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(CanShowTemporaryTypes)));
+                    attributes.Add(new ListDrawerSettingsAttribute
+                    {
+                        OnTitleBarGUI = nameof(DrawTemporaryTypesTitleBarGUI),
+                        NumberOfItemsPerPage = 5
+                    });
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetTemporaryTypes),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetTemporaryTypes)));
+                }
+
+                if (member.Name == nameof(typesCacheSOFolderPath))
+                {
+                    attributes.Add(new FolderPathAttribute());
+                    attributes.Add(new ShowIfAttribute(nameof(ShowSaveFolderPath)));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(CompleteConfig), SdfIconType.Check,
+                        "$" + nameof(_completeConfigButtonLabel)));
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetTypesCacheSOFolderPath),
+                        SdfIconType.ArrowClockwise, "$" + nameof(_resetSOSaveFolderPathButtonLabel)));
+                    attributes.Add(new TitleAttribute("存放 TypesCacheSO 的文件夹路径"));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetTypesCacheSOFolderPath)));
+                }
+
+                if (member.Name == nameof(targetAssemblyFullName))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(IsSingleAssembly)));
+                    attributes.Add(new TitleAttribute("目标程序集配置"));
+                    attributes.Add(new ValueDropdownAttribute(nameof(GetAssemblyNameToFullName)));
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetSingleAssemblyFullName),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetSingleAssemblyFullName)));
+                }
+
+                if (member.Name == nameof(selectedAssemblyFullNames))
+                {
+                    attributes.Add(new ShowIfAttribute(nameof(IsMultipleAssemblies)));
+                    attributes.Add(new TitleAttribute("目标程序集配置"));
+                    attributes.Add(new ValueDropdownAttribute(nameof(GetAssemblyNameToFullName)));
+                    attributes.Add(new ListDrawerSettingsAttribute
+                    {
+                        NumberOfItemsPerPage = 5
+                    });
+                    attributes.Add(new HideLabelAttribute());
+                    attributes.Add(new InlineButtonAttribute(nameof(ResetSelectedAssemblyFullNames),
+                        SdfIconType.ArrowClockwise, ""));
+                    attributes.Add(new CustomContextMenuAttribute("Reset To Default",
+                        nameof(ResetSelectedAssemblyFullNames)));
+                }
+
+                if (member.Name == nameof(_typeData))
+                {
+                    // 单一复合条件（AND 语义）：Odin 对同成员多个 ShowIf 是 OR（任一满足即显示），
+                    // 不得把"调试开关"与"模式条件"拆成两个 ShowIf 并挂
+                    attributes.Add(new TitleGroupAttribute("$" + nameof(_typeAnalysisResultLabel)));
+                    attributes.Add(new ShowIfAttribute(nameof(ShowSingleTypeAnalysisData)));
+                }
+
+                if (member.Name == nameof(_typeDataList))
+                {
+                    attributes.Add(new TitleGroupAttribute("$" + nameof(_typeAnalysisResultLabel)));
+                    attributes.Add(new ShowIfAttribute(nameof(ShowListTypeAnalysisData)));
+                }
+
+                if (member.Name == nameof(debugInspectionMode))
+                {
+                    // 提示框按需三态互斥显示：关闭时（何时才需要开）/ 开启时（能看到什么）/
+                    // 开启且程序集模式（卡顿警示）。可见性条件为根实例成员名（与 ShowIf 同款解析），
+                    // 勿写 @$value 前缀——InfoBox 挂在 bool 字段上，$value 指该字段的布尔值，
+                    // 会报 "Unable to locate identifier ... in context of type 'System.bool'"
+                    attributes.Add(new InfoBoxAttribute(
+                        "需要检查中间过程的 TypeData（即成员分析的单个解析结果）时才开启调试检查模式，日常生成文档无需开启。", InfoMessageType.Info,
+                        "@" + nameof(ShowDebugModeUsageHint)));
+                    attributes.Add(new InfoBoxAttribute("已开启调试检查模式：窗口会显示类型分析的中间产物 TypeData，可展开检查每一个成员的解析结果。",
+                        InfoMessageType.Info, "@" + nameof(ShowDebugModeEnabledHint)));
+                    attributes.Add(new InfoBoxAttribute("程序集模式下分析的类足够多时，一次性渲染数百个类型的完整成员树会导致窗口明显卡顿，一般情况请勿开启。",
+                        InfoMessageType.Warning, "@" + nameof(ShowAssemblyDebugWarning)));
+                }
+            }
+        }
+
+        #region Reset Default Values
+
+        void ResetTypeSource()
+        {
+            typeSource = TypeSource.SingleType;
+        }
+
+        void ResetDocFolderPath()
+        {
+            docFolderPath = DefaultDocFolderPath;
+        }
+
+        void ResetDocGeneratorSettingSO()
+        {
+            docGeneratorSettings = DefaultScriptingAPISettingsSO.Instance;
+        }
+
+        void ResetSingleType()
+        {
+            _targetType = null;
+        }
+
+        void ResetSelectedMonoScript()
+        {
+            selectedMonoScript = null;
+        }
+
+        void ResetTypesCacheSO()
+        {
+            typesCache = null;
+        }
+
+        void ResetTemporaryTypes()
+        {
+            _temporaryTypes = new List<Type>();
+        }
+
+        void ResetSelectedMonoScriptArray()
+        {
+            selectedMonoScriptArray = new MonoScript[] { };
+        }
+
+        void ResetTypesCacheSOFolderPath()
+        {
+            typesCacheSOFolderPath = DefaultTypesCacheSoFolderPath;
+        }
+
+        void ResetIsCustomizingSaveConfig()
+        {
+            _isCustomizingSaveConfig = false;
+        }
+
+        void ResetSingleAssemblyFullName()
+        {
+            targetAssemblyFullName = string.Empty;
+        }
+
+        void ResetSelectedAssemblyFullNames()
+        {
+            selectedAssemblyFullNames = new List<string>();
+        }
+
+        void ResetHasFinishedAnalyzed()
+        {
+            _hasFinishedAnalyze = false;
+        }
+
+        void ResetDebugInspectionMode()
+        {
+            debugInspectionMode = false;
+        }
+
+        void ResetTypeAnalysisData()
+        {
+            _typeData = null;
+            _typeDataList = null;
+        }
+
+        #endregion
+
+        #region 标签文本
+
+        string _singleTypeDataLabel = "目标 Type";
+
+        string _typeAnalysisResultLabel = "类型分析数据结果";
+
+        string _completeConfigButtonLabel = "完成设置";
+
+        string _resetSOSaveFolderPathButtonLabel = "重置路径";
+
+        #endregion
+    }
+}

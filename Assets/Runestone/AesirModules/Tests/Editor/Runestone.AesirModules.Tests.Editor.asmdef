@@ -1,0 +1,31 @@
+{
+  "name": "Runestone.AesirModules.Tests.Editor",
+  "rootNamespace": "Runestone.AesirModules.Tests.Editor",
+  "references": [
+    "Runestone.AesirArchitecture",
+    "Runestone.AesirModules",
+    "Runestone.AesirModules.Editor",
+    "Runestone.AesirModules.Editor.Bootstrap",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "Sirenix.OdinInspector.Attributes.dll",
+    "Sirenix.Serialization.dll",
+    "Sirenix.Serialization.Config.dll",
+    "Sirenix.Utilities.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

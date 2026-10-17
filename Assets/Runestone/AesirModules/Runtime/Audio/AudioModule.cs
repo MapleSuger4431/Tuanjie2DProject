@@ -1,0 +1,822 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Runestone.AesirArchitecture;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+namespace Runestone.AesirModules
+{
+    /// <summary>
+    /// 音频管理器（MonoBehaviour 单例）—— 2D 音频极简门面。
+    /// 负责 SFX 轮询播放、BGM 循环与淡入淡出、三通道音量/静音控制与持久化。
+    /// <para>公开 API 全部为静态成员，经 <see cref="Instance" /> 单例转发。</para>
+    /// </summary>
+    /// <remarks>
+    /// 是否加入 DontDestroyOnLoad 场景由序列化字段 <see cref="dontDestroyOnLoad" /> 控制，
+    /// 仅在本物体为根物体（场景预放置）时生效；运行时自动创建的实例挂载在 <see cref="AesirModules" /> 宿主下，
+    /// 实际是否 DDOL 跟随宿主的 <c>dontDestroyOnLoad</c> 决策。
+    /// <para>
+    /// SFX 采用固定数量独占音源轮询（等效池化：无每播实例化开销，源全忙时按轮询序抢占最旧）；
+    /// BGM 采用专用循环音源，切换支持协程淡入淡出（基于 <c>Time.unscaledDeltaTime</c>，不受 timeScale 影响）。
+    /// </para>
+    /// <para>
+    /// 设计边界（极简取舍）：仅负责 2D 音频——3D 空间音效请使用原生
+    /// <c>AudioSource.PlayClipAtPoint</c> 自建音源；不集成 AudioMixer（音量直接写入音源）；
+    /// <see cref="PlaySfx" /> 为 fire-and-forget，不提供单个音效的停止与播完回调（回调机制请使用 MiniEvent）。
+    /// </para>
+    /// </remarks>
+    [DisallowMultipleComponent]
+    [DefaultExecutionOrder(-999)]
+    public class AudioModule : AesirMonoBehaviour
+    {
+        internal const string DontDestroyOnLoadFieldName = nameof(dontDestroyOnLoad);
+
+        const string DefaultPrefsKey = "AesirAudio";
+
+        static AudioModule _instance;
+
+        /// <summary>
+        /// 是否将本物体加入 DontDestroyOnLoad 场景。仅在本物体为根物体（场景预放置）时生效。
+        /// </summary>
+        /// <remarks>
+        /// 默认 true（跨场景持久）。设为 false 时实例保留在所在场景、随场景卸载销毁，
+        /// 必须自行处理多场景叠加（Additive）加载下的生命周期管理。
+        /// 运行时自动创建的实例挂载在 [Aesir Modules] 宿主下（非根物体），
+        /// DDOL 跟随宿主决策，本字段不参与判断。
+        /// <para>
+        /// Inspector 呈现（字段说明 InfoBox 与关闭警告 InfoBox）由
+        /// <c>AudioModuleAttributeProcessor</c> 动态注入，运行时代码不持有任何 Inspector 样式特性。
+        /// </para>
+        /// </remarks>
+        [SerializeField]
+        bool dontDestroyOnLoad = true;
+
+        #region 公开 API — SFX
+
+        /// <summary>
+        /// 播放一次音效（fire-and-forget）。每次播放轮询取下一个独占音源，
+        /// 局部音量与音调独立于其他正在播放的音效。
+        /// </summary>
+        /// <param name="clip">音频片段。</param>
+        /// <param name="volume">本次播放的局部音量（0-1），与 SFX 通道音量、总音量相乘生效。</param>
+        /// <param name="pitch">本次播放的基准音调。</param>
+        /// <param name="pitchJitter">
+        /// 音调随机抖动幅度（非负）：最终音调在 [pitch - jitter, pitch + jitter] 内随机并钳制到 [0.01,
+        /// 3]（不会反播），用于脚步/射击等防止机械感。
+        /// </param>
+        public static void PlaySfx(AudioClip clip,
+            float volume = 1f,
+            float pitch = 1f,
+            float pitchJitter = 0f)
+        {
+            if (clip == null)
+            {
+                AesirModulesDebug.LogError(AesirModulesDebug.AudioModuleTag, "播放音效失败：clip 为空");
+                return;
+            }
+
+            var m = Ready();
+
+            // 轮询取下一个独占源；源在播时直接前进（全忙即抢占最旧，轮询序即分配序）
+            var index = m._sfxCursor;
+            m._sfxCursor = (m._sfxCursor + 1) % m._sfxSources.Length;
+            var source = m._sfxSources[index];
+
+            m._sfxLocalVolumes[index] = Mathf.Clamp01(volume);
+            source.clip = clip;
+            // 钳制到 [0.01, 3]：pitch - jitter < 0 会产生负音调（Unity 负 pitch 为反向播放），
+            // 下限取 0.01 而非 0（pitch = 0 在 Unity 中音源无声）
+            source.pitch = Mathf.Clamp(pitch + Random.Range(-pitchJitter, pitchJitter), 0.01f, 3f);
+            source.volume = m._channelVolumes[Sfx.Index] * m._masterVolume * m._sfxLocalVolumes[index];
+            source.Play();
+        }
+
+        #endregion
+
+        #region 公开 API — 配置
+
+        /// <summary>
+        /// 替换运行时配置并重新载入音量（持久化值优先于配置默认值）。
+        /// 传入 null 恢复为代码默认配置。预放置实例调用会改写序列化的资产引用。
+        /// <para>
+        /// 副作用声明：本方法会先将三通道音量与静音全部重置为配置默认值（无配置时为代码默认值），
+        /// 再读持久化键——<c>persistVolumes=false</c> 或持久化键缺失时，
+        /// 运行中经 API 设置的音量/静音状态会被重置，请在意图明确的配置切换时机调用。
+        /// </para>
+        /// </summary>
+        /// <param name="config">新配置资产（可为 null）。</param>
+        public static void ApplyConfig(AudioConfigSO config)
+        {
+            var m = Ready();
+            m.config = config;
+            m.LoadVolumesFromConfig();
+            m.ApplyVolumes();
+            m.ApplyMutes();
+        }
+
+        #endregion
+
+        #region 序列化字段
+
+        /// <summary>
+        /// SFX 独占音源数量。源全忙时按轮询序抢占最旧的源；初始化时一次性创建，运行时修改无效。
+        /// </summary>
+        [Tooltip("SFX 独占音源数量 — 每次播放轮询取下一个源，全忙时抢占最旧；初始化时创建，运行时修改无效")]
+        [SerializeField]
+        int sfxSourceCount = 8;
+
+        /// <summary>
+        /// 可选的模块配置资产。未指定时使用代码默认值（通道音量 1、持久化开启、键前缀 AesirAudio）。
+        /// </summary>
+        [Tooltip("可选的模块配置资产 — 默认音量、持久化开关与 PlayerPrefs 键前缀；留空时使用代码默认值")]
+        [SerializeField]
+        AudioConfigSO config;
+
+        #endregion
+
+        #region 通道
+
+        /// <summary>
+        /// BGM 通道。<see cref="AudioChannel.Index" /> 与 <see cref="Channels" /> 中的下标一致。
+        /// </summary>
+        public static readonly AudioChannel Bgm = new AudioChannel("Bgm", "BgmVolume", "BgmMute", 0);
+
+        /// <summary>
+        /// 音效通道。<see cref="AudioChannel.Index" /> 与 <see cref="Channels" /> 中的下标一致。
+        /// </summary>
+        public static readonly AudioChannel Sfx = new AudioChannel("Sfx", "SfxVolume", "SfxMute", 1);
+
+        /// <summary>
+        /// 全部音频通道（只读视图）。通道在此集中登记一次，音量/静音的存取、
+        /// PlayerPrefs 持久化与配置默认值载入均遍历本列表。
+        /// </summary>
+        /// <remarks>
+        /// 总音量与总静音是跨通道的总闸，不属于"通道"，仍由独立字段承载
+        /// （<see cref="MasterVolume" /> / <see cref="MasterMute" />）。
+        /// 新增通道时在 <see cref="AudioChannel.Index" /> 与本列表中同步登记同一位置。
+        /// </remarks>
+        public static readonly IReadOnlyList<AudioChannel> Channels = new[] { Bgm, Sfx };
+
+        #endregion
+
+        #region 运行时状态
+
+        AudioSource _bgmSource;
+        AudioSource[] _sfxSources;
+        float[] _sfxLocalVolumes;
+        int _sfxCursor;
+        bool _initialized;
+
+        float _masterVolume = 1f;
+        bool _masterMute;
+
+        /// <summary>各通道音量，下标与 <see cref="Channels" /> 对齐。</summary>
+        readonly float[] _channelVolumes = new float[Channels.Count];
+
+        /// <summary>各通道静音开关，下标与 <see cref="Channels" /> 对齐。</summary>
+        readonly bool[] _channelMutes = new bool[Channels.Count];
+
+        /// <summary>BGM 淡入淡出系数（0-1），与通道音量、总音量相乘生效，淡变协程仅修改此值。</summary>
+        float _bgmFadeFactor = 1f;
+
+        Coroutine _bgmFadeRoutine;
+
+        bool _persistVolumes = true;
+        string _prefsKey = DefaultPrefsKey;
+
+        string MasterVolumeKey => _prefsKey + ".MasterVolume";
+        string MasterMuteKey => _prefsKey + ".MasterMute";
+
+        /// <summary>通道音量持久化键（实际键名与旧实现逐字一致）。</summary>
+        string VolumeKey(AudioChannel channel) => _prefsKey + "." + channel.VolumeKeySuffix;
+
+        /// <summary>通道静音持久化键（实际键名与旧实现逐字一致）。</summary>
+        string MuteKey(AudioChannel channel) => _prefsKey + "." + channel.MuteKeySuffix;
+
+        #endregion
+
+        #region 单例与生命周期
+
+        /// <summary>
+        /// 全局单例入口。
+        /// 优先在已加载场景中查找预放置的实例；未找到时在 <see cref="AesirModules" />（DDOL）下创建子物体。
+        /// </summary>
+        public static AudioModule Instance
+        {
+            get
+            {
+                if (_instance != null)
+                {
+                    return _instance;
+                }
+
+                // 尝试在已加载的场景中查找预放置的实例（含未激活对象：
+                // Unity 不对未激活物体调用 Awake，"随用随开"式预放置的音频模块若被 Exclude 漏掉，
+                // 会在这里被判为不存在而重复创建，Inspector 配置的 sfxSourceCount / config 从一开始就被忽略）
+                // 使用 FindAnyObjectByType 而非 FindFirstObjectByType，后者因依赖 InstanceID 排序在 Unity 6 中已废弃
+                _instance = FindAnyObjectByType<AudioModule>(FindObjectsInactive.Include);
+                if (_instance != null)
+                {
+                    return _instance;
+                }
+
+                // 未找到预放置实例 → 在 AesirModules 下创建（跟随父级 DDOL）
+                _instance = AesirModules.GetOrAddChild<AudioModule>();
+                return _instance;
+            }
+        }
+
+        /// <summary>
+        /// 非创建式单例获取：实例不存在时返回 <c>false</c>，<b>不触发懒创建</b>
+        /// （与 <see cref="UIModule.TryGetExisting" /> 同款）。
+        /// </summary>
+        /// <remarks>
+        /// 供"只读状态查询"使用：<see cref="IsBgmPlaying" /> / <see cref="CurrentBgm" /> 这类查询在模块从未被使用过时
+        /// 本就有确定答案（没在播放 / 无片段），旧实现却会为此创建模块、连带创建 9 个 AudioSource 并加入 DDOL。
+        /// 需要实例提供能力的入口（播放、音量、暂停）仍走 <see cref="Ready" />。
+        /// </remarks>
+        /// <param name="module">找到时输出现有实例；否则输出 <c>null</c></param>
+        /// <returns>存在可用实例则返回 <c>true</c></returns>
+        internal static bool TryGetExisting(out AudioModule module)
+        {
+            if (_instance == null)
+            {
+                _instance = FindAnyObjectByType<AudioModule>(FindObjectsInactive.Include);
+            }
+
+            module = _instance;
+            return _instance != null;
+        }
+
+        void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                // 重复实例只销毁自身组件，避免连带销毁宿主整树（对齐 RAA 先例）
+                Destroy(this);
+                return;
+            }
+
+            _instance = this;
+            EnsureInitialized();
+
+            // 非根物体（运行时自动创建于 [Aesir Modules] 宿主下）时 DDOL 跟随宿主，本字段不参与判断
+            if (dontDestroyOnLoad && transform.root == transform)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
+        }
+
+        void OnDestroy()
+        {
+            if (_instance != null && _instance == this)
+            {
+                _instance = null;
+            }
+        }
+
+        /// <summary>
+        /// 域加载时重置静态单例，兼容关闭 Domain Reload 的 Play 模式设置。
+        /// </summary>
+        /// <remarks>
+        /// 非泛型类按框架铁律在类内声明 <c>[RuntimeInitializeOnLoadMethod]</c> 自重置，
+        /// 而非经 <see cref="ResetStaticsAssistant" />（该助手仅服务泛型类——泛型类中的 RIOLM 会被 Unity 静默跳过）。
+        /// 仅清空静态引用：既有物体仍留在场景中，下次 <see cref="Instance" /> 访问经
+        /// <c>FindAnyObjectByType</c> 兜底重发现。
+        /// </remarks>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics()
+        {
+            _instance = null;
+        }
+
+        #endregion
+
+        #region 公开 API — BGM
+
+        /// <summary>
+        /// 播放背景音乐（循环）。同曲稳定播放（无进行中的淡变）时幂等返回——跨场景重复触发不打断音乐。
+        /// <para>
+        /// 淡变进行中调用同曲：取消淡变并从当前系数续接淡回全音量（不重新播放）——
+        /// 覆盖 <see cref="StopBgm" /> 淡出途中反悔、切歌淡出途中回到旧曲两个场景。
+        /// </para>
+        /// </summary>
+        /// <param name="clip">音频片段。</param>
+        /// <param name="fadeSeconds">
+        /// 淡变时长（秒）。0 表示立即切换；大于 0 时旧曲先在此时长内淡出，随后新曲在同一时长内淡入。
+        /// </param>
+        public static void PlayBgm(AudioClip clip, float fadeSeconds = 0f)
+        {
+            if (clip == null)
+            {
+                AesirModulesDebug.LogError(AesirModulesDebug.AudioModuleTag, "播放背景音乐失败：clip 为空");
+                return;
+            }
+
+            var m = Ready();
+
+            var sameClipPlaying = m._bgmSource.clip == clip && m._bgmSource.isPlaying;
+
+            // 同曲稳定播放（无进行中的淡变）→ 幂等返回（重复进入场景不打断音乐）
+            if (sameClipPlaying && m._bgmFadeRoutine == null)
+            {
+                return;
+            }
+
+            // 同曲但淡变进行中（StopBgm 淡出途中 / 切歌淡出途中反悔）：
+            // 取消淡变、从当前系数续接淡回 1，不重新播放（"别停、继续放"）
+            if (sameClipPlaying)
+            {
+                if (fadeSeconds <= 0f)
+                {
+                    m.StopBgmFade();
+                    m._bgmFadeFactor = 1f;
+                    m.ApplyVolumes();
+                }
+                else
+                {
+                    m.StartBgmFade(m.FadeBgmRoutine(1f, fadeSeconds), () =>
+                    {
+                        m._bgmFadeFactor = 1f;
+                        m.ApplyVolumes();
+                    });
+                }
+
+                return;
+            }
+
+            if (fadeSeconds <= 0f)
+            {
+                m.StopBgmFade();
+                m._bgmFadeFactor = 1f;
+                m._bgmSource.clip = clip;
+                m.ApplyVolumes();
+                m._bgmSource.Play();
+                return;
+            }
+
+            m.StartBgmFade(m.SwitchBgmRoutine(clip, fadeSeconds), () =>
+            {
+                m._bgmFadeFactor = 1f;
+                m._bgmSource.clip = clip;
+                m._bgmSource.Play();
+                m.ApplyVolumes();
+            });
+        }
+
+        /// <summary>
+        /// 停止背景音乐。停止后 <see cref="CurrentBgm" /> 保留最后一次播放的片段（不清除）。
+        /// </summary>
+        /// <param name="fadeSeconds">淡出时长（秒）。0 表示立即停止。</param>
+        public static void StopBgm(float fadeSeconds = 0f)
+        {
+            var m = Ready();
+
+            if (fadeSeconds <= 0f)
+            {
+                m.StopBgmFade();
+                m._bgmFadeFactor = 1f;
+                m.ApplyVolumes();
+                m._bgmSource.Stop();
+                return;
+            }
+
+            m.StartBgmFade(m.StopBgmRoutine(fadeSeconds), () =>
+            {
+                m._bgmFadeFactor = 0f;
+                m.ApplyVolumes();
+                m._bgmSource.Stop();
+            });
+        }
+
+        /// <summary>
+        /// 当前背景音乐片段。停止播放后仍保留最后一次播放的片段，未播放过时为 null。
+        /// </summary>
+        /// <remarks>
+        /// 只读查询，<b>不创建模块实例</b>：模块不存在（从未播放过任何音频）时返回 null。
+        /// </remarks>
+        public static AudioClip CurrentBgm
+        {
+            get
+            {
+                TryGetExisting(out var m);
+                return m != null && m._initialized ? m._bgmSource.clip : null;
+            }
+        }
+
+        /// <summary>
+        /// 背景音乐是否正在播放。
+        /// </summary>
+        /// <remarks>
+        /// 只读查询，<b>不创建模块实例</b>：模块不存在或尚未初始化时返回 <c>false</c>
+        /// （没有音频源，等价于"没在播放"）。
+        /// </remarks>
+        public static bool IsBgmPlaying
+        {
+            get
+            {
+                TryGetExisting(out var m);
+                return m != null && m._initialized && m._bgmSource.isPlaying;
+            }
+        }
+
+        #endregion
+
+        #region 公开 API — 暂停
+
+        /// <summary>
+        /// 暂停全部音频（BGM 与所有 SFX 音源）。适合暂停菜单与切后台（配合 <c>OnApplicationPause</c>）。
+        /// </summary>
+        public static void PauseAll()
+        {
+            var m = Ready();
+            m._bgmSource.Pause();
+            for (var i = 0; i < m._sfxSources.Length; i++)
+            {
+                m._sfxSources[i].Pause();
+            }
+        }
+
+        /// <summary>
+        /// 恢复全部音频，与 <see cref="PauseAll" /> 成对使用；未暂停的音源调用无副作用。
+        /// </summary>
+        public static void ResumeAll()
+        {
+            var m = Ready();
+            m._bgmSource.UnPause();
+            for (var i = 0; i < m._sfxSources.Length; i++)
+            {
+                m._sfxSources[i].UnPause();
+            }
+        }
+
+        #endregion
+
+        #region 公开 API — 音量与静音
+
+        /// <summary>
+        /// 总音量（0-1），与各通道音量相乘生效。设置即时生效，并按配置持久化到 PlayerPrefs。
+        /// </summary>
+        /// <remarks>
+        /// <b>读取会确保模块实例存在</b>（与 <c>IsBgmPlaying</c> / <c>CurrentBgm</c> 不同）：音量与静音的"有效值"
+        /// 由配置资产决定（<c>AudioConfigSO</c> 的默认音量 / 持久化开关 / PlayerPrefs 键前缀都挂在模块实例的序列化字段上），
+        /// 无实例时无法还原该配置——非创建式取值只可能返回代码默认值，与项目配置矛盾（静默给出错误音量）。
+        /// 故本组（音量与静音）保持创建式取值，只读播放状态则走非创建式。
+        /// </remarks>
+        public static float MasterVolume
+        {
+            get => Ready()._masterVolume;
+            set
+            {
+                var m = Ready();
+                m._masterVolume = Mathf.Clamp01(value);
+                if (m._persistVolumes)
+                {
+                    PlayerPrefs.SetFloat(m.MasterVolumeKey, m._masterVolume);
+                }
+
+                m.ApplyVolumes();
+            }
+        }
+
+        /// <summary>
+        /// 背景音乐通道音量（0-1），与总音量相乘生效。设置即时生效，并按配置持久化。
+        /// </summary>
+        /// <remarks>读取会确保模块实例存在（取值语义见 <see cref="MasterVolume" />）。</remarks>
+        public static float BgmVolume
+        {
+            get => Ready()._channelVolumes[Bgm.Index];
+            set => Ready().SetChannelVolume(Bgm, value);
+        }
+
+        /// <summary>
+        /// 音效通道音量（0-1），与总音量相乘生效。设置即时生效，并按配置持久化。
+        /// </summary>
+        /// <remarks>读取会确保模块实例存在（取值语义见 <see cref="MasterVolume" />）。</remarks>
+        public static float SfxVolume
+        {
+            get => Ready()._channelVolumes[Sfx.Index];
+            set => Ready().SetChannelVolume(Sfx, value);
+        }
+
+        /// <summary>
+        /// 总静音开关（总闸，与各通道静音相或生效）。设置即时生效，并按配置持久化。
+        /// </summary>
+        /// <remarks>读取会确保模块实例存在（取值语义见 <see cref="MasterVolume" />）。</remarks>
+        public static bool MasterMute
+        {
+            get => Ready()._masterMute;
+            set
+            {
+                var m = Ready();
+                m._masterMute = value;
+                if (m._persistVolumes)
+                {
+                    PlayerPrefs.SetInt(m.MasterMuteKey, value ? 1 : 0);
+                }
+
+                m.ApplyMutes();
+            }
+        }
+
+        /// <summary>
+        /// 背景音乐静音开关，与总静音相或生效。设置即时生效，并按配置持久化。
+        /// </summary>
+        /// <remarks>读取会确保模块实例存在（取值语义见 <see cref="MasterVolume" />）。</remarks>
+        public static bool BgmMute
+        {
+            get => Ready()._channelMutes[Bgm.Index];
+            set => Ready().SetChannelMute(Bgm, value);
+        }
+
+        /// <summary>
+        /// 音效静音开关，与总静音相或生效。设置即时生效，并按配置持久化。
+        /// </summary>
+        /// <remarks>读取会确保模块实例存在（取值语义见 <see cref="MasterVolume" />）。</remarks>
+        public static bool SfxMute
+        {
+            get => Ready()._channelMutes[Sfx.Index];
+            set => Ready().SetChannelMute(Sfx, value);
+        }
+
+        #endregion
+
+        #region 内部实现
+
+        /// <summary>
+        /// 写入单个通道的音量并按配置持久化，随后统一刷新音源。
+        /// 所有通道音量的公开属性都收敛到此处（钳制、持久化、音源刷新三步只写一次）。
+        /// </summary>
+        void SetChannelVolume(AudioChannel channel, float value)
+        {
+            var volume = Mathf.Clamp01(value);
+            _channelVolumes[channel.Index] = volume;
+            if (_persistVolumes)
+            {
+                PlayerPrefs.SetFloat(VolumeKey(channel), volume);
+            }
+
+            ApplyVolumes();
+        }
+
+        /// <summary>
+        /// 写入单个通道的静音开关并按配置持久化，随后统一刷新音源。
+        /// </summary>
+        void SetChannelMute(AudioChannel channel, bool value)
+        {
+            _channelMutes[channel.Index] = value;
+            if (_persistVolumes)
+            {
+                PlayerPrefs.SetInt(MuteKey(channel), value ? 1 : 0);
+            }
+
+            ApplyMutes();
+        }
+
+        /// <summary>
+        /// 获取已完成初始化的单例，所有公开静态 API 的统一入口。
+        /// </summary>
+        static AudioModule Ready()
+        {
+            var m = Instance;
+            m.EnsureInitialized();
+            return m;
+        }
+
+        /// <summary>
+        /// 懒初始化：载入配置与持久化音量，创建 BGM 音源与 SFX 独占音源组。
+        /// 预放置实例在 Awake 调用；编辑器与测试环境未经 Awake 时由 <see cref="Ready" /> 兜底。
+        /// </summary>
+        void EnsureInitialized()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+
+            LoadVolumesFromConfig();
+
+            _bgmSource = gameObject.AddComponent<AudioSource>();
+            _bgmSource.playOnAwake = false;
+            _bgmSource.loop = true;
+
+            var count = Mathf.Max(1, sfxSourceCount);
+            _sfxSources = new AudioSource[count];
+            _sfxLocalVolumes = new float[count];
+            for (var i = 0; i < count; i++)
+            {
+                var source = gameObject.AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                _sfxSources[i] = source;
+                _sfxLocalVolumes[i] = 1f;
+            }
+
+            ApplyVolumes();
+            ApplyMutes();
+        }
+
+        /// <summary>
+        /// 载入配置默认值与持久化音量：持久化键存在时优先于配置默认值；
+        /// 未挂配置资产时使用代码默认值（通道音量 1、持久化开启）。
+        /// </summary>
+        void LoadVolumesFromConfig()
+        {
+            _persistVolumes = config == null || config.persistVolumes;
+            _prefsKey = config != null && !string.IsNullOrEmpty(config.prefsKey)
+                ? config.prefsKey
+                : DefaultPrefsKey;
+            _masterVolume = config != null ? config.masterVolume : 1f;
+            _masterMute = false;
+
+            // 通道默认值：来自配置资产（缺省 1f），静音一律先复位为不静音
+            var channelVolumes = config != null ? config.GetChannelVolumes() : null;
+            for (var i = 0; i < Channels.Count; i++)
+            {
+                _channelVolumes[i] = channelVolumes != null ? channelVolumes[i] : 1f;
+                _channelMutes[i] = false;
+            }
+
+            if (!_persistVolumes)
+            {
+                return;
+            }
+
+            if (PlayerPrefs.HasKey(MasterVolumeKey))
+            {
+                _masterVolume = PlayerPrefs.GetFloat(MasterVolumeKey);
+            }
+
+            if (PlayerPrefs.HasKey(MasterMuteKey))
+            {
+                _masterMute = PlayerPrefs.GetInt(MasterMuteKey) == 1;
+            }
+
+            // 通道持久化值按通道列表逐项覆盖配置默认值（键后缀来自 AudioChannel，键名与旧实现一致）
+            for (var i = 0; i < Channels.Count; i++)
+            {
+                var channel = Channels[i];
+                var volumeKey = VolumeKey(channel);
+                if (PlayerPrefs.HasKey(volumeKey))
+                {
+                    _channelVolumes[i] = PlayerPrefs.GetFloat(volumeKey);
+                }
+
+                var muteKey = MuteKey(channel);
+                if (PlayerPrefs.HasKey(muteKey))
+                {
+                    _channelMutes[i] = PlayerPrefs.GetInt(muteKey) == 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将音量乘法链单点写入全部音源：BGM = 通道 × 总 × 淡变系数；SFX = 通道 × 总 × 局部音量。
+        /// </summary>
+        /// <remarks>
+        /// 音源拓扑（BGM 专用源 / SFX 独占源组）与通道列表不同构，
+        /// 故此处仍按音源类型分支，通道音量本身取自 <see cref="Channels" /> 对齐的数组。
+        /// </remarks>
+        void ApplyVolumes()
+        {
+            _bgmSource.volume = _channelVolumes[Bgm.Index] * _masterVolume * _bgmFadeFactor;
+            for (var i = 0; i < _sfxSources.Length; i++)
+            {
+                _sfxSources[i].volume = _channelVolumes[Sfx.Index] * _masterVolume * _sfxLocalVolumes[i];
+            }
+        }
+
+        /// <summary>
+        /// 将静音链单点写入全部音源：BGM = 总静音或通道静音；SFX = 总静音或通道静音。
+        /// </summary>
+        void ApplyMutes()
+        {
+            _bgmSource.mute = _masterMute || _channelMutes[Bgm.Index];
+            for (var i = 0; i < _sfxSources.Length; i++)
+            {
+                _sfxSources[i].mute = _masterMute || _channelMutes[Sfx.Index];
+            }
+        }
+
+        /// <summary>
+        /// 切歌协程：旧曲淡出 → 换片段播放 → 新曲淡入，两段各占 fadeSeconds。
+        /// BGM 未在播放时跳过淡出段，直接从 0 淡入（首次播放/停止后重播不空等淡出时长）。
+        /// </summary>
+        IEnumerator SwitchBgmRoutine(AudioClip clip, float fadeSeconds)
+        {
+            if (_bgmSource.isPlaying)
+            {
+                yield return FadeBgmRoutine(0f, fadeSeconds);
+            }
+            else
+            {
+                _bgmFadeFactor = 0f;
+            }
+
+            _bgmSource.clip = clip;
+            _bgmSource.Play();
+            yield return FadeBgmRoutine(1f, fadeSeconds);
+        }
+
+        /// <summary>
+        /// 停止协程：淡出 → 停止播放（片段保留）。
+        /// </summary>
+        IEnumerator StopBgmRoutine(float fadeSeconds)
+        {
+            yield return FadeBgmRoutine(0f, fadeSeconds);
+            _bgmSource.Stop();
+        }
+
+        /// <summary>
+        /// 将淡变系数向目标值逐帧插值。基于 unscaledDeltaTime——BGM 不受 timeScale 影响（slow motion 不变调）。
+        /// <para>
+        /// MoveTowards 到达时精确返回目标值，循环条件用精确比较即可安全退出；
+        /// 连续切歌时新协程从当前系数续接，无跳变。
+        /// </para>
+        /// </summary>
+        IEnumerator FadeBgmRoutine(float target, float fadeSeconds)
+        {
+            while (_bgmFadeFactor != target)
+            {
+                _bgmFadeFactor =
+                    Mathf.MoveTowards(_bgmFadeFactor, target, Time.unscaledDeltaTime / fadeSeconds);
+                ApplyVolumes();
+                yield return null;
+            }
+        }
+
+        void StartBgmFade(IEnumerator routine, Action instantFallback)
+        {
+            StopBgmFade();
+
+            // 惰性启用的预放置模块：Instance 会（含未激活对象地）找到它，但未激活的 GameObject 上
+            // StartCoroutine 会被 Unity 静默丢弃，淡变协程根本不跑——BGM 会卡在旧系数上。
+            // 降级为瞬时到位：终态与淡变终点一致，仅丢失过渡过程。
+            if (!isActiveAndEnabled)
+            {
+                instantFallback();
+                return;
+            }
+
+            _bgmFadeRoutine = StartCoroutine(routine);
+        }
+
+        void StopBgmFade()
+        {
+            if (_bgmFadeRoutine != null)
+            {
+                StopCoroutine(_bgmFadeRoutine);
+                _bgmFadeRoutine = null;
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// 音频通道描述符（不可变值对象）。音量/静音的存取、PlayerPrefs 持久化与配置默认值载入
+    /// 均以通道列表（<see cref="AudioModule.Channels" />）为唯一数据源遍历。
+    /// </summary>
+    /// <remarks>
+    /// <b>意图：</b>把"通道"从散落在字段声明、键名属性、静态属性、配置载入与 ApplyVolumes /
+    /// ApplyMutes 分支中的硬编码，收敛为一次性声明的数据。此前新增第 4 个通道需要改动约 20 处语句，
+    /// 且容易漏改持久化键；现在新增通道只需在 <see cref="AudioModule.Channels" /> 增加一项
+    /// （含 <see cref="Index" />，须与列表位置一致）并在 <see cref="AudioConfigSO.GetChannelVolumes" />
+    /// 追加对应默认值。
+    /// <para>
+    /// 不含音源持有信息：音源拓扑（BGM 专用源 / SFX 独占源组）与通道列表不同构，
+    /// 强行并入会让值对象反过来承担音源引用职责，故此处只描述"可被统一遍历的通道维度"。
+    /// </para>
+    /// </remarks>
+    public readonly struct AudioChannel
+    {
+        /// <summary>通道标识（日志与调试用）。</summary>
+        public string Id { get; }
+
+        /// <summary>PlayerPrefs 音量键后缀，实际键为 前缀 + "." + 该后缀。</summary>
+        public string VolumeKeySuffix { get; }
+
+        /// <summary>PlayerPrefs 静音键后缀，实际键为 前缀 + "." + 该后缀。</summary>
+        public string MuteKeySuffix { get; }
+
+        /// <summary>本通道在音量/静音数组与通道列表中的下标，须与列表位置一致。</summary>
+        public int Index { get; }
+
+        /// <summary>
+        /// 构造通道描述符。
+        /// </summary>
+        /// <param name="id">通道标识（日志与调试用）。</param>
+        /// <param name="volumeKeySuffix">PlayerPrefs 音量键后缀（不含前缀与分隔符）。</param>
+        /// <param name="muteKeySuffix">PlayerPrefs 静音键后缀（不含前缀与分隔符）。</param>
+        /// <param name="index">在通道列表中的下标。</param>
+        public AudioChannel(string id, string volumeKeySuffix, string muteKeySuffix, int index)
+        {
+            Id = id;
+            VolumeKeySuffix = volumeKeySuffix;
+            MuteKeySuffix = muteKeySuffix;
+            Index = index;
+        }
+    }
+}

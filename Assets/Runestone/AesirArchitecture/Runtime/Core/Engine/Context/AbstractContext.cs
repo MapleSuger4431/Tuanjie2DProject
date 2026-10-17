@@ -1,0 +1,484 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Runestone.AesirArchitecture
+{
+    /// <summary>
+    /// 上下文基类。纯 C# 实现，不依赖 MonoBehaviour。
+    /// <para>子类在 <see cref="Configure" /> 中注册 Model 和 Service，通过 <see cref="Instance" /> 获取全局单例。</para>
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///     本类采用泛型自引用模式（CRTP）：泛型约束 <c>where T : AbstractContext&lt;T&gt;, new()</c>
+    ///     要求子类将自身作为类型参数传入，例如 <c>class MyContext : AbstractContext&lt;MyContext&gt;</c>。
+    ///     这样 <see cref="Instance" /> 静态属性就能在编译期确定具体类型并返回其单例，
+    ///     避免了反射或运行时类型查找的开销。
+    ///     </para>
+    ///     <para>
+    ///     <b>初始化流程</b>（由 <see cref="Instance" /> 首次访问触发）：
+    ///     <list type="number">
+    ///         <item>创建子类实例 <c>new T()</c></item>
+    ///         <item>调用 <see cref="Initialize" /></item>
+    ///         <item><see cref="Initialize" /> 先调用 <see cref="Configure" />，由子类注册全部 Model 和 Service</item>
+    ///         <item>按注册顺序依次调用各 Model 的 <c>Initialize</c></item>
+    ///         <item>按注册顺序依次调用各 Service 的 <c>Initialize</c></item>
+    ///     </list>
+    ///     </para>
+    ///     <para>
+    ///     <b>释放流程</b>（由 <see cref="Dispose" /> 触发）：
+    ///     <list type="number">
+    ///         <item>逆序于初始化地先销毁所有 Service</item>
+    ///         <item>再逆序于初始化地销毁所有 Model</item>
+    ///         <item>清空 Model 与 Service 容器</item>
+    ///     </list>
+    ///     先 Service 后 Model 的销毁顺序确保 Service 在销毁时仍可访问所依赖的 Model。
+    ///     </para>
+    ///     <para>
+    ///     <b>域加载安全</b>：静态构造函数通过 <see cref="ResetStaticsAssistant.Register(Action)" />
+    ///     注册"释放并置空单例"的重置回调。当 Unity 关闭 Domain Reload（Enter Play Mode Settings）
+    ///     时，静态字段不会被运行时自动清零，该回调确保下次进入 Play 模式时单例被正确重建。
+    ///     之所以经助手注册而非类内声明 <c>[RuntimeInitializeOnLoadMethod]</c>：泛型类中的该方法特性
+    ///     会被 Unity 静默跳过（不执行也不报错），只能由非泛型的中心位置代为触发。
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">具体上下文子类类型，必须具有无参公共构造函数</typeparam>
+    /// <seealso cref="IContext" />
+    [Serializable]
+    public abstract class AbstractContext<T> : IContext where T : AbstractContext<T>, new()
+    {
+        static T _instance;
+
+        /// <summary>
+        /// 依赖 <see cref="IGenericLocator{T}" /> 抽象而非具体实现（DIP）：容器行为契约由接口定义，
+        /// 具体实现可替换而不影响 Context 逻辑。
+        /// </summary>
+        IGenericLocator<IModel> _modelLocator = new GenericLocator<IModel>();
+
+        IGenericLocator<IService> _serviceLocator = new GenericLocator<IService>();
+
+        static AbstractContext()
+        {
+            ResetStaticsAssistant.Register(() =>
+            {
+                // 先摘除单例字段再释放：释放链路可能抛异常（如模块 OnDispose 访问已被上一局销毁的 MonoBehaviour），
+                // 先置空可保证下次访问 Instance 必定重建全新上下文，不会拿到已释放的空壳实例。
+                // 回调内不吞异常——ResetStaticsAssistant 已按回调逐个隔离异常并继续重置其余静态状态。
+                var instance = _instance;
+                _instance = null;
+                instance?.Dispose();
+            });
+        }
+
+        /// <summary>
+        /// 获取当前上下文类型的单例接口实例。首次访问时自动创建并初始化。
+        /// </summary>
+        /// <remarks>
+        /// 采用懒加载单例模式：首次访问时通过 <c>new T()</c> 创建实例并调用 <see cref="Initialize" />，
+        /// 初始化成功后才写入静态字段 <c>_instance</c>。后续访问直接返回缓存实例，不再重复初始化。
+        /// <para>
+        /// <b>初始化失败</b>：单例不会被缓存，后续每次访问都会重新创建并重新初始化，
+        /// 根因异常每次抛出（而非只抛一次后拿到 <see cref="Initialized" /> 为 <c>false</c> 的坏上下文）。
+        /// 已初始化到一半的模块不做回滚 Dispose，随被丢弃的实例交由 GC 回收——初始化失败属启动期编程错误，
+        /// 应修复根因而非优雅降级。
+        /// </para>
+        /// <para>
+        /// <b>重入约定</b>：<see cref="Configure" /> 及各模块的初始化方法中禁止访问 <c>Instance</c>，
+        /// 否则会因单例尚未发布而递归创建第二个上下文实例。
+        /// </para>
+        /// <para>
+        /// 该属性返回具体上下文类型 <typeparamref name="T" />，
+        /// 访问 <see cref="IContext" /> 接口成员时自动向上转型，无需强转。
+        /// </para>
+        /// </remarks>
+        public static T Instance
+        {
+            get
+            {
+                if (_instance != null)
+                {
+                    return _instance;
+                }
+
+                var context = new T();
+                context.Initialize();
+                _instance = context;
+                return context;
+            }
+        }
+
+        /// <summary>
+        /// 是否已初始化（只读）
+        /// </summary>
+        public bool Initialized { get; private set; }
+
+        /// <summary>
+        /// 注册 Model 并绑定上下文。
+        /// <para>若该类型已注册，视为动态替换：输出一条 Warning 日志，旧实例会被 <see cref="Dispose" /> 后再覆盖。</para>
+        /// </summary>
+        /// <typeparam name="TModel">要注册的 Model 接口类型，必须为引用类型并实现 <see cref="IModel" /></typeparam>
+        /// <param name="model">要注册的 Model 实例，注册后会绑定到当前上下文</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="model" /> 为 null 时抛出。先于 <c>SetContext</c> 校验，
+        /// 避免以裸 <see cref="NullReferenceException" /> 掩盖"传入 null"这一真实原因。
+        /// </exception>
+        /// <remarks>
+        /// 运行时替换 Model 属测试/调试用途，替换后旧实例上的订阅不会迁移——已订阅的 View 需自行重新订阅。
+        /// 首次注册不输出日志，仅动态替换时输出 Warning 提醒（详见 <see cref="LogReplacementWarning" />）。
+        /// </remarks>
+        public void RegisterModel<TModel>(TModel model) where TModel : class, IModel
+        {
+            // 与 GenericLocator{T}.Register 的 null 校验对称：此处先于 SetContext 拦下，
+            // 否则 null 会先在 SetContext 上炸成裸 NullReferenceException，定位不到真实原因。
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "注册的 Model 实例不可为 null");
+            }
+
+            if (_modelLocator.TryGet<TModel>(out var existing))
+            {
+                LogReplacementWarning("Model", typeof(TModel).Name);
+                existing.Dispose();
+            }
+
+            model.SetContext(this);
+            _modelLocator.Register(model);
+
+            // 集体初始化尚未开始（Configure 阶段）：只登记，交由 Initialize() 按注册顺序统一初始化。
+            // 集体初始化完成后（运行时注册）：立即初始化，使新模块与既有模块状态一致。
+            if (!Initialized)
+            {
+                return;
+            }
+
+            model.Initialize();
+        }
+
+        /// <summary>
+        /// 注册 Service 并绑定上下文。
+        /// <para>若上下文已完成统一初始化，则立即初始化该 Service。若该类型已注册，视为动态替换：输出一条 Warning 日志，旧实例会被 <see cref="Dispose" /> 后再覆盖。</para>
+        /// </summary>
+        /// <typeparam name="TService">要注册的 Service 接口类型，必须为引用类型并实现 <see cref="IService" /></typeparam>
+        /// <param name="service">要注册的 Service 实例，注册后会绑定到当前上下文</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service" /> 为 null 时抛出。先于 <c>SetContext</c> 校验，
+        /// 避免以裸 <see cref="NullReferenceException" /> 掩盖"传入 null"这一真实原因。
+        /// </exception>
+        /// <remarks>
+        /// 运行时替换 Service 属测试/调试用途，替换后旧实例上的订阅不会迁移——已订阅方需自行重新订阅。
+        /// 首次注册不输出日志，仅动态替换时输出 Warning 提醒（详见 <see cref="LogReplacementWarning" />）。
+        /// </remarks>
+        public void RegisterService<TService>(TService service) where TService : class, IService
+        {
+            // 与 RegisterModel / GenericLocator{T}.Register 同款：先于 SetContext 拦下 null。
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service), "注册的 Service 实例不可为 null");
+            }
+
+            if (_serviceLocator.TryGet<TService>(out var existing))
+            {
+                LogReplacementWarning("Service", typeof(TService).Name);
+                existing.Dispose();
+            }
+
+            service.SetContext(this);
+            _serviceLocator.Register(service);
+
+            // 与 RegisterModel 同款：Configure 阶段只登记、运行时注册立即初始化。
+            if (!Initialized)
+            {
+                return;
+            }
+
+            service.Initialize();
+        }
+
+        /// <summary>
+        /// 获取已注册的 Model。
+        /// </summary>
+        /// <typeparam name="TModel">要获取的 Model 类型，必须为引用类型并实现 <see cref="IModel" /></typeparam>
+        /// <returns>已注册的 Model 实例</returns>
+        /// <exception cref="InvalidOperationException">
+        /// 目标 Model 未注册时抛出（"已注册但尚未初始化"的次级防护由
+        /// <c>CapabilityExtensions.GetModel</c> 扩展方法补充）
+        /// </exception>
+        public TModel GetModel<TModel>() where TModel : class, IModel
+        {
+            if (_modelLocator.TryGet<TModel>(out var model))
+            {
+                return model;
+            }
+
+            throw new InvalidOperationException(
+                $"{AesirArchitectureDebug.ErrorTag} [Context] 尝试获取 Model [{typeof(TModel).Name}]，" +
+                $"但该 Model 未在 Context 中注册，需要提前调用 RegisterModel<{typeof(TModel).Name}>() 注册到 Context 中。" +
+                BuildNearMissHint<TModel, IModel>(_modelLocator));
+        }
+
+        /// <summary>
+        /// 获取已注册的 Service。
+        /// </summary>
+        /// <typeparam name="TService">要获取的 Service 类型，必须为引用类型并实现 <see cref="IService" /></typeparam>
+        /// <returns>已注册的 Service 实例</returns>
+        /// <exception cref="InvalidOperationException">
+        /// 目标 Service 未注册时抛出（"已注册但尚未初始化"的次级防护由
+        /// <c>CapabilityExtensions.GetService</c> 扩展方法补充）
+        /// </exception>
+        public TService GetService<TService>() where TService : class, IService
+        {
+            if (_serviceLocator.TryGet<TService>(out var service))
+            {
+                return service;
+            }
+
+            throw new InvalidOperationException(
+                $"{AesirArchitectureDebug.ErrorTag} [Context] 尝试获取 Service [{typeof(TService).Name}]，" +
+                $"但该 Service 未在 Context 中注册，需要提前调用 RegisterService<{typeof(TService).Name}>() 注册到 Context 中。" +
+                BuildNearMissHint<TService, IService>(_serviceLocator));
+        }
+
+        /// <summary>
+        /// 释放资源。逆序销毁 Service 和 Model，清空容器。
+        /// </summary>
+        /// <remarks>
+        /// 释放顺序与初始化顺序相反：先销毁所有 Service，再销毁所有 Model，最后清空两个容器。
+        /// 各容器内部亦按注册的逆序销毁（后注册的先销毁），与"按注册顺序初始化"严格镜像。
+        /// <para>
+        /// 先 Service 后 Model 的原因：Service 通常依赖 Model 完成自身逻辑，
+        /// 在 Service 释放时仍可能需要读取 Model 状态，因此 Model 必须晚于 Service 销毁。
+        /// </para>
+        /// <para>若上下文尚未初始化，此方法直接返回不做任何操作。</para>
+        /// <para>释放后解除 <see cref="Instance" /> 的单例缓存——再次访问 <see cref="Instance" /> 将重建并重新初始化全新上下文，而非返回已释放的空壳实例。</para>
+        /// <para><c>Reverse()</c> 在关停路径产生一次枚举分配，属可接受的一次性开销。</para>
+        /// <para>
+        /// <b>不可覆写</b>：本方法刻意非 <c>virtual</c>（模板方法），以保证"解除单例缓存 + 清空容器"这段
+        /// 框架级收尾永远被执行到底，不会被子类的部分实现跳过。自定义的释放逻辑请写入
+        /// <see cref="OnDispose" />——它是本类唯一的释放定制点。
+        /// </para>
+        /// <para>
+        /// <b>异常安全</b>：释放链路（<see cref="OnDispose" /> 与各模块的 <c>Dispose</c>，例如访问已被
+        /// 上一局销毁的 MonoBehaviour）抛出的异常照旧向上传播（fail-fast），但收尾不变量放在
+        /// <c>finally</c> 中执行——置 <c>Initialized</c> 为 <c>false</c> 并解除单例缓存。
+        /// 否则异常会让 <see cref="Instance" /> 长期指向半释放的上下文，且 <see cref="Initialize" />
+        /// 因 <c>Initialized</c> 早退而永不重建（与静态重置回调"先摘单例再释放"的硬化同构）。
+        /// </para>
+        /// </remarks>
+        public void Dispose()
+        {
+            if (!Initialized)
+            {
+                return;
+            }
+
+            try
+            {
+                OnDispose();
+
+                foreach (var service in _serviceLocator.GetAll().Reverse())
+                {
+                    service.Dispose();
+                }
+
+                foreach (var model in _modelLocator.GetAll().Reverse())
+                {
+                    model.Dispose();
+                }
+
+                // 经 IDisposable 契约清空容器（实现内为 Clear，语义见 IGenericLocator{T}）
+                _serviceLocator.Dispose();
+                _modelLocator.Dispose();
+            }
+            finally
+            {
+                // 收尾不变量：无论释放链路是否抛异常都必须执行（语义见 remarks 的"异常安全"）
+                Initialized = false;
+
+                if (ReferenceEquals(_instance, this))
+                {
+                    _instance = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 注销 Model：按类型键摘除注册并释放被摘除的实例（测试/调试用途，收窄为 internal）。
+        /// </summary>
+        /// <typeparam name="TModel">要注销的 Model 类型，必须与注册时的类型参数一致</typeparam>
+        /// <remarks>
+        /// 与动态替换同属测试/调试用途：被摘除实例经 <see cref="System.IDisposable.Dispose" /> 释放，
+        /// 其上的事件订阅（MiniEvent / ObservableValue 等）不会迁移——已订阅方需自行重新订阅。
+        /// 未注册时静默无操作（幂等）；注销后再次注册按新插入语义追加到注册顺序末尾。
+        /// </remarks>
+        internal void UnregisterModel<TModel>() where TModel : class, IModel
+        {
+            if (_modelLocator.TryGet<TModel>(out var existing))
+            {
+                existing.Dispose();
+                _modelLocator.Unregister<TModel>();
+            }
+        }
+
+        /// <summary>
+        /// 注销 Service：按类型键摘除注册并释放被摘除的实例（测试/调试用途，收窄为 internal）。
+        /// </summary>
+        /// <typeparam name="TService">要注销的 Service 类型，必须与注册时的类型参数一致</typeparam>
+        /// <remarks>
+        /// 与动态替换同属测试/调试用途：被摘除实例经 <see cref="System.IDisposable.Dispose" /> 释放，
+        /// 其上的事件订阅（MiniEvent / ObservableValue 等）不会迁移——已订阅方需自行重新订阅。
+        /// 未注册时静默无操作（幂等）；注销后再次注册按新插入语义追加到注册顺序末尾。
+        /// </remarks>
+        internal void UnregisterService<TService>() where TService : class, IService
+        {
+            if (_serviceLocator.TryGet<TService>(out var existing))
+            {
+                existing.Dispose();
+                _serviceLocator.Unregister<TService>();
+            }
+        }
+
+        /// <summary>
+        /// 获取所有已注册的 Model 列表
+        /// </summary>
+        /// <returns>所有已注册 Model 实例的集合；若无注册则返回空集合</returns>
+        internal IEnumerable<IModel> GetAllModels() => _modelLocator.GetAll();
+
+        /// <summary>
+        /// 获取所有已注册的 Service 列表
+        /// </summary>
+        /// <returns>所有已注册 Service 实例的集合；若无注册则返回空集合</returns>
+        internal IEnumerable<IService> GetAllServices() => _serviceLocator.GetAll();
+
+        /// <summary>
+        /// 动态替换已注册模块时输出 Warning，提醒事件订阅关系不会自动迁移。
+        /// </summary>
+        /// <remarks>
+        /// 仅提示、不影响执行：替换本身是合法操作（测试/调试用途），但旧实例被 <see cref="Dispose" /> 后，
+        /// 其上的事件订阅（MiniEvent / ObservableValue 等）仍指向旧实例。调用方需自查是否存在此类订阅，
+        /// 有则在新实例上重新订阅，没有则可忽略该警告。
+        /// <para>首次注册不触发此警告——只有键命中已有实例（即发生替换）时才输出。</para>
+        /// </remarks>
+        /// <param name="moduleKind">模块种类（"Model" 或 "Service"）</param>
+        /// <param name="keyName">被替换的注册键类型名（接口、类或任意键类型）</param>
+        static void LogReplacementWarning(string moduleKind, string keyName)
+        {
+            AesirArchitectureDebug.LogWarning(
+                $"[Context] 检测到动态替换 {moduleKind} [{keyName}]：旧实例将被 Dispose 并被新实例覆盖。" +
+                $"这只是一条警告，不影响正常运行。请确认是否有代码订阅了原 {moduleKind} 的事件（MiniEvent / ObservableValue 等）；" +
+                "若有，请在新实例上重新订阅，若没有则可忽略此警告。");
+        }
+
+        /// <summary>
+        /// 近失识别：当查询类型未命中、但已注册实例中存在可赋值给查询类型的条目时，
+        /// 生成"Register 与 Get 必须使用相同类型参数"的提示。
+        /// </summary>
+        /// <remarks>
+        /// 仅在异常路径执行（未注册时），正常路径零开销。
+        /// 典型触发：按实现类注册、按接口查询（或反之）——键精确匹配失败但实例实际兼容。
+        /// </remarks>
+        static string BuildNearMissHint<TQuery, TBase>(IGenericLocator<TBase> locator)
+            where TQuery : class where TBase : class
+        {
+            foreach (var entry in locator.GetAllEntries())
+            {
+                if (entry.Value is TQuery)
+                {
+                    return $" 检测到已注册实例（注册键 {entry.Key.Name}）可赋值给查询类型 {typeof(TQuery).Name}——" +
+                           "Register 与 Get 必须使用相同类型参数。";
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// 统一初始化。调用 <see cref="Configure" /> 注册模块后，按注册顺序依次初始化 Model 和 Service。
+        /// <para>开发者需保证注册顺序满足依赖关系——被依赖的模块先注册。运行时通过 <c>GetModel</c> / <c>GetService</c> 获取未注册模块会抛出异常。</para>
+        /// </summary>
+        /// <remarks>
+        /// 此方法由 <see cref="Instance" /> 在首次访问时自动调用，通常不需要手动调用。
+        /// <para>
+        /// 执行步骤：
+        /// <list type="number">
+        ///     <item>
+        ///     调用 <see cref="Configure" />，让子类在其中通过 <see cref="RegisterModel{TModel}" /> 和
+        ///     <see cref="RegisterService{TService}" /> 注册所有模块。此阶段只登记，<b>不初始化</b>
+        ///     （<c>Initialized</c> 尚未置位，注册不触发初始化）
+        ///     </item>
+        ///     <item>按注册顺序遍历并初始化全部 Model（跳过已初始化者）</item>
+        ///     <item>按注册顺序遍历并初始化全部 Service（跳过已初始化者）</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// <b>初始化期注册</b>：模块的 <c>OnInitialize</c> 中注册新模块时，<c>GetAll()</c> 的快照已经取定，
+        /// 新模块不在本轮快照内；此时 <c>Initialized</c> 仍为 <c>false</c>，故注册不会触发即时初始化。
+        /// 每一步都以「重复取快照直到没有未初始化模块」补齐，保证新增模块在本次 <see cref="Initialize" />
+        /// 返回前完成初始化且不重复初始化。
+        /// </para>
+        /// <para>
+        /// 若已初始化则直接返回，保证幂等性。初始化过程中抛出的异常直接向上传播，不做回滚——
+        /// 初始化失败属启动期编程错误，应修复根因（见 <see cref="Instance" /> 备注）。
+        /// </para>
+        /// </remarks>
+        public void Initialize()
+        {
+            if (Initialized)
+            {
+                return;
+            }
+
+            Configure();
+
+            // 先全部 Model、后全部 Service 的两阶段顺序；各阶段内部按注册顺序初始化。
+            InitializePendingModules(_modelLocator);
+            InitializePendingModules(_serviceLocator);
+
+            Initialized = true;
+        }
+
+        /// <summary>
+        /// 初始化容器内所有尚未初始化的模块，按注册顺序。
+        /// <para>
+        /// 重复取快照直到某一轮没有可初始化者为止：模块的 <c>OnInitialize</c> 中注册的新模块
+        /// 不在本轮快照内，由下一轮补齐（<see cref="ICanInitialize.Initialized" /> 使已初始化者被跳过，
+        /// 因此不会重复初始化）。
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TBase">容器元素类型，须具备初始化契约</typeparam>
+        /// <param name="locator">目标容器（Model 容器或 Service 容器）</param>
+        static void InitializePendingModules<TBase>(IGenericLocator<TBase> locator)
+            where TBase : class, ICanInitialize
+        {
+            while (true)
+            {
+                var initializedAny = false;
+                foreach (var module in locator.GetAll())
+                {
+                    if (module.Initialized)
+                    {
+                        continue;
+                    }
+
+                    module.Initialize();
+                    initializedAny = true;
+                }
+
+                if (!initializedAny)
+                {
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 配置上下文模块，子类在此注册 Model 和 Service。
+        /// </summary>
+        protected abstract void Configure();
+
+        /// <summary>
+        /// 子类可选覆写，在释放前执行自定义清理。
+        /// <para>这是本类唯一的释放定制点——<see cref="Dispose" /> 非 <c>virtual</c>，不可覆写。</para>
+        /// </summary>
+        protected virtual void OnDispose() { }
+    }
+}
