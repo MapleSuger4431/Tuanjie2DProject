@@ -31,6 +31,12 @@ namespace Game.Editor
         /// <summary>项目中文字体资产（TMPChineseText 扩展落地），不足时回退 TMP 默认字体。</summary>
         const string TmpChineseFontPath = "Assets/Codely/Fonts/NotoSansSC-Regular SDF.asset";
 
+        /// <summary>选关界面美术素材目录（2026-10-18 迁移后位置，与 TestTF 旧路径无关）。</summary>
+        const string UiImgDir = "Assets/Resources/UIPrefabs/UIimg";
+        const string MapSpritePath = UiImgDir + "/map_1920x1080_fit.png";   // 选关大地图背景
+        const string BackSpritePath = UiImgDir + "/back.png";                // 返回图标
+        const string SettingsSpritePath = UiImgDir + "/setting-transparent.png"; // 设置图标
+
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
 
@@ -112,7 +118,18 @@ namespace Game.Editor
 
             var bg = NewRect("Background", root.transform);
             Stretch(bg);
-            bg.gameObject.AddComponent<Image>().color = new Color(0.12f, 0.14f, 0.18f);
+            var bgImage = bg.gameObject.AddComponent<Image>();
+            var bgSprite = LoadSprite(MapSpritePath);
+            if (bgSprite != null)
+            {
+                bgImage.sprite = bgSprite;
+                bgImage.preserveAspect = true;   // 非 16:9 画面宁可留边，也不把地图拉变形
+                bgImage.color = Color.white;     // 有美术时保持原色，不再叠深色
+            }
+            else
+            {
+                bgImage.color = new Color(0.12f, 0.14f, 0.18f);
+            }
 
             var title = NewRect("Title", root.transform);
             Stretch(title, new Vector2(0f, 0.86f), new Vector2(1f, 1f));
@@ -121,27 +138,25 @@ namespace Game.Editor
             var nodesRoot = NewRect("NodesRoot", root.transform);
             Stretch(nodesRoot, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.85f));
 
+            // 左上：返回按钮——120×120 图标位。图标是方形透明图，配方形按钮才不被压扁；
+            // 纯图标不放文字：LevelSelectPanel.ApplyLocalization 会在 label 非空时填中文，
+            // 文字压在图标上会糊，故这里不建 Text 子节点、也不回填 backButtonLabel。
             var back = NewRect("BackButton", root.transform);
             back.anchorMin = back.anchorMax = new Vector2(0f, 1f);
             back.pivot = new Vector2(0.5f, 0.5f);
-            back.sizeDelta = new Vector2(170f, 56f);
-            back.anchoredPosition = new Vector2(115f, -50f);
-            back.gameObject.AddComponent<Image>().color = new Color(0.35f, 0.38f, 0.45f);
+            back.sizeDelta = new Vector2(120f, 120f);
+            back.anchoredPosition = new Vector2(96f, -64f);
+            ApplyIcon(back.gameObject, BackSpritePath, new Color(0.35f, 0.38f, 0.45f));
             var backBtn = back.gameObject.AddComponent<Button>();
-            var backText = NewRect("Text", back);
-            Stretch(backText);
-            var backTmp = NewTmp(backText, "返回", 30f);
 
+            // 右上：设置按钮——与返回按钮对称的图标位
             var settings = NewRect("SettingsButton", root.transform);
             settings.anchorMin = settings.anchorMax = new Vector2(1f, 1f);
             settings.pivot = new Vector2(0.5f, 0.5f);
-            settings.sizeDelta = new Vector2(170f, 56f);
-            settings.anchoredPosition = new Vector2(-115f, -50f);
-            settings.gameObject.AddComponent<Image>().color = new Color(0.35f, 0.38f, 0.45f);
+            settings.sizeDelta = new Vector2(120f, 120f);
+            settings.anchoredPosition = new Vector2(-96f, -64f);
+            ApplyIcon(settings.gameObject, SettingsSpritePath, new Color(0.35f, 0.38f, 0.45f));
             var settingsBtn = settings.gameObject.AddComponent<Button>();
-            var settingsText = NewRect("Text", settings);
-            Stretch(settingsText);
-            var settingsTmp = NewTmp(settingsText, "设置", 30f);
 
             var so = new SerializedObject(script);
             so.FindProperty("nodesRoot").objectReferenceValue = nodesRoot;
@@ -149,8 +164,6 @@ namespace Game.Editor
             so.FindProperty("settingsButton").objectReferenceValue = settingsBtn;
             so.FindProperty("levelNodePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(NodePath);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
-            so.FindProperty("backButtonLabel").objectReferenceValue = backTmp;
-            so.FindProperty("settingsButtonLabel").objectReferenceValue = settingsTmp;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             SaveAsPrefab(root, PanelPath);
@@ -255,6 +268,32 @@ namespace Game.Editor
         }
 
         // ---------- 工具 ----------
+
+        /// <summary>按路径取 Sprite；取不到打警告并返回 null，调用方负责回退成纯色占位。</summary>
+        static Sprite LoadSprite(string path)
+        {
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite == null)
+                Debug.LogWarning($"[LevelSelectUIBuilder] 未找到素材 {path}，该处回退为纯色占位");
+            return sprite;
+        }
+
+        /// <summary>给按钮挂图标：有图则用原色 + 保持比例，无图则退回纯色块。</summary>
+        static void ApplyIcon(GameObject go, string path, Color fallbackColor)
+        {
+            var image = go.AddComponent<Image>();
+            var sprite = LoadSprite(path);
+            if (sprite != null)
+            {
+                image.sprite = sprite;
+                image.preserveAspect = true;
+                image.color = Color.white;
+            }
+            else
+            {
+                image.color = fallbackColor;
+            }
+        }
 
         static TextMeshProUGUI NewTmp(RectTransform rect, string text, float fontSize)
         {
