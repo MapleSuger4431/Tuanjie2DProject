@@ -1,0 +1,58 @@
+.br-scroll {
+    flex-grow: 1;
+}
+
+.br-scroll__content {
+    padding: 16px;
+}
+
+.br-scroll--padding-none .br-scroll__content { padding: 0; }
+.br-scroll--padding-sm .br-scroll__content { padding: 8px; }
+.br-scroll--padding-md .br-scroll__content { padding: 16px; }
+.br-scroll--padding-lg .br-scroll__content { padding: 24px; }
+
+.br-scroll .unity-scroller {
+    width: 10px;
+}
+
+.br-scroll .unity-scroller__slider {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.br-scroll .unity-scroller__high-button,
+.br-scroll .unity-scroller__low-button {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-width: 0;
+}
+
+.br-scroll .unity-scroller__slider .unity-base-slider__tracker,
+.br-scroll .unity-scroller__slider .unity-base-slider__fill {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 5px;
+}
+
+.br-scroll .unity-scroller__slider:hover .unity-base-slider__tracker,
+.br-scroll .unity-scroller__slider:hover .unity-base-slider__fill {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.br-scroll .unity-scroller__slider:active .unity-base-slider__tracker,
+.br-scroll .unity-scroller__slider:active .unity-base-slider__fill {
+    background-color: rgba(255, 255, 255, 0.38);
+}
+
+.br-scroll .unity-scroller__dragger,
+.br-scroll .unity-scroller__dragger-element {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 5px;
+}
+
+.br-scroll .unity-scroller:hover .unity-scroller__dragger,
+.br-scroll .unity-scroller:hover .unity-scroller__dragger-element {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.br-scroll .unity-scroller:active .unity-scroller__dragger,
+.br-scroll .unity-scroller:active .unity-scroller__dragger-element {
+    background-color: rgba(255, 255, 255, 0.38);
+}

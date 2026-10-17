@@ -1,0 +1,224 @@
+{
+  "brickId": "ugui.list_item",
+  "layer": "primitive",
+  "category": "container",
+  "assemblyOnly": true,
+  "requiredComponents": [
+    "Button",
+    "Image"
+  ],
+  "childStructure": [
+    {
+      "name": "Icon",
+      "component": "Image",
+      "optional": true
+    },
+    {
+      "name": "Label",
+      "component": "Text"
+    },
+    {
+      "name": "Value",
+      "component": "Text",
+      "optional": true
+    }
+  ],
+  "parameters": {
+    "text": {
+      "target": "GetComponentInChildren<Text>().text",
+      "type": "string",
+      "default": "Item"
+    },
+    "interactable": {
+      "target": "interactable",
+      "type": "bool",
+      "default": true
+    },
+    "icon.active": {
+      "handler": "SetActive",
+      "child": "Icon",
+      "component": "Image",
+      "type": "bool"
+    },
+    "iconSprite": {
+      "target": "GetComponent<Image>().sprite",
+      "child": "Icon",
+      "type": "Sprite"
+    },
+    "icon.width": {
+      "handler": "SetSizeDelta",
+      "child": "Icon",
+      "axis": "x",
+      "type": "int"
+    },
+    "icon.height": {
+      "handler": "SetSizeDelta",
+      "child": "Icon",
+      "axis": "y",
+      "type": "int"
+    },
+    "icon.margin": {
+      "handler": "SetIconLayout",
+      "prop": "margin",
+      "type": "int"
+    },
+    "value.active": {
+      "handler": "SetActive",
+      "child": "Value",
+      "component": "Text",
+      "type": "bool"
+    },
+    "value.text": {
+      "target": "GetComponent<Text>().text",
+      "child": "Value",
+      "type": "string"
+    },
+    "fontSize": {
+      "target": "GetComponent<Text>().fontSize",
+      "child": "Label",
+      "type": "int"
+    },
+    "fontStyle": {
+      "target": "GetComponentInChildren<Text>().fontStyle",
+      "type": "FontStyle"
+    },
+    "textColor": {
+      "target": "GetComponent<Text>().color",
+      "child": "Label",
+      "type": "Color"
+    },
+    "label.width": {
+      "handler": "SetFlexTextProp",
+      "child": "Label",
+      "prop": "preferredWidth",
+      "type": "float"
+    },
+    "label.flexibleWidth": {
+      "handler": "SetFlexTextProp",
+      "child": "Label",
+      "prop": "flexibleWidth",
+      "type": "float"
+    },
+    "textAlignment": {
+      "target": "GetComponent<Text>().alignment",
+      "child": "Label",
+      "type": "TextAnchor"
+    },
+    "childAlignment": {
+      "target": "GetComponent<LayoutGroup>().childAlignment",
+      "type": "TextAnchor"
+    },
+    "horizontalOverflow": {
+      "target": "GetComponentInChildren<Text>().horizontalOverflow",
+      "type": "HorizontalWrapMode"
+    },
+    "verticalOverflow": {
+      "target": "GetComponentInChildren<Text>().verticalOverflow",
+      "type": "VerticalWrapMode"
+    },
+    "lineSpacing": {
+      "target": "GetComponentInChildren<Text>().lineSpacing",
+      "type": "float"
+    },
+    "richText": {
+      "target": "GetComponentInChildren<Text>().supportRichText",
+      "type": "bool"
+    },
+    "raycastTarget": {
+      "target": "GetComponentInChildren<Text>().raycastTarget",
+      "type": "bool"
+    },
+    "bestFit": {
+      "target": "GetComponentInChildren<Text>().resizeTextForBestFit",
+      "type": "bool"
+    },
+    "bestFitMinSize": {
+      "target": "GetComponentInChildren<Text>().resizeTextMinSize",
+      "type": "int"
+    },
+    "bestFitMaxSize": {
+      "target": "GetComponentInChildren<Text>().resizeTextMaxSize",
+      "type": "int"
+    },
+    "value.fontSize": {
+      "target": "GetComponent<Text>().fontSize",
+      "child": "Value",
+      "type": "int"
+    },
+    "value.textColor": {
+      "target": "GetComponent<Text>().color",
+      "child": "Value",
+      "type": "Color"
+    },
+    "value.flexibleWidth": {
+      "handler": "SetFlexTextProp",
+      "child": "Value",
+      "prop": "flexibleWidth",
+      "type": "float"
+    },
+    "value.textAlignment": {
+      "target": "GetComponent<Text>().alignment",
+      "child": "Value",
+      "type": "TextAnchor"
+    },
+    "value.horizontalOverflow": {
+      "target": "GetComponent<Text>().horizontalOverflow",
+      "child": "Value",
+      "type": "HorizontalWrapMode"
+    },
+    "value.verticalOverflow": {
+      "target": "GetComponent<Text>().verticalOverflow",
+      "child": "Value",
+      "type": "VerticalWrapMode"
+    },
+    "backgroundSprite": {
+      "handler": "LoadSprite",
+      "type": "string"
+    },
+    "backgroundColor": {
+      "target": "GetComponent<Image>().color",
+      "type": "Color"
+    },
+    "backgroundType": {
+      "target": "GetComponent<Image>().type",
+      "type": "Image.Type"
+    },
+    "backgroundPreserveAspect": {
+      "target": "GetComponent<Image>().preserveAspect",
+      "type": "bool"
+    },
+    "backgroundFillCenter": {
+      "target": "GetComponent<Image>().fillCenter",
+      "type": "bool"
+    },
+    "backgroundPixelsPerUnitMultiplier": {
+      "target": "GetComponent<Image>().pixelsPerUnitMultiplier",
+      "type": "float"
+    },
+    "icon.preserveAspect": {
+      "target": "GetComponent<Image>().preserveAspect",
+      "child": "Icon",
+      "type": "bool"
+    }
+  },
+  "eventBindings": {
+    "clicked": "onClick.AddListener"
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": [
+      "ugui.scroll_view"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "hug",
+        "fixed"
+      ]
+    }
+  }
+}

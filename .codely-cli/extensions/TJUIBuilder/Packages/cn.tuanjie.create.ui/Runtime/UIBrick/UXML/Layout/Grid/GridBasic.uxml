@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Layout/Grid/GridBasic.uss" />
+    <ui:VisualElement name="GridRoot" class="br-grid">
+        <ui:VisualElement name="GridContent" class="br-grid__content" />
+    </ui:VisualElement>
+</ui:UXML>

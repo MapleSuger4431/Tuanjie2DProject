@@ -1,0 +1,24 @@
+.br-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.br-grid__content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* Column widths slightly below exact fractions to leave room for margin-based gap.
+   USS does not support box-sizing or calc(), so this prevents overflow/wrapping. */
+.br-grid--2 > .br-grid__content > * { width: 48%; }
+.br-grid--3 > .br-grid__content > * { width: 31%; }
+.br-grid--4 > .br-grid__content > * { width: 23%; }
+.br-grid--5 > .br-grid__content > * { width: 18%; }
+.br-grid--6 > .br-grid__content > * { width: 14.5%; }
+
+.br-grid--xs > .br-grid__content > * { margin-right: 4px; margin-bottom: 4px; }
+.br-grid--sm > .br-grid__content > * { margin-right: 8px; margin-bottom: 8px; }
+.br-grid--md > .br-grid__content > * { margin-right: 16px; margin-bottom: 16px; }
+.br-grid--lg > .br-grid__content > * { margin-right: 24px; margin-bottom: 24px; }

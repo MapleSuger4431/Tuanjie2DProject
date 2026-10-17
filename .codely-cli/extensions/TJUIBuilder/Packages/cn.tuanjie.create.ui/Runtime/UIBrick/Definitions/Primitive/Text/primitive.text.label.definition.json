@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "primitive.text.label",
+  "layer": "primitive",
+  "category": "text",
+  "defaultClasses": ["br-label"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Text/Label.uss",
+  "snippetPath": "UXML/Primitive/Text/Label.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "variant": ["muted", "disabled"],
+    "size": ["xs", "sm", "md", "lg", "xl"]
+  },
+  "bindingPropsSchema": {
+    "text": { "bindable": true, "runtimeType": "string" },
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["auto"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

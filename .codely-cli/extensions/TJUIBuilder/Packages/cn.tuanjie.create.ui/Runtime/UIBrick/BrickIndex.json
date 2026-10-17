@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "2.0",
+  "generatedFrom": "Definitions/**/*.definition.json",
+  "brickCount": 17,
+  "note": "brickCount must match the actual number of entries across all layers",
+  "layers": {
+    "primitive": [
+      {
+        "brickId": "primitive.container.panel",
+        "category": "container",
+        "definitionPath": "Definitions/Primitive/Container/primitive.container.panel.definition.json",
+        "snippetPath": "UXML/Primitive/Container/Panel.uxml",
+        "stylePath": "USS/Primitive/Container/Panel.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.image.icon",
+        "category": "image",
+        "definitionPath": "Definitions/Primitive/Image/primitive.image.icon.definition.json",
+        "snippetPath": "UXML/Primitive/Image/Icon.uxml",
+        "stylePath": "USS/Primitive/Image/Icon.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.image.sprite",
+        "category": "image",
+        "definitionPath": "Definitions/Primitive/Image/primitive.image.sprite.definition.json",
+        "snippetPath": "UXML/Primitive/Image/Sprite.uxml",
+        "stylePath": "USS/Primitive/Image/Sprite.uss",
+        "aiSelectable": true,
+        "aiPriority": "medium"
+      },
+      {
+        "brickId": "primitive.input.button_base",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/primitive.input.button_base.definition.json",
+        "snippetPath": "UXML/Primitive/Input/ButtonBase.uxml",
+        "stylePath": "USS/Primitive/Input/ButtonBase.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.input.dropdown_base",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/primitive.input.dropdown_base.definition.json",
+        "snippetPath": "UXML/Primitive/Input/DropdownBase.uxml",
+        "stylePath": "USS/Primitive/Input/DropdownBase.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.input.progress_bar",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/primitive.input.progress_bar.definition.json",
+        "snippetPath": "UXML/Primitive/Input/ProgressBar.uxml",
+        "stylePath": "USS/Primitive/Input/ProgressBar.uss",
+        "aiSelectable": true,
+        "aiPriority": "medium"
+      },
+      {
+        "brickId": "primitive.input.slider_base",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/primitive.input.slider_base.definition.json",
+        "snippetPath": "UXML/Primitive/Input/SliderBase.uxml",
+        "stylePath": "USS/Primitive/Input/SliderBase.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.input.text_field",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/text_field.definition.json",
+        "snippetPath": "UXML/Primitive/Input/TextField.uxml",
+        "stylePath": "USS/Primitive/Input/TextField.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.input.toggle_base",
+        "category": "input",
+        "definitionPath": "Definitions/Primitive/Input/primitive.input.toggle_base.definition.json",
+        "snippetPath": "UXML/Primitive/Input/ToggleBase.uxml",
+        "stylePath": "USS/Primitive/Input/ToggleBase.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.text.label",
+        "category": "text",
+        "definitionPath": "Definitions/Primitive/Text/primitive.text.label.definition.json",
+        "snippetPath": "UXML/Primitive/Text/Label.uxml",
+        "stylePath": "USS/Primitive/Text/Label.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "primitive.text.value_text",
+        "category": "text",
+        "definitionPath": "Definitions/Primitive/Text/primitive.text.value_text.definition.json",
+        "snippetPath": "UXML/Primitive/Text/ValueText.uxml",
+        "stylePath": "USS/Primitive/Text/ValueText.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      }
+    ],
+    "layout": [
+      {
+        "brickId": "layout.grid.basic",
+        "category": "grid",
+        "definitionPath": "Definitions/Layout/Grid/layout.grid.basic.definition.json",
+        "snippetPath": "UXML/Layout/Grid/GridBasic.uxml",
+        "stylePath": "USS/Layout/Grid/GridBasic.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "layout.list.item",
+        "category": "list",
+        "definitionPath": "Definitions/Layout/List/list_item.definition.json",
+        "snippetPath": "UXML/Layout/List/ListItem.uxml",
+        "stylePath": "USS/Layout/List/ListItem.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "layout.modal.shell",
+        "category": "modal",
+        "definitionPath": "Definitions/Layout/Modal/layout.modal.shell.definition.json",
+        "snippetPath": "UXML/Layout/Modal/ModalShell.uxml",
+        "stylePath": "USS/Layout/Modal/ModalShell.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "layout.scroll.view",
+        "category": "scroll",
+        "definitionPath": "Definitions/Layout/Scroll/layout.scroll.view.definition.json",
+        "snippetPath": "UXML/Layout/Scroll/ScrollView.uxml",
+        "stylePath": "USS/Layout/Scroll/ScrollView.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "layout.stack.horizontal",
+        "category": "stack",
+        "definitionPath": "Definitions/Layout/Stack/layout.stack.horizontal.definition.json",
+        "snippetPath": "UXML/Layout/Stack/StackHorizontal.uxml",
+        "stylePath": "USS/Layout/Stack/StackHorizontal.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      },
+      {
+        "brickId": "layout.stack.vertical",
+        "category": "stack",
+        "definitionPath": "Definitions/Layout/Stack/layout.stack.vertical.definition.json",
+        "snippetPath": "UXML/Layout/Stack/StackVertical.uxml",
+        "stylePath": "USS/Layout/Stack/StackVertical.uss",
+        "aiSelectable": true,
+        "aiPriority": "high"
+      }
+    ]
+  }
+}

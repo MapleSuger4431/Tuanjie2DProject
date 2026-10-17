@@ -1,0 +1,34 @@
+.br-progress-bar .unity-progress-bar__container {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    border-width: 0;
+}
+
+.br-progress-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    border-width: 0;
+}
+
+.br-progress-bar .unity-progress-bar__progress {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    border-width: 0;
+    -unity-background-scale-mode: stretch-to-fill;
+    overflow: hidden;
+}
+
+/* Fill texture child: fixed width = full bar width, clipped by __progress's overflow:hidden.
+   Game USS only needs to set background-image on this class. */
+.br-progress-bar .br-progress-fill-texture {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.br-progress-bar .unity-progress-bar__title-container {
+    display: none;
+}

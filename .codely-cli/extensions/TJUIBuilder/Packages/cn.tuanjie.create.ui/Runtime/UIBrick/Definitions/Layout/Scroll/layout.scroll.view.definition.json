@@ -1,0 +1,55 @@
+{
+  "brickId": "layout.scroll.view",
+  "layer": "layout",
+  "category": "scroll",
+  "defaultClasses": [
+    "br-scroll"
+  ],
+  "slots": [
+    "content"
+  ],
+  "stylePath": "USS/Layout/Scroll/ScrollView.uss",
+  "snippetPath": "UXML/Layout/Scroll/ScrollView.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "padding": [
+      "none",
+      "sm",
+      "md",
+      "lg"
+    ],
+    "listMode": [
+      "off",
+      "on"
+    ]
+  },
+  "bindingPropsSchema": {
+    "visible": {
+      "bindable": true,
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": [
+      "layout.*",
+      "layout.list.item"
+    ],
+    "canNestUnder": [
+      "layout.*"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "hug",
+        "fill"
+      ]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

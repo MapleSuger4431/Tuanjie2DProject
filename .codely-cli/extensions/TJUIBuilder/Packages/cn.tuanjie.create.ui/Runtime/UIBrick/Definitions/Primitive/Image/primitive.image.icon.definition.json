@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "primitive.image.icon",
+  "layer": "primitive",
+  "category": "image",
+  "defaultClasses": ["br-icon"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Image/Icon.uss",
+  "snippetPath": "UXML/Primitive/Image/Icon.uxml",
+  "assetPropsSchema": {
+    "iconAsset": "asset?"
+  },
+  "stylePropsSchema": {
+    "size": ["sm", "md", "lg"]
+  },
+  "bindingPropsSchema": {
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug"],
+      "heightMode": ["hug"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

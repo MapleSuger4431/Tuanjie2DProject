@@ -1,0 +1,21 @@
+.br-icon {
+    width: 24px;
+    height: 24px;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.br-icon--sm {
+    width: 18px;
+    height: 18px;
+}
+
+.br-icon--md {
+    width: 24px;
+    height: 24px;
+}
+
+.br-icon--lg {
+    width: 32px;
+    height: 32px;
+}

@@ -1,0 +1,38 @@
+﻿{
+  "brickId": "primitive.input.button_base",
+  "layer": "primitive",
+  "category": "input",
+  "defaultClasses": ["br-button-base"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Input/ButtonBase.uss",
+  "snippetPath": "UXML/Primitive/Input/ButtonBase.uxml",
+  "assetPropsSchema": {
+    "iconAsset": "asset?"
+  },
+  "stylePropsSchema": {
+    "size": ["sm", "md", "lg"],
+    "state": ["disabled", "loading"]
+  },
+  "bindingPropsSchema": {
+    "text": { "bindable": true, "runtimeType": "string" },
+    "visible": { "bindable": true, "runtimeType": "bool" },
+    "enabled": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "normal", "wide", "fill"],
+      "heightMode": ["auto"],
+      "grow": "number?",
+      "shrink": "number?"
+    }
+  },
+  "eventSchema": {
+    "clicked": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

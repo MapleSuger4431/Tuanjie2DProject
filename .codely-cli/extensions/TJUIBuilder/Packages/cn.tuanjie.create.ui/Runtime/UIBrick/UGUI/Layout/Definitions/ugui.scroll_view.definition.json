@@ -1,0 +1,232 @@
+{
+  "brickId": "ugui.scroll_view",
+  "layer": "layout",
+  "category": "scroll",
+  "requiredComponents": [
+    "ScrollRect"
+  ],
+  "childStructure": [
+    { "name": "Background", "component": "Image", "ignoreLayout": true },
+    {
+      "name": "Viewport",
+      "components": ["Image", "Mask"],
+      "anchorMin": [0, 0],
+      "anchorMax": [1, 1],
+      "sizeDelta": [0, 0],
+      "pivot": [0, 1],
+      "children": [
+        {
+          "name": "Content",
+          "component": "RectTransform",
+          "anchorMin": [0, 1],
+          "anchorMax": [1, 1],
+          "sizeDelta": [0, 300],
+          "pivot": [0, 1],
+          "anchoredPosition": [0, 0]
+        }
+      ]
+    },
+    {
+      "name": "ScrollbarVertical",
+      "components": ["Scrollbar", "Image"],
+      "optional": true,
+      "anchorMin": [1, 0],
+      "anchorMax": [1, 1],
+      "sizeDelta": [20, 0],
+      "pivot": [1, 1],
+      "anchoredPosition": [0, 0],
+      "children": [
+        {
+          "name": "SlidingArea",
+          "component": "RectTransform",
+          "anchorMin": [0, 0],
+          "anchorMax": [1, 1],
+          "sizeDelta": [-20, -20],
+          "anchoredPosition": [0, 0],
+          "children": [
+            {
+              "name": "Handle",
+              "component": "Image",
+              "anchorMin": [0, 0],
+              "anchorMax": [1, 1],
+              "sizeDelta": [20, 20],
+              "anchoredPosition": [0, 0]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ScrollbarHorizontal",
+      "components": ["Scrollbar", "Image"],
+      "optional": true,
+      "anchorMin": [0, 0],
+      "anchorMax": [1, 0],
+      "sizeDelta": [0, 20],
+      "pivot": [0, 0],
+      "anchoredPosition": [0, 0],
+      "children": [
+        {
+          "name": "SlidingArea",
+          "component": "RectTransform",
+          "anchorMin": [0, 0],
+          "anchorMax": [1, 1],
+          "sizeDelta": [-20, -20],
+          "anchoredPosition": [0, 0],
+          "children": [
+            {
+              "name": "Handle",
+              "component": "Image",
+              "anchorMin": [0, 0],
+              "anchorMax": [1, 1],
+              "sizeDelta": [20, 20],
+              "anchoredPosition": [0, 0]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "width": { "handler": "SetSizeDelta", "axis": "x", "type": "float" },
+    "height": { "handler": "SetSizeDelta", "axis": "y", "type": "float" },
+    "backgroundEnabled": { "handler": "SetBackgroundEnabled", "child": "Background", "type": "bool" },
+    "backgroundSprite": { "handler": "LoadSprite", "child": "Background", "type": "string" },
+    "backgroundColor": { "target": "GetComponent<Image>().color", "child": "Background", "type": "Color" },
+    "backgroundType": { "target": "GetComponent<Image>().type", "child": "Background", "type": "Image.Type" },
+    "background.preserveAspect": { "target": "GetComponent<Image>().preserveAspect", "child": "Background", "type": "bool" },
+    "background.fillCenter": { "target": "GetComponent<Image>().fillCenter", "child": "Background", "type": "bool" },
+    "background.pixelsPerUnitMultiplier": { "target": "GetComponent<Image>().pixelsPerUnitMultiplier", "child": "Background", "type": "float" },
+    "background.anchorMin": { "target": "GetComponent<RectTransform>().anchorMin", "child": "Background", "type": "Vector2" },
+    "background.anchorMax": { "target": "GetComponent<RectTransform>().anchorMax", "child": "Background", "type": "Vector2" },
+    "background.pivot": { "target": "GetComponent<RectTransform>().pivot", "child": "Background", "type": "Vector2" },
+    "background.anchoredPosition": { "target": "GetComponent<RectTransform>().anchoredPosition", "child": "Background", "type": "Vector2" },
+    "background.sizeDelta": { "target": "GetComponent<RectTransform>().sizeDelta", "child": "Background", "type": "Vector2" },
+    "background.offsetMin": { "target": "GetComponent<RectTransform>().offsetMin", "child": "Background", "type": "Vector2" },
+    "background.offsetMax": { "target": "GetComponent<RectTransform>().offsetMax", "child": "Background", "type": "Vector2" },
+    "background.width": { "handler": "SetSizeDelta", "child": "Background", "axis": "x", "type": "float" },
+    "background.height": { "handler": "SetSizeDelta", "child": "Background", "axis": "y", "type": "float" },
+    "borderRadius": { "handler": "SetBorderRadius", "child": "Background", "type": "int" },
+    "shadowEnabled": { "handler": "EnsureShadow", "child": "Background", "type": "bool" },
+    "shadowColor": { "handler": "SetShadowProp", "child": "Background", "prop": "effectColor", "type": "Color" },
+    "shadowDistance": { "handler": "SetShadowProp", "child": "Background", "prop": "effectDistance", "type": "Vector2" },
+    "horizontal": {
+      "target": "horizontal",
+      "type": "bool",
+      "default": false
+    },
+    "vertical": {
+      "target": "vertical",
+      "type": "bool",
+      "default": true
+    },
+    "movementType": {
+      "target": "movementType",
+      "type": "ScrollRect.MovementType",
+      "default": "Clamped"
+    },
+    "elasticity": {
+      "target": "elasticity",
+      "type": "float",
+      "default": 0.1
+    },
+    "inertia": {
+      "target": "inertia",
+      "type": "bool",
+      "default": true
+    },
+    "decelerationRate": {
+      "target": "decelerationRate",
+      "type": "float",
+      "default": 0.135
+    },
+    "scrollSensitivity": {
+      "target": "scrollSensitivity",
+      "type": "float",
+      "default": 1
+    },
+    "viewportSprite": { "handler": "LoadSprite", "child": "Viewport", "type": "string" },
+    "viewportColor": { "target": "GetComponent<Image>().color", "child": "Viewport", "type": "Color" },
+    "viewportType": { "target": "GetComponent<Image>().type", "child": "Viewport", "type": "Image.Type" },
+    "viewportPreserveAspect": { "target": "GetComponent<Image>().preserveAspect", "child": "Viewport", "type": "bool" },
+    "viewportFillCenter": { "target": "GetComponent<Image>().fillCenter", "child": "Viewport", "type": "bool" },
+    "viewportPixelsPerUnitMultiplier": { "target": "GetComponent<Image>().pixelsPerUnitMultiplier", "child": "Viewport", "type": "float" },
+    "viewportShowMaskGraphic": { "target": "GetComponent<Mask>().showMaskGraphic", "child": "Viewport", "type": "bool" },
+    "verticalScrollbarSprite": { "handler": "LoadSprite", "child": "ScrollbarVertical", "type": "string" },
+    "verticalScrollbarColor": { "target": "GetComponent<Image>().color", "child": "ScrollbarVertical", "type": "Color" },
+    "verticalScrollbarType": { "target": "GetComponent<Image>().type", "child": "ScrollbarVertical", "type": "Image.Type" },
+    "verticalScrollbarPreserveAspect": { "target": "GetComponent<Image>().preserveAspect", "child": "ScrollbarVertical", "type": "bool" },
+    "horizontalScrollbarSprite": { "handler": "LoadSprite", "child": "ScrollbarHorizontal", "type": "string" },
+    "horizontalScrollbarColor": { "target": "GetComponent<Image>().color", "child": "ScrollbarHorizontal", "type": "Color" },
+    "horizontalScrollbarType": { "target": "GetComponent<Image>().type", "child": "ScrollbarHorizontal", "type": "Image.Type" },
+    "horizontalScrollbarPreserveAspect": { "target": "GetComponent<Image>().preserveAspect", "child": "ScrollbarHorizontal", "type": "bool" },
+    "verticalHandleSprite": { "handler": "LoadSprite", "child": "ScrollbarVertical/SlidingArea/Handle", "type": "string" },
+    "verticalHandleColor": { "target": "GetComponent<Image>().color", "child": "ScrollbarVertical/SlidingArea/Handle", "type": "Color" },
+    "horizontalHandleSprite": { "handler": "LoadSprite", "child": "ScrollbarHorizontal/SlidingArea/Handle", "type": "string" },
+    "horizontalHandleColor": { "target": "GetComponent<Image>().color", "child": "ScrollbarHorizontal/SlidingArea/Handle", "type": "Color" },
+    "contentLayout": {
+      "handler": "SetContentLayout",
+      "type": "string",
+      "description": "Layout group mounted on Viewport/Content: vertical|horizontal|grid|none"
+    },
+    "contentSpacing": {
+      "handler": "SetContentLayoutProp",
+      "prop": "spacing",
+      "type": "float"
+    },
+    "contentPadding": {
+      "handler": "SetContentLayoutProp",
+      "prop": "padding",
+      "type": "RectOffset"
+    },
+    "contentCellSize": {
+      "handler": "SetContentLayoutProp",
+      "prop": "cellSize",
+      "type": "Vector2"
+    },
+    "verticalScrollbar.active": {
+      "handler": "SetActive",
+      "child": "ScrollbarVertical",
+      "component": "Scrollbar",
+      "type": "bool"
+    },
+    "horizontalScrollbar.active": {
+      "handler": "SetActive",
+      "child": "ScrollbarHorizontal",
+      "component": "Scrollbar",
+      "type": "bool"
+    }
+  },
+  "eventBindings": {},
+  "bindingProps": {
+    "visible": {
+      "target": "gameObject.SetActive",
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.grid",
+      "ugui.list_item",
+      "ugui.panel"
+    ],
+    "canNestUnder": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.panel"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "hug",
+        "fill"
+      ]
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "brickId": "ugui.sprite",
+  "layer": "primitive",
+  "category": "image",
+  "requiredComponents": ["Image"],
+  "childStructure": [],
+  "bindingProps": {
+    "visible": { "target": "gameObject.SetActive", "runtimeType": "bool" }
+  },
+  "parameters": {
+    "spritePath": { "handler": "LoadSprite", "type": "string" },
+    "color": { "target": "GetComponent<Image>().color", "type": "Color" },
+    "width": { "handler": "SetSizeDelta", "axis": "x", "type": "float" },
+    "height": { "handler": "SetSizeDelta", "axis": "y", "type": "float" },
+    "imageType": { "target": "GetComponent<Image>().type", "type": "Image.Type" },
+    "preserveAspect": { "target": "GetComponent<Image>().preserveAspect", "type": "bool" },
+    "raycastTarget": { "target": "GetComponent<Image>().raycastTarget", "type": "bool" },
+    "opacity": { "target": "GetComponent<CanvasGroup>().alpha", "type": "float" },
+    "borderRadius": { "handler": "SetBorderRadius", "type": "int" },
+    "shadowEnabled": { "handler": "EnsureShadow", "type": "bool" },
+    "shadowColor": { "handler": "SetShadowProp", "prop": "effectColor", "type": "Color" },
+    "shadowDistance": { "handler": "SetShadowProp", "prop": "effectDistance", "type": "Vector2" },
+    "showSoundPath": { "handler": "LoadAudioClip", "prop": "showSound", "type": "string" },
+    "audioVolume": { "handler": "SetAudioProp", "prop": "volume", "type": "float" },
+    "anchorMin": { "target": "GetComponent<RectTransform>().anchorMin", "type": "Vector2" },
+    "anchorMax": { "target": "GetComponent<RectTransform>().anchorMax", "type": "Vector2" },
+    "pivot": { "target": "GetComponent<RectTransform>().pivot", "type": "Vector2" },
+    "anchoredPosition": { "target": "GetComponent<RectTransform>().anchoredPosition", "type": "Vector2" },
+    "localScale": { "target": "GetComponent<Transform>().localScale", "type": "Vector3" },
+    "localRotation": { "target": "GetComponent<Transform>().localEulerAngles", "type": "Vector3" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.grid",
+      "ugui.panel"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["hug", "fill"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "medium"
+}

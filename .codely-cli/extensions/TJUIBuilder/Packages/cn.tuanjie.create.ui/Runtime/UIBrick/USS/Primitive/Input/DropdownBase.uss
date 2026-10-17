@@ -1,0 +1,63 @@
+.br-dropdown-base {
+    min-height: 28px;
+}
+
+/*
+ * Collapsed state — input field background.
+ * Game USS overrides background-image with the dropdown field art.
+ */
+.br-dropdown-base .unity-base-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+}
+
+.br-dropdown-base .unity-base-dropdown-field__arrow {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/*
+ * Expanded state — popup overlay hierarchy:
+ *   .unity-base-dropdown               (full-screen click-capture overlay — MUST stay transparent)
+ *   .unity-base-dropdown__container-outer  (layout wrapper — transparent)
+ *   .unity-base-dropdown__container-inner   (actual dropdown list — background slot)
+ *
+ * background-image MUST go on __container-inner, NOT on .unity-base-dropdown.
+ * The root .unity-base-dropdown covers the entire screen; putting a background
+ * image there will fill the whole screen with the dropdown art.
+ */
+.unity-base-dropdown {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.unity-base-dropdown__container-outer {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.unity-base-dropdown__container-inner {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+/* Expanded items — transparent by default; game USS sets color/font-size */
+.unity-base-dropdown__item {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.unity-base-dropdown__item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.unity-base-dropdown__item:checked {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.unity-base-dropdown__checkmark {
+    background-image: none;
+}
+
+.br-dropdown-base--disabled {
+    opacity: 0.45;
+}

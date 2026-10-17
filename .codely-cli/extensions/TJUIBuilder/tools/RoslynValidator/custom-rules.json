@@ -1,0 +1,149 @@
+{
+  "_comment": "本文件是规则清单文档索引。实际分析器在 Analyzers/ 下以 DiagnosticAnalyzer 类实现，由 Program.cs 的 LoadCustomAnalyzers() 注册（不是运行时从本 JSON 加载）。新增/修改规则须同时改对应分析器类。",
+  "rules": [
+    {
+      "id": "UR025",
+      "title": "占位注释 + 常量返回的半成品方法",
+      "messageFormat": "方法含占位/TODO 注释且无条件返回字面量常量，疑似未写完的占位实现",
+      "category": "Correctness",
+      "severity": "error",
+      "analyzer": "PlaceholderReturnAnalyzer",
+      "note": "仅扫描注释 trivia；仅当方法体是单一常量 return 时拦截，guard return + 真实计算不误报。普通 SuppressWiringCheck 无效；窄豁免格式：SuppressWiringCheck UR025 reason:<非空原因>。"
+    },
+    {
+      "id": "UR026",
+      "title": "public { get; set; } 属性被读却从不赋值",
+      "messageFormat": "public 可写自动属性被读取却全工程从未赋值，将永远停在默认值（属性不被序列化）",
+      "category": "Correctness",
+      "severity": "warning",
+      "analyzer": "PropertyDataFlowAnalyzer",
+      "note": "IOperation 语义级读/写统计。⚠️ 精度依赖编译看到全部引用方——仅传本批文件时可能误报，声明行 // SuppressWiringCheck 豁免，全量复验最准。"
+    },
+    {
+      "id": "UR027",
+      "title": "public { get; private set; } 属性被赋值却从不读",
+      "messageFormat": "public 内部可写自动属性被计算赋值却全工程从未被读取，是算了没人用的死输出",
+      "category": "Correctness",
+      "severity": "warning",
+      "analyzer": "PropertyDataFlowAnalyzer",
+      "note": "UR026 的镜像。同样受全量文件集精度约束，SuppressWiringCheck 豁免。"
+    },
+    {
+      "id": "UR028",
+      "title": "if/else-if 链中不可达的蕴含分支",
+      "messageFormat": "较晚 else-if 条件蕴含较早分支（合取子集），恒不可达、内部是死代码",
+      "category": "Correctness",
+      "severity": "warning",
+      "analyzer": "UnreachableBranchAnalyzer",
+      "note": "语法树解析 if/else-if 链，条件按顶层 && 拆子句集合，较早分支子句 ⊆ 较晚分支子句则较晚分支不可达。含 || 的分支不判定。SuppressWiringCheck 豁免。"
+    },
+    {
+      "id": "UR029",
+      "title": "禁止使用 Resources 加载 API",
+      "messageFormat": "禁止 Resources.Load/LoadAsync/LoadAll/GetBuiltinResource，本项目禁用 Resources/ 文件夹，应通过直接引用加载资产",
+      "category": "Correctness",
+      "severity": "error",
+      "analyzer": "ResourcesLoadAnalyzer",
+      "note": "语义优先判定 UnityEngine.Resources 上的禁用方法，语义不可用时回退语法 Resources.Method(...)。"
+    },
+    {
+      "id": "UR030",
+      "title": "框架单例不应用 FindObjectOfType 查找",
+      "messageFormat": "对框架 MonoSingleton<T> 用 FindObjectOfType<T>()，应改用 MonoSingleton<T>.Instance（HasInstance 守卫）",
+      "category": "Architecture",
+      "severity": "warning",
+      "analyzer": "FindSingletonAnalyzer",
+      "note": "语义级：仅当泛型实参 T 的基类链含 Create.GameFramework.MonoSingleton<> 才报警，非单例类型不误伤。覆盖 FindObjectOfType/FindObjectsOfType/FindAnyObjectByType/FindFirstObjectByType/FindObjectsByType（含 UnityEngine.Object. 限定形式）。触发行 // SuppressWiringCheck 豁免。"
+    },
+    {
+      "id": "UR032",
+      "title": "禁止 NotImplementedException 占位",
+      "messageFormat": "游戏脚本不得抛出 NotImplementedException",
+      "category": "Completeness",
+      "severity": "error",
+      "analyzer": "GameScriptCompletenessAnalyzer",
+      "note": "仅 --profile game-scripts 启用；排除 abstract/interface/generated，合法空 Unity hook 不报。"
+    },
+    {
+      "id": "UR033",
+      "title": "禁止只有占位注释的空方法",
+      "messageFormat": "含占位注释但无有效语句的方法未完成",
+      "category": "Completeness",
+      "severity": "error",
+      "analyzer": "GameScriptCompletenessAnalyzer",
+      "note": "仅 --profile game-scripts 启用；排除 abstract/interface/generated，合法空 Unity hook 不报。"
+    },
+    {
+      "id": "UR034",
+      "title": "禁止占位 getter 返回 default/常量",
+      "messageFormat": "占位属性 getter 不得返回 default/常量",
+      "category": "Completeness",
+      "severity": "error",
+      "analyzer": "GameScriptCompletenessAnalyzer",
+      "note": "仅 --profile game-scripts 启用；排除 abstract/interface/generated，合法空 Unity hook 不报。"
+    },
+    {
+      "id": "UR035",
+      "title": "禁止占位空核心方法",
+      "messageFormat": "核心方法不得保留占位空实现",
+      "category": "Completeness",
+      "severity": "error",
+      "analyzer": "GameScriptCompletenessAnalyzer",
+      "note": "仅 --profile game-scripts 启用；排除 abstract/interface/generated，合法空 Unity hook 不报。"
+    },
+    {
+      "id": "UR036",
+      "title": "禁止 TODO 异常 stub",
+      "messageFormat": "含 TODO/占位注释的方法不得抛 NotSupportedException/Exception",
+      "category": "Completeness",
+      "severity": "error",
+      "analyzer": "GameScriptCompletenessAnalyzer",
+      "note": "仅 --profile game-scripts 启用；排除 abstract/interface/generated，合法空 Unity hook 不报。"
+    },
+    {
+      "id": "UR038",
+      "title": "禁止遮蔽框架公共事件类型",
+      "messageFormat": "游戏源码声明不得与 Create.GameFramework public *Event class/struct 同名",
+      "category": "Architecture",
+      "severity": "error",
+      "analyzer": "FrameworkEventShadowAnalyzer",
+      "note": "仅 --profile game-scripts 启用；从编译语义动态枚举事件集合，不硬编码事件名。"
+    },
+    {
+      "id": "UR039",
+      "title": "Unity 脚本类型与文件名必须一致",
+      "messageFormat": "public concrete MonoBehaviour/ScriptableObject 的文件名必须等于类型名",
+      "category": "Correctness",
+      "severity": "error",
+      "analyzer": "UnityScriptFilenameAnalyzer",
+      "note": "仅 --profile game-scripts 启用；仅顶层非泛型类型，排除 abstract、partial、generated；允许 enum/struct/辅助类共存。"
+    },
+    {
+      "id": "UR048",
+      "title": "禁止实例化组件未验证即解引用",
+      "messageFormat": "Component '{0}' obtained from {1} is dereferenced without verification; the prefab may not carry it",
+      "category": "Reliability",
+      "severity": "error",
+      "analyzer": "ComponentLookupNullAnalyzer",
+      "note": "仅 --profile game-scripts 启用。高置信来源限定为 UnityEngine.Object.Instantiate；用户同名类型/方法不触发 UR048；同方法不可重赋值本地变量最多传播 3 跳。其它跨对象 GetComponent* 降级为 UR049 Warning。豁免：同对象 [RequireComponent]、TryGetComponent、?.、真实 ??/??=、guard 后 throw、ComponentLookupExemption: reason=<非空>。"
+    },
+    {
+      "id": "UR049",
+      "title": "不建议跨对象组件查找未验证即解引用",
+      "messageFormat": "Component '{0}' obtained from {1} is dereferenced without verification",
+      "category": "Reliability",
+      "severity": "warning",
+      "analyzer": "ComponentLookupNullAnalyzer",
+      "note": "仅 --profile game-scripts 启用。高置信来源之外的跨对象 GetComponent* 未验证直接解引用。豁免同 UR048。"
+    },
+    {
+      "id": "UR050",
+      "title": "疑似 null guard 把缺组件静默成 no-op",
+      "messageFormat": "The null guard for '{0}' exits without surfacing a configuration error, turning a missing component into a silent functional failure",
+      "category": "Reliability",
+      "severity": "warning",
+      "analyzer": "ComponentLookupNullAnalyzer",
+      "note": "仅 --profile game-scripts 启用。null guard 分支只有 return/continue/break、无 throw 时，NPE 被静默降级为功能性消失。guard 后 throw 例外。豁免同 UR048。"
+    }
+  ]
+}

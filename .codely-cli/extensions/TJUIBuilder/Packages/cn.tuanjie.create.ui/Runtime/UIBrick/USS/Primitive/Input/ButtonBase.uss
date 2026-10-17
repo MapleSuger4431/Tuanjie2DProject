@@ -1,0 +1,39 @@
+.br-button-base {
+    min-height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-width: 2px;
+    border-radius: 12px;
+    border-color: rgba(0, 0, 0, 0);
+    color: rgb(244, 246, 250);
+    font-size: 14px;
+    transition: opacity 0.1s;
+}
+
+.br-button-base:hover {
+    opacity: 0.9;
+}
+
+.br-button-base:active {
+    opacity: 0.8;
+}
+
+.br-button-base--sm {
+    min-height: 40px;
+}
+
+.br-button-base--md {
+    min-height: 48px;
+}
+
+.br-button-base--lg {
+    min-height: 58px;
+}
+
+.br-button-base--disabled {
+    opacity: 0.45;
+}
+
+.br-button-base--loading {
+    opacity: 0.6;
+}

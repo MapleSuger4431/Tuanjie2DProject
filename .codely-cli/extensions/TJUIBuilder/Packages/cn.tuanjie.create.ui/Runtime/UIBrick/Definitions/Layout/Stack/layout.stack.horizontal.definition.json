@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "layout.stack.horizontal",
+  "layer": "layout",
+  "category": "stack",
+  "defaultClasses": ["br-stack-horizontal"],
+  "slots": ["content"],
+  "stylePath": "USS/Layout/Stack/StackHorizontal.uss",
+  "snippetPath": "UXML/Layout/Stack/StackHorizontal.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "gap": ["xs", "sm", "md", "lg", "xl"],
+    "padding": ["none", "sm", "md", "lg"],
+    "align": ["start", "center", "end", "stretch"]
+  },
+  "bindingPropsSchema": {
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": ["layout.*", "primitive.*"],
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["hug", "fill"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

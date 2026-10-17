@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Layout Intent Designer"
+  short_description: "通过多画布项目采集并验证 Unity UI 界面布局意图"
+  default_prompt: "Use $ui-layout-intent-designer to collect and validate multiple Unity UI layouts in one LayoutIntentBoard project."

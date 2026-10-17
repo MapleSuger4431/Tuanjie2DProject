@@ -1,0 +1,53 @@
+{
+  "brickId": "primitive.input.text_field",
+  "layer": "primitive",
+  "category": "input",
+  "defaultClasses": [
+    "br-text-field"
+  ],
+  "slots": [],
+  "stylePath": "USS/Primitive/Input/TextField.uss",
+  "snippetPath": "UXML/Primitive/Input/TextField.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "state": [
+      "disabled"
+    ]
+  },
+  "bindingPropsSchema": {
+    "value": {
+      "bindable": true,
+      "runtimeType": "string"
+    },
+    "visible": {
+      "bindable": true,
+      "runtimeType": "bool"
+    },
+    "enabled": {
+      "bindable": true,
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": [
+      "layout.*"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "hug",
+        "fill"
+      ],
+      "heightMode": [
+        "hug"
+      ]
+    }
+  },
+  "eventSchema": {
+    "changed": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}
