@@ -1,17 +1,18 @@
 %YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
+%TAG !u! tag:yousandi.cn,2023:
 --- !u!1 &2084619787472812360
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 298873222474144278}
   - component: {fileID: 3352129206509342753}
   - component: {fileID: 7584342099633662944}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,12 +86,13 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 1554625739732570363}
   - component: {fileID: 5414201901371957739}
   - component: {fileID: 2090908137621948684}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,13 +166,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 9138989749680211369}
   - component: {fileID: 3651878680862648462}
   - component: {fileID: 1197585339075559282}
   - component: {fileID: 1233446623467108382}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Btn_Close
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,12 +288,13 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 665450961066244531}
   - component: {fileID: 7654796188633095048}
   - component: {fileID: 5434124186398744023}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Hint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,13 +368,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 8539047979748972920}
   - component: {fileID: 3304953256521818293}
   - component: {fileID: 497590010643119431}
   - component: {fileID: 3881400285568535480}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -484,7 +489,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 3087490598752830714}
   - component: {fileID: 1139315278235262619}
@@ -492,6 +497,7 @@ GameObject:
   - component: {fileID: 6452018994269988667}
   - component: {fileID: 1041604608007266178}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: SampleUISettingWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -527,7 +533,7 @@ Canvas:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7336661524631632780}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
@@ -537,6 +543,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_AlwaysInGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -581,7 +588,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &1041604608007266178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -614,12 +621,13 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 182711499535773830}
   - component: {fileID: 2301104114393494336}
   - component: {fileID: 6568357568735319242}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
