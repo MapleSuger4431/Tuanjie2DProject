@@ -3,7 +3,8 @@
   "rootNamespace": "Runestone.AesirModules.Samples.Events.KeyPress",
   "references": [
     "Runestone.AesirModules",
-    "Runestone.AesirArchitecture"
+    "Runestone.AesirArchitecture",
+    "Unity.InputSystem"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

@@ -1,5 +1,8 @@
 #if UNITY_EDITOR // 示例仅编辑器内参与编译（运行时程序集保证场景可挂载，#if 保证构建剔除）
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace Runestone.AesirArchitecture.Samples.PlaneWarMono
 {
@@ -62,8 +65,14 @@ namespace Runestone.AesirArchitecture.Samples.PlaneWarMono
         void Move()
         {
             // 归一化保证斜向移动不快于正向
+#if ENABLE_INPUT_SYSTEM
+            var direction = ReadMoveDirection();
+#elif ENABLE_LEGACY_INPUT_MANAGER
             var direction = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0f)
                 .normalized;
+#else
+            var direction = Vector3.zero;
+#endif
 
             var position = transform.position + direction * (moveSpeed * Time.deltaTime);
             position.x = Mathf.Clamp(position.x, -moveBounds.x, moveBounds.x);
@@ -74,13 +83,40 @@ namespace Runestone.AesirArchitecture.Samples.PlaneWarMono
         void Fire()
         {
             _fireTimer += Time.deltaTime;
-            if (Input.GetKey(KeyCode.Space) && _fireTimer >= fireCooldown)
+#if ENABLE_INPUT_SYSTEM
+            bool fireHeld = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            bool fireHeld = Input.GetKey(KeyCode.Space);
+#else
+            bool fireHeld = false;
+#endif
+            if (fireHeld && _fireTimer >= fireCooldown)
             {
                 _fireTimer = 0f;
                 Instantiate(bulletPrefab, transform.position + Vector3.up * muzzleOffsetY,
                     Quaternion.identity);
             }
         }
+
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// 新输入系统下读取方向键 / WASD，按键映射与旧输入管理器默认 Horizontal / Vertical 轴一致。
+        /// </summary>
+        static Vector3 ReadMoveDirection()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null)
+            {
+                return Vector3.zero;
+            }
+
+            var x = (keyboard.rightArrowKey.isPressed || keyboard.dKey.isPressed ? 1f : 0f)
+                - (keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed ? 1f : 0f);
+            var y = (keyboard.upArrowKey.isPressed || keyboard.wKey.isPressed ? 1f : 0f)
+                - (keyboard.downArrowKey.isPressed || keyboard.sKey.isPressed ? 1f : 0f);
+            return new Vector3(x, y, 0f).normalized;
+        }
+#endif
     }
 }
 #endif

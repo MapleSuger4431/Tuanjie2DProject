@@ -1110,7 +1110,7 @@ PlayerSettings:
   weixinMiniGameInvariantPosition: 0
   minigameJobEnabled: 0
   minigameJobWorkerCount: 2
-  activeInputHandler: 0
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
