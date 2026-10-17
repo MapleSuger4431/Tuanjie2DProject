@@ -1,0 +1,29 @@
+{
+    "name": "Codely.TmpChineseFont.Editor.Tmp",
+    "rootNamespace": "Codely.TmpChineseFont",
+    "references": [
+        "Codely.TmpChineseFont.Editor",
+        "Unity.TextMeshPro",
+        "Unity.TextMeshPro.Editor"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": ["TMP_PRESENT"],
+    "versionDefines": [
+        {
+            "name": "com.unity.textmeshpro",
+            "expression": "",
+            "define": "TMP_PRESENT"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "2.0.0",
+            "define": "TMP_PRESENT"
+        }
+    ],
+    "noEngineReferences": false
+}

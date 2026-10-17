@@ -1,6 +1,9 @@
 #if UNITY_EDITOR // 示例仅编辑器内参与编译（运行时程序集保证场景可挂载，#if 保证构建剔除）
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace Runestone.AesirArchitecture.Samples.PlaneWarMono
 {
@@ -53,7 +56,15 @@ namespace Runestone.AesirArchitecture.Samples.PlaneWarMono
 
         void Update()
         {
-            if (_isGameOver && Input.GetKeyDown(KeyCode.Space))
+            // 双输入系统兼容：按当前 Active Input Handling 选择读取方式
+#if ENABLE_INPUT_SYSTEM
+            bool restartPressed = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            bool restartPressed = Input.GetKeyDown(KeyCode.Space);
+#else
+            bool restartPressed = false;
+#endif
+            if (_isGameOver && restartPressed)
             {
                 Restart();
             }

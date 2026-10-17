@@ -1,17 +1,18 @@
 %YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
+%TAG !u! tag:yousandi.cn,2023:
 --- !u!1 &9030788087369337
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 5609099091468569058}
   - component: {fileID: 5222044976496476109}
   - component: {fileID: 6928287416910921997}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,12 +83,13 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 163212025558184340}
   - component: {fileID: 2130627676308197826}
   - component: {fileID: 6803744950515867828}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: LoadingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +163,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 3181322264926316237}
   - component: {fileID: 4205104462413484859}
@@ -169,6 +171,7 @@ GameObject:
   - component: {fileID: 3625769086547613116}
   - component: {fileID: 333083272471362779}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: SampleUILoadingWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +206,7 @@ Canvas:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4687386369522921706}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
@@ -213,6 +216,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_AlwaysInGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -257,7 +261,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &333083272471362779
 MonoBehaviour:
   m_ObjectHideFlags: 0
