@@ -257,6 +257,8 @@ git commit -m "fix: 采用我这一版的测试场景"
 | 打包报 `Android NDK not found`，但 NDK 目录里有内容 | NDK 被装深了一层（`NDK\android-ndk-rXX\`）→ 右键运行 `tools\fix-android-ndk.ps1` 自动修复 |
 | 打包报 `Package Name has not been set up correctly` | 包名不合法（每段不能以数字开头）→ 在 Player Settings 里设成 `com.xxx.yyy` 形式 |
 | 本地仓库还是旧内容（引擎版本写 1.8.4、没有 `Docs/Git-Basics.md`） | 仓库在 2026-10-15 重置过历史，旧 clone 的 `git pull` 拉不动 → **删掉本地目录重新 `git clone`**（不是 pull） |
+| 拿到的工程打不开，或少了 `ProjectSettings`、`Packages`、`tools` | 那是从 U 盘拷的**残缺快照** → **工程一律用 `git clone` 获取**；U 盘只用来分发 `Assets/Art/` 下的资源 |
+| 在 U 盘目录里跑 `git` 报 `dubious ownership ... does not record ownership` | U 盘文件系统不记录文件所有权 → **不要直接操作 U 盘上的 git 仓库**，先整个拷到本地磁盘再跑命令 |
 | 打开工程报 `cn.tuanjie.ai.generators ... cannot be found` | 没装 Codely 的 TJGenerators 扩展（见 4.3） |
 | 打开工程报某个 Unity 包 `cannot be found` | 该版本团结引擎不支持；改用编辑器 `Window → Package Manager` 安装（UI 只列可用版本） |
 | 改了东西但 `git status` 看不到 | 它被 `.gitignore` 忽略了（如 `Assets/Art/` 下的图），本来就不走 Git |
