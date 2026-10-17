@@ -593,7 +593,7 @@ namespace Game.Input
                     ""name"": ""Place"",
                     ""type"": ""Button"",
                     ""id"": ""a47c92e1-5b38-4d60-8a24-3f7e1c09b5d2"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -620,7 +620,7 @@ namespace Game.Input
                     ""name"": ""ResetView"",
                     ""type"": ""Button"",
                     ""id"": ""c90d5b17-4a38-4e62-91f0-2b7c8d36e5a9"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
