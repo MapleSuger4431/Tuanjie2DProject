@@ -1,0 +1,5 @@
+{
+  "name": "TMPChineseText",
+  "version": "1.0.0",
+  "description": "Silent Chinese TextMeshPro fallback and designated Dynamic Font Asset for Tuanjie/Unity UI. Agent skill TMPChineseText calls TmpChineseFontApi (Ensure / Apply / ReplaceFromSource)."
+}

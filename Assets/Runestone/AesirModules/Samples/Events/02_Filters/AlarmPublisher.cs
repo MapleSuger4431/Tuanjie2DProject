@@ -1,5 +1,8 @@
 #if UNITY_EDITOR // 示例仅编辑器内参与编译（运行时程序集保证场景可挂载，#if 保证构建剔除）
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace Runestone.AesirModules.Samples.Events.Filters
 {
@@ -13,7 +16,15 @@ namespace Runestone.AesirModules.Samples.Events.Filters
     {
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            // 双输入系统兼容：按当前 Active Input Handling 选择读取方式
+#if ENABLE_INPUT_SYSTEM
+            bool triggered = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            bool triggered = Input.GetKeyDown(KeyCode.Space);
+#else
+            bool triggered = false;
+#endif
+            if (triggered)
             {
                 PublishAlarm();
             }

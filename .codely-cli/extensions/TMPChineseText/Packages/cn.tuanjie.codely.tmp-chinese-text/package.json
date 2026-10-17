@@ -1,0 +1,9 @@
+{
+  "name": "cn.tuanjie.codely.tmp-chinese-text",
+  "version": "1.0.0",
+  "displayName": "Codely TMP Chinese Text",
+  "description": "Silent Chinese TextMeshPro fallback and designated Dynamic Font Asset for Tuanjie/Unity UI.",
+  "unity": "2021.3",
+  "keywords": ["TextMeshPro", "TMP", "Chinese", "Codely", "Tuanjie"],
+  "type": "library"
+}
