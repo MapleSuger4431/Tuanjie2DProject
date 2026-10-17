@@ -4,17 +4,25 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Game.Input;
 using Runestone.AesirArchitecture;
+using Runestone.AesirModules;
 
 namespace GameRuntimeTest.Board
 {
     /// <summary>
     /// 鼠标交互：悬停格对齐方块包围盒左上角显示虚影，左键点击把当前方块覆盖到棋盘格，随后换新方块。
     /// 输入一律走 Input System（本工程 activeInputHandler=2，旧 Input.* 运行时会抛异常）。
+    /// 放置成功瞬间经 <see cref="AudioModule" /> 播放一次放置音效。
     /// </summary>
     public sealed class BoardPlacementController : MonoViewController<BoardContext>
     {
         [SerializeField] float ghostAlpha = 0.6f;
         [SerializeField] Color invalidColor = new Color(1f, 0.25f, 0.25f, 0.6f);
+
+        [Tooltip("放置成功时播放的音效 — 经 AudioModule 的 SFX 通道播放")]
+        [SerializeField] AudioClip placeSfx;
+
+        [Tooltip("本次播放的局部音量（0-1），与 SFX 通道音量、总音量相乘生效")]
+        [SerializeField, Range(0f, 1f)] float placeSfxVolume = 1f;
 
         BoardModel _board;
         PieceModel _piece;
@@ -82,7 +90,18 @@ namespace GameRuntimeTest.Board
             _ghost?.Show(anchor, shape, valid ? GhostColor(shape.Color) : invalidColor);
 
             if (_input.Place.WasPressedThisFrame() && _board.TryCover(anchor, shape))
+            {
+                PlayPlaceSfx();
                 _piece.RollNew();
+            }
+        }
+
+        void PlayPlaceSfx()
+        {
+            // 未接音效时静默跳过：AudioModule.PlaySfx 对空 clip 会 LogError，避免无音效场景刷屏
+            if (placeSfx == null) return;
+
+            AudioModule.PlaySfx(placeSfx, placeSfxVolume);
         }
 
         /// <summary>

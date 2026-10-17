@@ -12,6 +12,7 @@ namespace GameRuntimeTest.Board
     {
         [SerializeField] Vector2Int cell;
         [SerializeField] TileType type = TileType.Void;
+        [SerializeField] CellEffect effect = CellEffect.None;
         [SerializeField] SpriteRenderer tileRenderer;
 
         TileType? _runtimeType;
@@ -20,6 +21,12 @@ namespace GameRuntimeTest.Board
 
         /// <summary>关卡预设状态（编辑器配置，运行期不被改写）。</summary>
         public TileType PresetType => type;
+
+        /// <summary>格子附带的效果（Inspector 里逐格选，运行期不改写）。</summary>
+        public CellEffect Effect => effect;
+
+        /// <summary>写入附带效果；效果当前只做关卡配置，读法由后续玩法决定。</summary>
+        public void SetEffect(CellEffect value) => effect = value;
 
         /// <summary>当前生效状态：运行期覆盖优先，否则回落预设。</summary>
         public TileType CurrentType => _runtimeType ?? type;
