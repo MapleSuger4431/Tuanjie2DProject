@@ -1,6 +1,6 @@
 ---
 name: aesir-framework
-description: AesirFramework（RAA 架构框架 + RAM 功能模块）的 AI 编码指南。为 Unity/团结引擎项目用 Aesir 框架写游戏代码时使用——覆盖 Context/Model/View/Controller 组织与默认最低档（Quick）写法、六档分级模板、UI（Panel 默认/Window 进阶）、场景一行切换、事件机制（ObservableValue/MiniEvent/EventModule）、音频、jam 快速开发实战。触发场景：用户提到 Aesir、AesirFramework、RAA、RAM、AbstractContext、ObservableValue、MiniEvent、UIModule、SceneModule、AudioModule，或要求"用 Aesir 框架写"、"按 Aesir 架构组织代码"、"搭游戏骨架"。
+description: AesirFramework（RAA 架构框架 + RAM 功能模块）的 AI 编码指南。为 Unity/团结引擎项目用 Aesir 框架写游戏代码时使用——覆盖 Context/Model/View/Controller 组织与默认最低档（Quick）写法、六档分级模板、UI（Panel 默认/Window 进阶）、场景一行切换、事件机制（ObservableValue/MiniEvent/EventModule）、音频、jam 快速开发实战。触发场景：用户提到 Aesir、AesirFramework、RAA、RAM、AbstractContext、ObservableValue、MiniEvent、UIModule、SceneModule、AudioModule，或要求"用 Aesir 框架写"、"按 Aesir 架构组织代码"、"搭游戏骨架"、"建个物体/生成预制体/搭 UI 面板"。
 ---
 
 # AesirFramework AI 编码指南
@@ -121,14 +121,64 @@ SceneModule.LoadSceneSingle("Assets/Scenes/Gameplay.unity",
 5. **订阅句柄绑生命周期**——`RemoveListenerWhenGameObjectOnDestroyed/OnDisable`；清理逻辑放 `OnDestroy`（`OnClose` 只在受控销毁路径调用）。
 6. **OnEnable/OnDisable 逐一对称**——禁用 `RemoveAllListeners()` 一刀切。
 7. **禁止静态可变全局状态**（`public static` 可变字段）；例外：常量类、路径常量、纯函数门面。
-8. **禁止手写 `.prefab`/`.unity`/`.asset` YAML**——一切资产经编辑器脚本生成（UI 生成器 / BootSceneBuilder）。
+8. **禁止手写 `.prefab`/`.unity`/`.asset` YAML**——一律用 `exec_editor_script` 内联 C# 直接创建（见下节），**不必先写持久化编辑器脚本**。
 9. **禁止修改框架包**（`Assets/Runestone/**`、`Library/PackageCache/cn.runestone.*`）——框架问题在业务侧绕过并记录。
 10. **Model 不引用 UnityEngine 组件类型**（Transform/GameObject/MonoBehaviour）。
+
+## 直接创建物体对象（默认手段，2026-10-17 起）
+
+**不用先写 `Assets/Editor/**` 脚本**：`exec_editor_script` 的内联 C# 就能建层级、加组件、回填引用、另存预制体与 `.asset`。YAML 仍然禁止手写——所有资产必须由 Unity API 生成。持久化编辑器脚本（UiPrefabBuilder / BootSceneBuilder）**降级为可选**，只在"需要反复重建 + 版本化留痕"的复杂 UI 时才写。
+
+```csharp
+using UnityEditor;                                   // PrefabUtility / SerializedObject / Undo / AssetDatabase
+using UnityEditor.SceneManagement;                   // EditorSceneManager
+
+// 1) 建层级：先查重，保证重跑幂等（不产生 Player (1) 这类副本）
+var root = GameObject.Find("Player") ?? new GameObject("Player");
+Undo.RegisterCreatedObjectUndo(root, "Create Player");
+
+// 2) 加组件：public 字段直接赋值
+var rb = root.GetComponent<Rigidbody2D>() ?? root.AddComponent<Rigidbody2D>();
+rb.gravityScale = 0;
+
+// 3) [SerializeField] 私有字段必须走 SerializedObject 回填（obj.field = x 不编译）
+var view = root.GetComponent<PlayerView>() ?? root.AddComponent<PlayerView>();
+var so = new SerializedObject(view);
+so.FindProperty("moveSpeed").floatValue = 8f;
+so.ApplyModifiedPropertiesWithoutUndo();
+
+// 4a) 只留在场景：标脏 + 存盘
+EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+
+// 4b) 另存预制体（UI 落 Assets/Game/UI/Resources/GameUI/*.prefab，走 Resources 加载）
+Directory.CreateDirectory("Assets/Game/Prefabs");
+PrefabUtility.SaveAsPrefabAssetAndConnect(root, "Assets/Game/Prefabs/Player.prefab", InteractionMode.UserAction);
+AssetDatabase.SaveAssets();
+
+// 4c) 另存 ScriptableObject 资产
+var cfg = ScriptableObject.CreateInstance<GameConfigAsset>();
+AssetDatabase.CreateAsset(cfg, "Assets/Game/Config/GameConfig.asset");
+```
+
+**要点（踩过就返工）**：
+
+| 要点 | 说明 |
+|------|------|
+| 幂等优先 | 先 `GameObject.Find` / `AssetDatabase.LoadAssetAtPath` 查重；重跑内联脚本不应新增副本 |
+| 私有 `[SerializeField]` | 只能 `SerializedObject.FindProperty` + `ApplyModifiedPropertiesWithoutUndo()`；`obj.field = x` 不编译 |
+| 场景内单例 | `GameBootstrap`、EventSystem、`[Aesir Modules]` 宿主等只能有一个，创建前先 `FindObjectsByType` 计数 |
+| 资产落盘 | 新建/改动资产后 `AssetDatabase.SaveAssets()`；场景改动 `MarkSceneDirty` + `SaveScene` |
+| 存预制体后 | `SaveAsPrefabAssetAndConnect` 会保留场景实例；只要资产不要实例用 `SaveAsPrefabAsset` + `DestroyImmediate(go)` |
+| UI 形态 | Panel 根**不带 Canvas**；Window 根必须 `Canvas + CanvasScaler + GraphicRaycaster`，`Mask` 子节点按名字 `transform.Find("Mask")` 查找 |
+| 会退出 Play | `exec_editor_script` 自动退出 Play Mode 并丢弃运行期状态——用户可能正在测试，先说明 |
+| 无 `UNITY_EDITOR` 宏 | Bridge 脚本编译上下文没有该宏：不要调用标了 `[Conditional("UNITY_EDITOR")]` 的方法（编译期被剔除，表现为方法体完全不执行）；要触发就反射 `MethodInfo.Invoke` 或内联等价逻辑 |
+| 校验 | 建完读回断言（`GetComponent` / `SerializedObject` 值 / `LoadAssetAtPath` 非空），别靠截图确认 |
 
 ## 工程初始化流程（jam 开工 / 新项目起步）
 
 1. 装两个包（Git URL 两条都要加）。
-2. **创建启动场景**：用 `AesirBootScene-Skill`（同目录 `../AesirBootScene-Skill/SKILL.md`）——一键产出 `Boot.unity`（只含启动脚本 + AudioListener，无相机）+ `GameBootstrap.cs`，登记 Build Settings index 0。
+2. **创建启动场景**：用 `AesirBootScene-Skill`（同目录 `../AesirBootScene-Skill/SKILL.md`）——一键产出 `Boot.unity`（只含启动脚本 + AudioListener，无相机）+ `GameBootstrap.cs`，登记 Build Settings index 0。（也可按上一节内联创建，BootSceneBuilder 脚本非必需。）
 3. 建目录结构与缺口补件（JamTimer / JamInput / GameFlowModel / UIPaths / GameConfig / JamFonts）：按 [references/jam-playbook.md](references/jam-playbook.md) 第 1、3 节。
 4. 写 Context + 第一个 Model + 第一个面板，跑通闭环。
 5. 写自检脚本（jam-playbook 第 5 节）。

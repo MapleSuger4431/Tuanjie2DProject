@@ -19,8 +19,8 @@ Assets/
 │   └── UI/
 │       ├── Resources/GameUI/   # 所有 UI 预制体（供 ResourcesUILoader 按路径加载）
 │       └── Art/               # AI 生成的 UI 图（PNG）
-├── Editor/
-│   └── Game/            # UiPrefabBuilder（UI 生成器）+ JamSelfCheck（自检）+ BootSceneBuilder
+├── Editor/               # 可选：只有「需反复重建 + 版本化留痕」的复杂 UI 才写生成器脚本
+│   └── Game/            # UiPrefabBuilder（UI 生成器，可选）+ JamSelfCheck（自检）+ BootSceneBuilder（可选）
 ├── Art/                 # 世界素材（Sprite / Audio）
 └── Scenes/              # Boot.unity（启动场景）+ Main.unity（玩法场景）
 ```
@@ -39,7 +39,7 @@ Assets/
 
 ## 2. 硬规则（违反即返工）
 
-1. **禁止手写 `.prefab` / `.unity` / `.asset` 的 YAML**——一切资产经编辑器脚本生成（UI 用第 4 节生成器；场景用 BootSceneBuilder）。
+1. **禁止手写 `.prefab` / `.unity` / `.asset` 的 YAML**——一律用 `exec_editor_script` 内联 C# 直接创建（SKILL.md「直接创建物体对象」节）；持久化生成器脚本（第 4 节）**可选**，不强制先写。
 2. **禁止修改框架包**（`Assets/Runestone/**` 或 `Library/PackageCache/cn.runestone.*`）；发现框架问题在业务代码绕过并记录，不改包。
 3. **禁止静态可变全局状态**（`public static` 可变字段/单例）。唯一例外：`GameConfig` 常量、`UIPaths` 路径常量、`JamInput` 纯函数门面。
 4. **禁止在 Model 里引用 UnityEngine 组件类型**（`Transform`/`GameObject`/`Camera`/`MonoBehaviour`）；Model 只放 `ObservableValue` / `MiniEvent` / 值类型 / 纯数据。**运行时数据不代表全部存档**——存档是选择性的，jam 里通常不做存档。
@@ -47,7 +47,7 @@ Assets/
 6. **订阅必须绑生命周期句柄**：`AddListener(...).RemoveListenerWhenGameObjectOnDestroyed(gameObject)`；清理逻辑放 `OnDestroy`（`OnClose` 只在受控销毁路径调用）。
 7. **所有读输入的点先判流程态**：`Update` 首行 `if (!_flow.IsPlaying) return;`（唯一例外：暂停/重开键，集中在 GameFlowDriver）。
 8. **禁止顺手重构**：一次会话只做被要求的事。
-9. **改动后必须**：确认 Console 无编译错误；动了 UI 提示重跑「重建 UI 预制体」；跑一次自检。
+9. **改动后必须**：确认 Console 无编译错误；动了 UI 提示重跑「重建 UI 预制体」（内联脚本或生成器，第 4 节）；跑一次自检。
 
 ## 3. 缺口补件（框架没有、jam 高频，原样落文件）
 
@@ -255,9 +255,13 @@ namespace Game.Core
 - `GameConfig`：`public static class` + `const`/`static readonly`，全部可调数值集中一处。
 - `JamFonts`：跨平台中文动态字体（候选顺序 Microsoft YaHei → PingFang SC → Noto Sans CJK SC → WenQuanYi Zen Hei，`Font.CreateDynamicFontFromOSFont`），在面板/窗口 `OnInit` 里对子树 `Apply(transform)`。不做 TMP。
 
-## 4. UI 资产生成器（AI 禁止手写预制体 YAML 的落地手段）
+## 4. UI 资产生成（默认内联创建；生成器脚本可选）
 
-工作流（必须照此）：
+**默认路径（不写脚本）**：一次 `exec_editor_script` 内联 C# 直接建层级 → 加组件/回填引用 → `PrefabUtility.SaveAsPrefabAssetAndConnect` 存到 `Assets/Game/UI/Resources/GameUI/*.prefab` → 运行时 `UIModule.Show<T>(path: UIPaths.Xxx)` 加载。模板与要点见 SKILL.md「直接创建物体对象」节。
+
+**可选路径（写生成器脚本）**：仅当某界面需要反复重建、且希望"改脚本 = 改产物"的版本化留痕时才用：
+
+工作流：
 
 ```
 ① AI 改生成器脚本 Assets/Editor/Game/UiPrefabBuilder.cs（每个界面一个 BuildXxx() 方法）
@@ -267,13 +271,13 @@ namespace Game.Core
 ⑤ 运行时按路径加载（UIModule.Show<T>(path: UIPaths.Xxx)，无需序列化引用）
 ```
 
-生成器三个必知坑：
+建 UI 三个必知坑（两条路径通用）：
 
 1. `[SerializeField]` 私有字段不能用 `obj.field = x` 赋值（不编译），**必须**走 `SerializedObject.FindProperty(fieldName)` + `ApplyModifiedPropertiesWithoutUndo()` 回填。
 2. 窗口（Window 形态）根节点**必须**同时有 `Canvas + CanvasScaler + GraphicRaycaster`，否则 UIModule 挂载时报错中止。
 3. 窗口的 `Mask` 子物体是**按名字**查找的（`transform.Find("Mask")`），蒙版点击的 `Button` 必须在 `Mask` 节点上；`Content` 只是"框架不触碰"的结构约定。
 
-边界（硬规则）：生成器**只负责结构**（节点、组件、布局、引用回填）；重跑生成器 = 覆盖该预制体，禁止在产物上手改结构（加节点），要改就改生成器；手工微调的样式记录在 `<预制体>.md` 里。
+边界（硬规则）：创建手段（内联或生成器）**只负责结构**（节点、组件、布局、引用回填）；重跑 = 覆盖该预制体，禁止在产物上手改结构（加节点），要改就改创建脚本；手工微调的样式记录在 `<预制体>.md` 里。内联创建时先 `GameObject.Find` / `LoadAssetAtPath` 查重保证幂等。
 
 ## 5. 自检脚本（开工第一小时内写好）
 
@@ -309,7 +313,7 @@ namespace Game.Core
 
 | 写法 | 后果 | 正确做法 |
 |------|------|----------|
-| 手写 `.prefab` / `.unity` YAML | 打开场景一片 None / Missing Script | 生成器（第 4 节）+ BootSceneBuilder |
+| 手写 `.prefab` / `.unity` YAML | 打开场景一片 None / Missing Script | `exec_editor_script` 内联创建（SKILL.md「直接创建物体对象」；复杂 UI 可用生成器，第 4 节） |
 | 视图里直接 `Input.GetKey` | 暂停仍开火、改键满仓搜 | 走 `JamInput` + 判态 |
 | `Time.timeScale = 0` 当暂停全部 | `Update` 照跑、输入照样进来 | GameFlowDriver 判态规则（3.3） |
 | 直接 `ReloadScene` 重开 | Context 是纯 C# 单例，上一局状态还在 | 先 `GameContext.Instance.Dispose()`（3.4） |
