@@ -15,11 +15,26 @@ namespace Game.View
     [AddComponentMenu("")]
     public class MainMenuBoot : MonoBehaviour
     {
+        [Tooltip("主菜单背景音乐 — 经 AudioModule 的 BGM 通道循环播放，音量随设置面板的音乐滑条")]
+        [SerializeField]
+        AudioClip bgmClip;
+
+        [Tooltip("背景音乐淡入时长（秒）")]
+        [SerializeField]
+        float bgmFadeSeconds = 1f;
+
         void Start()
         {
             // 裸字符串位置参数命中 Show<T>(string path) 重载：按 Resources 路径加载并自动注册
             UIModule.Show<MainMenuPanel>(UIPaths.MainMenuPanel);
             Debug.Log("[MainMenuBoot] 主菜单面板已显示（Resources path 加载）");
+
+            // BGM 走音频模块的 BGM 通道：音量由 GameSettings（启动已下发）决定，同曲在播幂等返回
+            // 未配置片段时静默跳过：PlayBgm 对空 clip 会 LogError
+            if (bgmClip != null)
+            {
+                AudioModule.PlayBgm(bgmClip, bgmFadeSeconds);
+            }
         }
     }
 }

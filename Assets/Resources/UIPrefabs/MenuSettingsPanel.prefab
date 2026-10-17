@@ -1152,6 +1152,8 @@ MonoBehaviour:
   chineseButton: {fileID: 8699608852820957734}
   englishButton: {fileID: 879459864945010492}
   closeButton: {fileID: 6304928819580825116}
+  uiClickSfx: {fileID: 8300000, guid: 5a5862ad461fa49e8a089150c1e60c43, type: 3}
+  uiClickVolume: 1
 --- !u!1 &5222265121791923858
 GameObject:
   m_ObjectHideFlags: 0
