@@ -9,6 +9,7 @@ namespace GameRuntimeTest.Board
         {
             RegisterModel(new BoardModel());
             RegisterModel(new PieceModel());
+            RegisterModel(new BoardTimeModel());
         }
     }
 }
