@@ -3,7 +3,8 @@
     "rootNamespace": "Sunset.Test",
     "references": [
         "Runestone.AesirArchitecture",
-        "Runestone.AesirModules"
+        "Runestone.AesirModules",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
