@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using Game.Core;
+using Game.View;
 using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
 
@@ -36,20 +38,21 @@ public class LevelSelectPanel : AesirBasePanelViewController<GameContext>
 
     private void OnBackClicked()
     {
-        // 返回主菜单：走切场景设计；测试阶段占位路径未登记 Build Settings，仅打印
-        if (SceneUtility.GetBuildIndexByScenePath(TestTFUIPaths.MainMenuScene) < 0)
-        {
-            Debug.Log($"[LevelSelect] 返回按钮：开始菜单场景 \"{TestTFUIPaths.MainMenuScene}\" 未登记 Build Settings（占位，测试阶段仅打印）");
-            return;
-        }
-        SceneModule.LoadSceneSingle(TestTFUIPaths.MainMenuScene,
-            onFailed: () => Debug.LogWarning($"[LevelSelect] 切换开始菜单场景 \"{TestTFUIPaths.MainMenuScene}\" 失败"));
+        // 返回主菜单：切到队友已入库的主菜单场景（已登记 Build Settings）
+        // 切走前隐藏本面板——UIRoot 跨场景常驻，不隐藏会把选关面板带到主菜单场景
+        UIModule.Hide<LevelSelectPanel>();
+        SceneModule.LoadSceneSingle(ScenePaths.MainMenu,
+            onFailed: () =>
+            {
+                UIModule.Show<LevelSelectPanel>(path: TestTFUIPaths.LevelSelectPanel); // 切换失败恢复面板
+                Debug.LogWarning($"[LevelSelect] 切换开始菜单场景 \"{ScenePaths.MainMenu}\" 失败");
+            });
     }
 
     private void OnSettingsClicked()
     {
-        // 设置窗口 prefab 与类型由队友提供；测试阶段仅打印（就位后改一行：UIModule.Open<XxxSettingsWindow>(path: TestTFUIPaths.SettingsWindow)）
-        Debug.Log("[LevelSelect] 设置按钮：设置窗口 prefab 待队友提供（路径占位），测试阶段仅打印");
+        // 设置面板（队友已入库）：Popup 层面板，蒙版 / × 双通道关闭由面板自身处理
+        UIModule.Show<MenuSettingsPanel>(path: UIPaths.MenuSettingsPanel);
     }
 
     private void BuildNodes()

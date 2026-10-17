@@ -18,11 +18,8 @@ public static class TestTFUIPaths
     public const string LevelSelectPanel = "GameUI/LevelSelectPanel";
     public const string LevelDetailWindow = "GameUI/LevelDetailWindow";
 
-    // ---- 占位符（待就位后替换）----
-    /// <summary>TODO 占位：开始菜单场景完整路径，待场景组提供并登记 Build Settings。</summary>
-    public const string MainMenuScene = "Assets/Scenes/MainMenu.unity";
-    /// <summary>TODO 占位：设置窗口 prefab 路径，待队友的设置窗口 prefab 就位。</summary>
-    public const string SettingsWindow = "GameUI/SettingsWindow";
+    // 返回主菜单 / 设置面板已对接队友资产：场景路径用 Game.Core.ScenePaths.MainMenu，
+    // 设置面板用 Game.Core.UIPaths.MenuSettingsPanel（见 Assets/Scripts/Core）。
 }
 
 /// <summary>
