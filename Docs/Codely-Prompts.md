@@ -24,7 +24,8 @@ https://github.com/MapleSuger4431/Tuanjie2DProject.git
 2. 检查 .codely-cli\extensions\TJGenerators\Packages\cn.tuanjie.ai.generators\package.json 是否存在；不存在就停下，提示我需要先在 Codely 里安装 TJGenerators（团结AI资产生成）扩展
 3. 执行 git config --global core.autocrlf false
 4. 运行 tools\setup-git-merge-driver.ps1，然后验证 git config --global --get merge.unityyamlmerge.driver 有输出
-5. 最后提醒我：先从 U 盘拷资源（Assets/Art/），再打开工程
+5. 运行 tools\fix-android-ndk.ps1，确认它报告 NDK 位置正确（要打安卓包必须；不打也顺手跑一次没坏处）
+6. 最后提醒我：先从 U 盘拷资源（Assets/Art/，连 .meta 一起），再打开工程
 任何一步失败都停下来告诉我，不要跳过。
 ```
 
