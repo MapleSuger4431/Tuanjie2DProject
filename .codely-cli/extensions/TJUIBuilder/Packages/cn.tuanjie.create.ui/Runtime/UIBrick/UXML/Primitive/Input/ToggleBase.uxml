@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Input/ToggleBase.uss" />
+    <ui:Toggle name="ToggleBaseRoot" class="br-toggle-base" label="" />
+</ui:UXML>

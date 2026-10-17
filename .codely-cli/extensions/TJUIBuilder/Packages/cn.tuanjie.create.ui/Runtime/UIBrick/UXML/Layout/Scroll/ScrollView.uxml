@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Layout/Scroll/ScrollView.uss" />
+    <ui:ScrollView name="ScrollRoot" class="br-scroll" mode="vertical">
+        <ui:VisualElement name="ScrollContent" class="br-scroll__content" />
+    </ui:ScrollView>
+</ui:UXML>

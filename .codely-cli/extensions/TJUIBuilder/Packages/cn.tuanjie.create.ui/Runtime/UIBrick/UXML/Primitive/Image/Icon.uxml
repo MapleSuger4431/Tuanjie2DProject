@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Image/Icon.uss" />
+    <ui:VisualElement name="IconRoot" class="br-icon" />
+</ui:UXML>

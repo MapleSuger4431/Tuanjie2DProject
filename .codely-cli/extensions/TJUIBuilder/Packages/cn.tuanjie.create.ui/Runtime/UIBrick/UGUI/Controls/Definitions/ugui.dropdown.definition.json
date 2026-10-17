@@ -1,0 +1,147 @@
+{
+  "brickId": "ugui.dropdown",
+  "layer": "primitive",
+  "category": "input",
+  "requiredComponents": ["Dropdown", "Image"],
+  "childStructure": [
+    { "name": "Caption Area", "component": "RectTransform", "children": [
+      { "name": "Label", "component": "Text", "anchorMin": [0, 0], "anchorMax": [1, 1], "sizeDelta": [-35, -13], "anchoredPosition": [-7.5, -0.5] },
+      { "name": "Arrow", "component": "Image", "anchorMin": [1, 0.5], "anchorMax": [1, 0.5], "sizeDelta": [20, 20], "anchoredPosition": [-5, 0], "pivot": [1, 0.5] }
+    ]},
+    { "name": "Template", "components": ["Image", "ScrollRect"], "anchorMin": [0, 0], "anchorMax": [1, 0], "sizeDelta": [0, 150], "anchoredPosition": [0, 2], "pivot": [0.5, 1], "children": [
+      { "name": "Viewport", "components": ["Image", "Mask"], "anchorMin": [0, 0], "anchorMax": [1, 1], "sizeDelta": [-18, 0], "pivot": [0, 1], "anchoredPosition": [0, 0], "children": [
+        { "name": "Content", "component": "RectTransform", "anchorMin": [0, 1], "anchorMax": [1, 1], "sizeDelta": [0, 28], "pivot": [0.5, 1], "anchoredPosition": [0, 0], "children": [
+          { "name": "Item", "components": ["Toggle"], "anchorMin": [0, 0.5], "anchorMax": [1, 0.5], "sizeDelta": [0, 20], "anchoredPosition": [0, 0], "children": [
+            { "name": "ItemBackground", "component": "Image", "optional": true, "anchorMin": [0, 0], "anchorMax": [1, 1], "sizeDelta": [0, 0], "anchoredPosition": [0, 0] },
+            { "name": "ItemCheckmark", "component": "Image", "anchorMin": [0, 0.5], "anchorMax": [0, 0.5], "sizeDelta": [20, 20], "anchoredPosition": [0, 0], "pivot": [0, 0.5] },
+            { "name": "ItemLabel", "component": "Text", "anchorMin": [0, 0], "anchorMax": [1, 1], "sizeDelta": [-30, -3], "anchoredPosition": [5, -0.5] }
+          ]}
+        ]}
+      ]},
+      { "name": "Scrollbar", "components": ["Scrollbar", "Image"], "optional": true, "anchorMin": [1, 0], "anchorMax": [1, 1], "sizeDelta": [20, 0], "pivot": [1, 1], "anchoredPosition": [0, 0], "children": [
+        { "name": "SlidingArea", "component": "RectTransform", "anchorMin": [0, 0], "anchorMax": [1, 1], "sizeDelta": [-20, -20], "anchoredPosition": [0, 0], "children": [
+          { "name": "Handle", "component": "Image", "anchorMin": [0, 0], "anchorMax": [1, 0.2], "sizeDelta": [20, 20], "anchoredPosition": [0, 0] }
+        ]}
+      ]}
+    ]}
+  ],
+  "dynamicLayout": {
+    "parent": "Caption Area",
+    "spacing": 5,
+    "children": [
+      { "name": "Label", "role": "flex" },
+      { "name": "Arrow", "role": "fixed", "prefW": 20, "prefH": 20 }
+    ]
+  },
+  "eventBindings": {
+    "changed": "onValueChanged.AddListener"
+  },
+  "bindingProps": {
+    "value": { "target": "value", "runtimeType": "int" },
+    "visible": { "target": "gameObject.SetActive", "runtimeType": "bool" },
+    "enabled": { "target": "interactable", "runtimeType": "bool" }
+  },
+  "parameters": {
+    "width": { "handler": "SetSizeDelta", "axis": "x", "type": "float" },
+    "height": { "handler": "SetSizeDelta", "axis": "y", "type": "float" },
+    "backgroundSprite": { "handler": "LoadSprite", "type": "string" },
+    "backgroundColor": { "target": "GetComponent<Image>().color", "type": "Color" },
+    "backgroundType": { "target": "GetComponent<Image>().type", "type": "Image.Type" },
+    "background.preserveAspect": { "target": "GetComponent<Image>().preserveAspect", "type": "bool" },
+    "background.fillCenter": { "target": "GetComponent<Image>().fillCenter", "type": "bool" },
+    "background.pixelsPerUnitMultiplier": { "target": "GetComponent<Image>().pixelsPerUnitMultiplier", "type": "float" },
+    "borderRadius": { "handler": "SetBorderRadius", "type": "int" },
+    "shadowEnabled": { "handler": "EnsureShadow", "type": "bool" },
+    "shadowColor": { "handler": "SetShadowProp", "prop": "effectColor", "type": "Color" },
+    "shadowDistance": { "handler": "SetShadowProp", "prop": "effectDistance", "type": "Vector2" },
+    "opacity": { "target": "GetComponent<CanvasGroup>().alpha", "type": "float" },
+    "navigation.mode": { "target": "GetComponent<Dropdown>().navigation.mode", "type": "Navigation.Mode", "default": "Automatic" },
+    "navigation.wrapAround": { "target": "GetComponent<Dropdown>().navigation.wrapAround", "type": "bool", "default": false },
+    "transitionMode": { "target": "GetComponent<Dropdown>().transition", "type": "Selectable.Transition" },
+    "tint.normalColor": { "target": "GetComponent<Dropdown>().colors.normalColor", "type": "Color" },
+    "tint.highlightedColor": { "target": "GetComponent<Dropdown>().colors.highlightedColor", "type": "Color" },
+    "tint.pressedColor": { "target": "GetComponent<Dropdown>().colors.pressedColor", "type": "Color" },
+    "tint.selectedColor": { "target": "GetComponent<Dropdown>().colors.selectedColor", "type": "Color" },
+    "tint.disabledColor": { "target": "GetComponent<Dropdown>().colors.disabledColor", "type": "Color" },
+    "tint.fadeDuration": { "target": "GetComponent<Dropdown>().colors.fadeDuration", "type": "float" },
+    "spriteSwap.highlightedSprite": { "target": "GetComponent<Dropdown>().spriteState.highlightedSprite", "type": "Sprite" },
+    "spriteSwap.pressedSprite": { "target": "GetComponent<Dropdown>().spriteState.pressedSprite", "type": "Sprite" },
+    "spriteSwap.selectedSprite": { "target": "GetComponent<Dropdown>().spriteState.selectedSprite", "type": "Sprite" },
+    "spriteSwap.disabledSprite": { "target": "GetComponent<Dropdown>().spriteState.disabledSprite", "type": "Sprite" },
+    "animation.normalTrigger": { "target": "GetComponent<Dropdown>().animationTriggers.normalTrigger", "type": "string" },
+    "animation.highlightedTrigger": { "target": "GetComponent<Dropdown>().animationTriggers.highlightedTrigger", "type": "string" },
+    "animation.pressedTrigger": { "target": "GetComponent<Dropdown>().animationTriggers.pressedTrigger", "type": "string" },
+    "animation.selectedTrigger": { "target": "GetComponent<Dropdown>().animationTriggers.selectedTrigger", "type": "string" },
+    "animation.disabledTrigger": { "target": "GetComponent<Dropdown>().animationTriggers.disabledTrigger", "type": "string" },
+    "animation.animatorEnabled": { "handler": "EnsureAnimator", "type": "bool" },
+    "animation.animatorControllerPath": { "handler": "LoadAnimatorController", "type": "string" },
+    "value": { "target": "value", "type": "int" },
+    "fontSize": { "target": "GetComponentInChildren<Text>().fontSize", "type": "int" },
+    "fontStyle": { "target": "GetComponentInChildren<Text>().fontStyle", "type": "FontStyle" },
+    "textColor": { "target": "GetComponentInChildren<Text>().color", "type": "Color" },
+    "textAlignment": { "target": "GetComponentInChildren<Text>().alignment", "type": "TextAnchor" },
+    "lineSpacing": { "target": "GetComponentInChildren<Text>().lineSpacing", "type": "float" },
+    "richText": { "target": "GetComponentInChildren<Text>().supportRichText", "type": "bool" },
+    "raycastTarget": { "target": "GetComponentInChildren<Text>().raycastTarget", "type": "bool" },
+    "horizontalOverflow": { "target": "GetComponentInChildren<Text>().horizontalOverflow", "type": "HorizontalWrapMode" },
+    "verticalOverflow": { "target": "GetComponentInChildren<Text>().verticalOverflow", "type": "VerticalWrapMode" },
+    "bestFit": { "target": "GetComponentInChildren<Text>().resizeTextForBestFit", "type": "bool" },
+    "bestFitMinSize": { "target": "GetComponentInChildren<Text>().resizeTextMinSize", "type": "int" },
+    "bestFitMaxSize": { "target": "GetComponentInChildren<Text>().resizeTextMaxSize", "type": "int" },
+    "customFontPath": { "handler": "LoadFont", "type": "string" },
+    "textShadowEnabled": { "handler": "EnsureShadow", "child": "Label", "type": "bool" },
+    "textShadowColor": { "handler": "SetShadowProp", "child": "Label", "prop": "effectColor", "type": "Color" },
+    "textShadowDistance": { "handler": "SetShadowProp", "child": "Label", "prop": "effectDistance", "type": "Vector2" },
+    "textOutlineEnabled": { "handler": "EnsureOutline", "child": "Label", "type": "bool" },
+    "textOutlineColor": { "handler": "SetOutlineProp", "child": "Label", "prop": "effectColor", "type": "Color" },
+    "textOutlineDistance": { "handler": "SetOutlineProp", "child": "Label", "prop": "effectDistance", "type": "Vector2" },
+    "arrow.spritePath": { "handler": "LoadSprite", "child": "Arrow", "type": "string" },
+    "arrow.color": { "target": "GetComponent<Image>().color", "child": "Arrow", "type": "Color" },
+    "arrow.type": { "target": "GetComponent<Image>().type", "child": "Arrow", "type": "Image.Type" },
+    "arrow.width": { "handler": "SetSizeDelta", "child": "Arrow", "axis": "x", "type": "int" },
+    "arrow.height": { "handler": "SetSizeDelta", "child": "Arrow", "axis": "y", "type": "int" },
+    "templateHeight": { "handler": "SetSizeDelta", "child": "Template", "axis": "y", "type": "int" },
+    "itemHeight": { "handler": "SetSizeDelta", "child": "Item", "axis": "y", "type": "int" },
+    "templateBackgroundColor": { "target": "GetComponent<Image>().color", "child": "Template", "type": "Color" },
+    "templateBackgroundSprite": { "handler": "LoadSprite", "child": "Template", "type": "string" },
+    "templateBackgroundType": { "target": "GetComponent<Image>().type", "child": "Template", "type": "Image.Type" },
+    "itemBackgroundColor": { "target": "GetComponent<Image>().color", "child": "ItemBackground", "type": "Color", "default": [1, 1, 1, 0.05] },
+    "itemBackgroundSprite": { "handler": "LoadSprite", "child": "ItemBackground", "type": "string" },
+    "itemBackgroundType": { "target": "GetComponent<Image>().type", "child": "ItemBackground", "type": "Image.Type" },
+    "itemBackground.active": { "handler": "SetActive", "child": "ItemBackground", "component": "Image", "type": "bool", "default": true },
+    "itemTextColor": { "target": "GetComponent<Text>().color", "child": "ItemLabel", "type": "Color" },
+    "itemFontSize": { "target": "GetComponent<Text>().fontSize", "child": "ItemLabel", "type": "int" },
+    "itemCheckmarkSprite": { "handler": "LoadSprite", "child": "ItemCheckmark", "type": "string" },
+    "itemCheckmarkColor": { "target": "GetComponent<Image>().color", "child": "ItemCheckmark", "type": "Color" },
+    "itemCheckmarkType": { "target": "GetComponent<Image>().type", "child": "ItemCheckmark", "type": "Image.Type" },
+    "scrollbar.active": { "handler": "SetActive", "child": "Scrollbar", "component": "Scrollbar", "type": "bool", "default": true },
+    "scrollbar.color": { "target": "GetComponent<Image>().color", "child": "Scrollbar", "type": "Color" },
+    "scrollbar.spritePath": { "handler": "LoadSprite", "child": "Scrollbar", "type": "string" },
+    "scrollbar.type": { "target": "GetComponent<Image>().type", "child": "Scrollbar", "type": "Image.Type" },
+    "scrollbar.handleColor": { "target": "GetComponent<Image>().color", "child": "Template/Scrollbar/SlidingArea/Handle", "type": "Color" },
+    "scrollbar.handleSprite": { "handler": "LoadSprite", "child": "Template/Scrollbar/SlidingArea/Handle", "type": "string" },
+    "scrollbar.handleType": { "target": "GetComponent<Image>().type", "child": "Template/Scrollbar/SlidingArea/Handle", "type": "Image.Type" },
+    "anchorMin": { "target": "GetComponent<RectTransform>().anchorMin", "type": "Vector2" },
+    "anchorMax": { "target": "GetComponent<RectTransform>().anchorMax", "type": "Vector2" },
+    "pivot": { "target": "GetComponent<RectTransform>().pivot", "type": "Vector2" },
+    "anchoredPosition": { "target": "GetComponent<RectTransform>().anchoredPosition", "type": "Vector2" },
+    "localScale": { "target": "GetComponent<Transform>().localScale", "type": "Vector3" },
+    "localRotation": { "target": "GetComponent<Transform>().localEulerAngles", "type": "Vector3" },
+    "interactable": { "target": "interactable", "type": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["ugui.stack_vertical", "ugui.stack_horizontal", "ugui.grid", "ugui.panel"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fixed", "fill"],
+      "heightMode": ["hug", "fixed"]
+    }
+  },
+  "eventSchema": {
+    "changed": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

@@ -1,0 +1,119 @@
+{
+  "brickId": "ugui.modal",
+  "layer": "primitive",
+  "category": "container",
+  "assemblyOnly": true,
+  "requiredComponents": [
+    "Canvas",
+    "Image",
+    "GraphicRaycaster",
+    "CanvasScaler"
+  ],
+  "childStructure": [
+    {
+      "name": "ModalPanel",
+      "component": "Image",
+      "children": [
+        {
+          "name": "ModalHeaderSlot",
+          "component": "RectTransform"
+        },
+        {
+          "name": "ModalContentSlot",
+          "component": "RectTransform"
+        },
+        {
+          "name": "ModalFooterSlot",
+          "component": "RectTransform"
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "overlayColor": {
+      "target": "GetComponent<Image>().color",
+      "type": "Color",
+      "default": "#000000CC"
+    },
+    "sortingOrder": {
+      "target": "GetComponent<Canvas>().sortingOrder",
+      "type": "int",
+      "default": 100
+    },
+    "panelWidth": {
+      "handler": "SetModalSize",
+      "axis": "x",
+      "type": "float"
+    },
+    "panelHeight": {
+      "handler": "SetModalSize",
+      "axis": "y",
+      "type": "float"
+    },
+    "panelPadding": {
+      "handler": "SetModalPadding",
+      "type": "RectOffset"
+    },
+    "headerHeight": {
+      "handler": "SetModalSlotHeight",
+      "prop": "header",
+      "type": "float"
+    },
+    "footerHeight": {
+      "handler": "SetModalSlotHeight",
+      "prop": "footer",
+      "type": "float"
+    },
+    "panelSprite": {
+      "handler": "LoadSprite",
+      "child": "ModalPanel",
+      "type": "string"
+    },
+    "panelColor": {
+      "target": "GetComponent<Image>().color",
+      "child": "ModalPanel",
+      "type": "Color"
+    },
+    "panelType": {
+      "target": "GetComponent<Image>().type",
+      "child": "ModalPanel",
+      "type": "Image.Type"
+    },
+    "panelPreserveAspect": {
+      "target": "GetComponent<Image>().preserveAspect",
+      "child": "ModalPanel",
+      "type": "bool"
+    },
+    "panelFillCenter": {
+      "target": "GetComponent<Image>().fillCenter",
+      "child": "ModalPanel",
+      "type": "bool"
+    },
+    "panelPixelsPerUnitMultiplier": {
+      "target": "GetComponent<Image>().pixelsPerUnitMultiplier",
+      "child": "ModalPanel",
+      "type": "float"
+    }
+  },
+  "eventBindings": {},
+  "compositionPolicy": {
+    "allowedChildren": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.button",
+      "ugui.label",
+      "ugui.panel"
+    ],
+    "canNestUnder": ["ugui.panel"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "fill"
+      ]
+    }
+  }
+}

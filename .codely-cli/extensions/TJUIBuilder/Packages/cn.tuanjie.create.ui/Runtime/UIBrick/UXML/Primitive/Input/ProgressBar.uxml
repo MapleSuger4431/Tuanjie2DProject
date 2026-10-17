@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Input/ProgressBar.uss" />
+    <ui:ProgressBar name="ProgressBarRoot" class="br-progress-bar" low-value="0" high-value="1" value="0.5" />
+</ui:UXML>

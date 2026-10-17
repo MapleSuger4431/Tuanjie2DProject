@@ -1,0 +1,44 @@
+.br-slider-base {
+    min-height: 6px;
+}
+
+/* Tuanjie 2022.3 actual internal class names (not unity-slider__*) */
+.br-slider-base .unity-base-slider__drag-container,
+.br-slider-base .unity-base-slider__tracker {
+    height: 100%;
+    top: 0;
+    border-radius: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Tracker acts as a clipping mask so the fill texture inside is not stretched. */
+.br-slider-base .unity-base-slider__tracker {
+    overflow: hidden;
+}
+
+/* Fill texture child: fixed width = full track width, clipped by tracker's overflow:hidden.
+   Game USS only needs to set background-image on this class. */
+.br-slider-base .br-slider-fill-texture {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.br-slider-base .unity-base-slider__dragger {
+    width: 22px;
+    height: 22px;
+    top: 0;
+    border-radius: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.br-slider-base--disabled {
+    opacity: 0.45;
+}

@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "primitive.text.value_text",
+  "layer": "primitive",
+  "category": "text",
+  "defaultClasses": ["br-value-text"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Text/ValueText.uss",
+  "snippetPath": "UXML/Primitive/Text/ValueText.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "variant": ["muted", "disabled", "accent"],
+    "size": ["sm", "md", "lg", "xl"]
+  },
+  "bindingPropsSchema": {
+    "text": { "bindable": true, "runtimeType": "string" },
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["auto"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

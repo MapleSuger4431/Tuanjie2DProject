@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Layout/Modal/ModalShell.uss" />
+    <ui:VisualElement name="ModalOverlay" class="br-modal-overlay">
+        <ui:VisualElement name="ModalPanel" class="br-modal-shell">
+            <ui:VisualElement name="ModalHeaderSlot" class="br-modal-shell__header" />
+            <ui:VisualElement name="ModalContentSlot" class="br-modal-shell__content" />
+            <ui:VisualElement name="ModalFooterSlot" class="br-modal-shell__footer" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

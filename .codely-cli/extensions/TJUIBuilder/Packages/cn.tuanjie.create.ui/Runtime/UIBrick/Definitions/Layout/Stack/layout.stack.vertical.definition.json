@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "layout.stack.vertical",
+  "layer": "layout",
+  "category": "stack",
+  "defaultClasses": ["br-stack-vertical"],
+  "slots": ["content"],
+  "stylePath": "USS/Layout/Stack/StackVertical.uss",
+  "snippetPath": "UXML/Layout/Stack/StackVertical.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "gap": ["xs", "sm", "md", "lg", "xl"],
+    "padding": ["none", "sm", "md", "lg"],
+    "align": ["start", "center", "end", "stretch"]
+  },
+  "bindingPropsSchema": {
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": ["layout.*", "primitive.*"],
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["hug", "fill"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

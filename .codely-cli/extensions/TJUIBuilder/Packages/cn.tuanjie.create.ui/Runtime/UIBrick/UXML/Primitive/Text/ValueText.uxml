@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Text/ValueText.uss" />
+    <ui:Label name="ValueTextRoot" class="br-value-text" text="0" />
+</ui:UXML>

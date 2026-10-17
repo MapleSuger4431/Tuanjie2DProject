@@ -1,0 +1,81 @@
+{
+  "brickId": "ugui.icon",
+  "layer": "primitive",
+  "category": "image",
+  "requiredComponents": ["Image", "Button"],
+  "childStructure": [],
+  "eventBindings": {
+    "clicked": "onClick.AddListener"
+  },
+  "bindingProps": {
+    "visible": { "target": "gameObject.SetActive", "runtimeType": "bool" }
+  },
+  "parameters": {
+    "spritePath": { "handler": "LoadSprite", "type": "string" },
+    "color": { "target": "GetComponent<Image>().color", "type": "Color" },
+    "width": { "handler": "SetSizeDelta", "axis": "x", "type": "float" },
+    "height": { "handler": "SetSizeDelta", "axis": "y", "type": "float" },
+    "imageType": { "target": "GetComponent<Image>().type", "type": "Image.Type" },
+    "preserveAspect": { "target": "GetComponent<Image>().preserveAspect", "type": "bool" },
+    "raycastTarget": { "target": "GetComponent<Image>().raycastTarget", "type": "bool" },
+    "opacity": { "target": "GetComponent<CanvasGroup>().alpha", "type": "float" },
+    "borderRadius": { "handler": "SetBorderRadius", "type": "int" },
+    "shadowEnabled": { "handler": "EnsureShadow", "type": "bool" },
+    "shadowColor": { "handler": "SetShadowProp", "prop": "effectColor", "type": "Color" },
+    "shadowDistance": { "handler": "SetShadowProp", "prop": "effectDistance", "type": "Vector2" },
+    "clickSoundPath": { "handler": "LoadAudioClip", "prop": "clickSound", "type": "string" },
+    "hoverSoundPath": { "handler": "LoadAudioClip", "prop": "hoverSound", "type": "string" },
+    "audioVolume": { "handler": "SetAudioProp", "prop": "volume", "type": "float" },
+    "clickScale": { "handler": "SetScaleEffect", "prop": "pressScale", "type": "Vector3" },
+    "clickScaleDuration": { "handler": "SetScaleEffect", "prop": "pressScaleDuration", "type": "float" },
+    "hoverScale": { "handler": "SetScaleEffect", "prop": "hoverScale", "type": "Vector3" },
+    "hoverScaleDuration": { "handler": "SetScaleEffect", "prop": "hoverScaleDuration", "type": "float" },
+    "interactable": { "target": "GetComponent<Button>().interactable", "type": "bool" },
+    "clickable": { "target": "GetComponent<Button>().enabled", "type": "bool", "default": false },
+    "navigation.mode": { "target": "GetComponent<Button>().navigation.mode", "type": "Navigation.Mode", "default": "Automatic" },
+    "navigation.wrapAround": { "target": "GetComponent<Button>().navigation.wrapAround", "type": "bool", "default": false },
+    "transitionMode": { "target": "GetComponent<Button>().transition", "type": "Selectable.Transition" },
+    "tint.normalColor": { "target": "GetComponent<Button>().colors.normalColor", "type": "Color" },
+    "tint.highlightedColor": { "target": "GetComponent<Button>().colors.highlightedColor", "type": "Color" },
+    "tint.pressedColor": { "target": "GetComponent<Button>().colors.pressedColor", "type": "Color" },
+    "tint.disabledColor": { "target": "GetComponent<Button>().colors.disabledColor", "type": "Color" },
+    "tint.fadeDuration": { "target": "GetComponent<Button>().colors.fadeDuration", "type": "float" },
+    "spriteSwap.highlightedSprite": { "target": "GetComponent<Button>().spriteState.highlightedSprite", "type": "Sprite" },
+    "spriteSwap.pressedSprite": { "target": "GetComponent<Button>().spriteState.pressedSprite", "type": "Sprite" },
+    "spriteSwap.selectedSprite": { "target": "GetComponent<Button>().spriteState.selectedSprite", "type": "Sprite" },
+    "spriteSwap.disabledSprite": { "target": "GetComponent<Button>().spriteState.disabledSprite", "type": "Sprite" },
+    "animation.normalTrigger": { "target": "GetComponent<Button>().animationTriggers.normalTrigger", "type": "string" },
+    "animation.highlightedTrigger": { "target": "GetComponent<Button>().animationTriggers.highlightedTrigger", "type": "string" },
+    "animation.pressedTrigger": { "target": "GetComponent<Button>().animationTriggers.pressedTrigger", "type": "string" },
+    "animation.selectedTrigger": { "target": "GetComponent<Button>().animationTriggers.selectedTrigger", "type": "string" },
+    "animation.disabledTrigger": { "target": "GetComponent<Button>().animationTriggers.disabledTrigger", "type": "string" },
+    "animation.animatorEnabled": { "handler": "EnsureAnimator", "type": "bool" },
+    "animation.animatorControllerPath": { "handler": "LoadAnimatorController", "type": "string" },
+    "anchorMin": { "target": "GetComponent<RectTransform>().anchorMin", "type": "Vector2" },
+    "anchorMax": { "target": "GetComponent<RectTransform>().anchorMax", "type": "Vector2" },
+    "pivot": { "target": "GetComponent<RectTransform>().pivot", "type": "Vector2" },
+    "anchoredPosition": { "target": "GetComponent<RectTransform>().anchoredPosition", "type": "Vector2" },
+    "localScale": { "target": "GetComponent<Transform>().localScale", "type": "Vector3" },
+    "localRotation": { "target": "GetComponent<Transform>().localEulerAngles", "type": "Vector3" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.grid",
+      "ugui.panel"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug"],
+      "heightMode": ["hug"]
+    }
+  },
+  "eventSchema": {
+    "clicked": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

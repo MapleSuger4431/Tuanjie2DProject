@@ -1,0 +1,476 @@
+/* ===== Annotation Board — Unified Stylesheet ===== */
+/* Designed for 1920×1080 reference resolution (ScaleWithScreenSize) */
+
+/* --- Variables --- */
+:root {
+    --bg-dark: #1e1e1e;
+    --bg-panel: #2d2d2d;
+    --bg-hover: #3a3a3a;
+    --bg-active: #094771;
+    --border: #444;
+    --text: #ccc;
+    --text-dim: #888;
+    --accent: #0078d4;
+    --accent-hover: #1a8ae8;
+    --danger: #c74634;
+}
+
+/* --- Main Panel --- */
+.annotation-board-panel {
+    background-color: var(--bg-dark);
+    color: var(--text);
+    font-size: 22px;
+}
+
+/* --- Toolbar --- */
+.toolbar {
+    background-color: var(--bg-panel);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--border);
+    align-items: center;
+}
+
+.toolbar-btn {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px 22px;
+    background-color: var(--bg-panel);
+    color: var(--text);
+    border-width: 2px;
+    border-color: var(--border);
+    border-radius: 6px;
+    font-size: 22px;
+}
+
+.toolbar-btn:hover {
+    background-color: var(--bg-hover);
+}
+
+.toolbar-btn:active {
+    background-color: var(--accent);
+}
+
+/* --- Zoom Slider --- */
+.zoom-slider {
+    min-width: 192px;
+}
+
+.zoom-slider .unity-slider__dragger {
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+}
+
+/* --- Tab Bar --- */
+.tab-bar {
+    flex-direction: row;
+    height: 58px;
+    overflow: hidden;
+    background-color: var(--bg-panel);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--border);
+}
+
+.tab-item {
+    background-color: var(--bg-panel);
+    border-right-width: 2px;
+    border-right-color: var(--border);
+    border-radius: 0;
+    cursor: link;
+}
+
+.tab-item.tab-active {
+    background-color: var(--bg-active);
+    color: white;
+}
+
+.tab-item.tab-inactive {
+    background-color: var(--bg-panel);
+    color: var(--text-dim);
+}
+
+.tab-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.tab-close-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin-left: 6px;
+    font-size: 28px;
+    background-color: transparent;
+    color: var(--text-dim);
+    border-width: 0;
+}
+
+.tab-close-btn:hover {
+    color: var(--danger);
+}
+
+/* --- Content Area --- */
+.content-area {
+    background-color: var(--bg-dark);
+}
+
+/* --- Canvas --- */
+.annotation-canvas {
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+    background-color: rgb(25, 25, 25);
+    border-right-width: 2px;
+    border-right-color: var(--border);
+}
+
+.image-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #111;
+}
+
+.rect-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* --- Annotation Rect --- */
+.annotation-rect {
+    position: absolute;
+    border-width: 3px;
+    border-style: solid;
+    cursor: move;
+}
+
+.annotation-rect:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.rect-label {
+    font-size: 19px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 3px 10px;
+    margin: 5px;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+    overflow: hidden;
+}
+
+/* --- Inspector --- */
+.annotation-inspector {
+    width: 512px;
+    min-width: 512px;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--bg-panel);
+    border-left-width: 2px;
+    border-left-color: var(--border);
+}
+
+/* --- Inspector: main scroll --- */
+.inspector-main-scroll {
+    flex-grow: 1;
+}
+
+/* --- Inspector: rect list scroll --- */
+.rect-list-scroll {
+    max-height: 320px;
+    flex-grow: 0;
+}
+
+/* --- Inspector ScrollBars --- */
+.annotation-inspector ScrollView .unity-scroll-view__horizontal-scroller {
+    height: 0;
+    display: none;
+}
+
+#inspector-scroll .unity-scroll-view__vertical-scroller {
+    width: 22px;
+}
+#inspector-scroll .unity-scroller__dragger {
+    width: 10px;
+    height: 16px;
+    border-radius: 8px;
+}
+
+#rect-list .unity-scroll-view__vertical-scroller {
+    width: 16px;
+}
+#rect-list .unity-scroller__dragger {
+    width: 6px;
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* --- Inspector: sections --- */
+.inspector-section {
+    padding: 16px;
+}
+
+.section-header {
+}
+
+.inspector-section Label {
+    margin-bottom: 5px;
+    color: var(--text);
+}
+
+.annotation-inspector Label {
+    margin-bottom: 5px;
+    font-size: 21px;
+    color: var(--text);
+}
+
+/* --- Inspector: props header row --- */
+#props-header-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* --- Inspector: rect info label --- */
+#rect-info {
+    font-size: 16px;
+    color: rgb(153, 179, 217);
+    margin-left: 8px;
+}
+
+/* --- Inspector: separator --- */
+.inspector-separator {
+    height: 2px;
+    background-color: var(--border);
+}
+
+/* --- Inspector: input fields --- */
+.inspector-input {
+    width: 100%;
+    margin-bottom: 13px;
+}
+
+.inspector-input .unity-text-field__input {
+    color: var(--text);
+    --unity-cursor-color: var(--text);
+    background-color: #1a1a1a;
+}
+
+.inspector-input .unity-base-popup-field__input {
+    color: var(--text);
+    background-color: #1a1a1a;
+}
+
+.inspector-input .unity-base-popup-field__arrow {
+    background-color: #1a1a1a;
+}
+
+/* --- Inspector: annotation field (multiline, auto-grow) --- */
+.annotation-input {
+    width: 100%;
+    min-height: 128px;
+    margin-bottom: 13px;
+}
+
+.annotation-input .unity-text-field__input {
+    overflow: hidden;
+    white-space: normal;
+    color: var(--text);
+    --unity-cursor-color: var(--text);
+    background-color: #1a1a1a;
+}
+
+.annotation-input .unity-base-text-field__multiline-container {
+    overflow: hidden;
+    white-space: normal;
+    background-color: #1a1a1a;
+}
+
+.annotation-input .unity-text-element--inner-input-field-component {
+    white-space: normal;
+    overflow: hidden;
+    color: var(--text);
+    --unity-cursor-color: var(--text);
+    background-color: #1a1a1a;
+}
+
+/* --- Inspector: enum field --- */
+.annotation-inspector EnumField {
+    margin-bottom: 13px;
+    color: var(--text);
+}
+
+/* --- Inspector: rect list items --- */
+.rect-list-item {
+    flex-direction: row;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.rect-list-item--selected {
+    background-color: rgba(0, 120, 215, 0.15);
+}
+
+.rect-list-color {
+    width: 22px;
+    height: 22px;
+    margin-right: 13px;
+    margin-top: 3px;
+}
+
+.rect-list-name {
+    flex-grow: 1;
+    color: var(--text);
+}
+
+.rect-list-type {
+    font-size: 18px;
+    color: var(--text-dim);
+}
+
+.rect-list-eye {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    margin-left: 4px;
+    cursor: link;
+}
+
+.rect-list-eye--visible {
+    color: rgb(179, 217, 255);
+}
+
+.rect-list-eye--hidden {
+    color: rgb(128, 128, 128);
+}
+
+.rect-list-item--hidden {
+    opacity: 0.45;
+}
+
+/* --- Inspector: confirm button --- */
+.confirm-btn {
+    height: 70px;
+    flex-shrink: 0;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: #555;
+    border-color: #444;
+    border-width: 2px;
+    border-radius: 6px;
+}
+
+.confirm-btn:hover {
+    background-color: #666;
+}
+
+/* --- Status Bar --- */
+.status-bar {
+    background-color: var(--bg-panel);
+    border-top-width: 2px;
+    border-top-color: var(--border);
+    padding-left: 16px;
+    font-size: 19px;
+    color: var(--text-dim);
+    -unity-text-align: middle-left;
+}
+
+/* --- Dialog --- */
+.dialog-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog-container {
+    background-color: rgb(0, 0, 0);
+    padding: 32px 48px;
+    width: 640px;
+    border-width: 2px;
+    border-color: rgb(80, 80, 80);
+    border-radius: 10px;
+}
+
+.dialog-container Label {
+    color: rgb(220, 220, 220);
+}
+
+.dialog-container TextField {
+    margin-bottom: 32px;
+}
+
+.dialog-container Button {
+    padding: 13px 32px;
+    margin-left: 16px;
+}
+
+/* --- Resize Handles --- */
+.resize-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-width: 1px;
+    border-color: rgb(77, 77, 77);
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.handle-nw { cursor: nwse-resize; }
+.handle-n { cursor: ns-resize; }
+.handle-ne { cursor: nesw-resize; }
+.handle-e { cursor: ew-resize; }
+.handle-se { cursor: nwse-resize; }
+.handle-s { cursor: ns-resize; }
+.handle-sw { cursor: nesw-resize; }
+.handle-w { cursor: ew-resize; }
+
+/* --- Create Preview (drag-to-create) --- */
+.create-preview {
+    position: absolute;
+    border-width: 3px;
+    border-style: dashed;
+    border-color: yellow;
+    background-color: rgba(255, 255, 0, 0.15);
+    pointer-events: none;
+}
+
+/* --- Analyzing Mask --- */
+.analyzing-mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    pointer-events: auto;
+}
+
+.analyzing-container {
+    flex-direction: column;
+    align-items: center;
+}
+
+.analyzing-label {
+    font-size: 24px;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.analyzing-hint {
+    font-size: 15px;
+    color: rgb(179, 179, 179);
+    margin-top: 10px;
+}

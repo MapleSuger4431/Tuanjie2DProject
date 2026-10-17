@@ -1,0 +1,6 @@
+{
+  "name": "TJUIBuilder",
+  "version": "1.0.3",
+  "contextFileName": "CODELY.md",
+  "description": "TJUIBuilder for Unity 提供 UI 界面构建能力（默认 UGUI，可选 UI Toolkit），包含 UI 文档生成、面板构建、图片生成、风格参考提取、AI 效果图和画板布局设计。"
+}

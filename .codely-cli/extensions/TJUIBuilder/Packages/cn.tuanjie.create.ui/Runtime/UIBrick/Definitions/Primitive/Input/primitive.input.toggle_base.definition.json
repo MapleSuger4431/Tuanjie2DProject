@@ -1,0 +1,33 @@
+﻿{
+  "brickId": "primitive.input.toggle_base",
+  "layer": "primitive",
+  "category": "input",
+  "defaultClasses": ["br-toggle-base"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Input/ToggleBase.uss",
+  "snippetPath": "UXML/Primitive/Input/ToggleBase.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "state": ["disabled"]
+  },
+  "bindingPropsSchema": {
+    "value": { "bindable": true, "runtimeType": "bool" },
+    "visible": { "bindable": true, "runtimeType": "bool" },
+    "enabled": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug"],
+      "heightMode": ["hug"]
+    }
+  },
+  "eventSchema": {
+    "changed": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

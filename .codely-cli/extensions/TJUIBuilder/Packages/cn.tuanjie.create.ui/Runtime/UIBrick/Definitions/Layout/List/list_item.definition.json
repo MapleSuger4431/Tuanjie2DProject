@@ -1,0 +1,53 @@
+{
+  "brickId": "layout.list.item",
+  "layer": "layout",
+  "category": "list",
+  "defaultClasses": [
+    "br-list-item"
+  ],
+  "slots": [],
+  "stylePath": "USS/Layout/List/ListItem.uss",
+  "snippetPath": "UXML/Layout/List/ListItem.uxml",
+  "assetPropsSchema": {
+    "iconAsset": "asset?"
+  },
+  "stylePropsSchema": {
+    "variant": [
+      "default",
+      "selected",
+      "highlighted"
+    ]
+  },
+  "bindingPropsSchema": {
+    "text": {
+      "bindable": true,
+      "runtimeType": "string"
+    },
+    "visible": {
+      "bindable": true,
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": [
+      "layout.scroll.view"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "hug",
+        "fixed"
+      ]
+    }
+  },
+  "eventSchema": {
+    "clicked": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

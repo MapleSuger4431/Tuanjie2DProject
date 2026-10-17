@@ -1,0 +1,47 @@
+.br-toggle-base {
+    min-width: 48px;
+    min-height: 40px;
+}
+
+/* Tuanjie 2022.3 actual internal class name is unity-toggle__checkmark (not unity-toggle__check) */
+.br-toggle-base .unity-toggle__checkmark {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+}
+
+.br-toggle-base--disabled {
+    opacity: 0.45;
+}
+
+/*
+ * iOS-style switch variant.
+ * Usage: add "br-toggle-base--switch" alongside "br-toggle-base" on <ui:Toggle>.
+ * Knob slides left (unchecked) / right (checked) via position:absolute + :checked.
+ * Track image should use stretch-to-fill in game USS to avoid transparent gaps.
+ */
+.br-toggle-base--switch .unity-toggle__input {
+    border-width: 0;
+    border-radius: 0;
+    -unity-background-image-tint-color: rgba(140, 140, 140, 255);
+}
+
+.br-toggle-base--switch .unity-toggle__checkmark {
+    position: absolute;
+    top: 0%;
+    height: 100%;
+    width: 50%;
+    left: 0%;
+    background-image: none;
+    /* Prevent inheriting __input's unchecked gray tint — knob always shows original color */
+    -unity-background-image-tint-color: rgba(255, 255, 255, 255);
+    transition: left 0.15s ease-in-out;
+}
+
+.br-toggle-base--switch:checked .unity-toggle__checkmark {
+    left: 50%;
+}
+
+.br-toggle-base--switch:checked .unity-toggle__input {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 255);
+}

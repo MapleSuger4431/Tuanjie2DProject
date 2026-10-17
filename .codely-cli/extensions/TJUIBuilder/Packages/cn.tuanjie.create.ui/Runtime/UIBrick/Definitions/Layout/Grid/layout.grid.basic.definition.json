@@ -1,0 +1,30 @@
+﻿{
+  "brickId": "layout.grid.basic",
+  "layer": "layout",
+  "category": "grid",
+  "defaultClasses": ["br-grid"],
+  "slots": ["content"],
+  "stylePath": "USS/Layout/Grid/GridBasic.uss",
+  "snippetPath": "UXML/Layout/Grid/GridBasic.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "columns": ["2", "3", "4", "5", "6"],
+    "gap": ["xs", "sm", "md", "lg"]
+  },
+  "bindingPropsSchema": {
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": ["primitive.*"],
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["fill"],
+      "heightMode": ["hug", "fill"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

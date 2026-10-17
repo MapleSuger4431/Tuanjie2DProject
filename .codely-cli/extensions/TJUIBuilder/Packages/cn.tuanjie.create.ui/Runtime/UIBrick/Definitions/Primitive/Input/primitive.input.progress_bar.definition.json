@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "primitive.input.progress_bar",
+  "layer": "primitive",
+  "category": "input",
+  "defaultClasses": ["br-progress-bar"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Input/ProgressBar.uss",
+  "snippetPath": "UXML/Primitive/Input/ProgressBar.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "variant": ["accent", "danger", "success"],
+    "size": ["sm", "md", "lg"]
+  },
+  "bindingPropsSchema": {
+    "value": { "bindable": true, "runtimeType": "number" },
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["fill"],
+      "heightMode": ["hug"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "medium"
+}
