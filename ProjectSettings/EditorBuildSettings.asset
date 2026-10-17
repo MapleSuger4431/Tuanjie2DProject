@@ -12,11 +12,8 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.scene
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: "Assets/Test/Yuumix/\u6E38\u620F\u8FD0\u884C\u8FC7\u7A0B/Scenes/GameRuntimeTest.unity"
-    guid: 9108891336c3b4993b0ff8c95cf6ccf6
-  - enabled: 1
-    path: "Assets/Test/Yuumix/\u6E38\u620F\u8FD0\u884C\u8FC7\u7A0B/Scenes/BoardStep.unity"
-    guid: 52fdfc813820048af9b2e9755963b2ec
+    path: Assets/Scenes/MainMenu.scene
+    guid: d9d4f99bccc291447931391e8ed48635
   m_BuildProfiles: []
   m_configObjects: {}
   m_SlimFeaturesWeixinMiniGame:
