@@ -25,7 +25,7 @@ https://github.com/MapleSuger4431/Tuanjie2DProject.git
 3. 执行 git config --global core.autocrlf false
 4. 运行 tools\setup-git-merge-driver.ps1，然后验证 git config --global --get merge.unityyamlmerge.driver 有输出
 5. 运行 tools\fix-android-ndk.ps1，确认它报告 NDK 位置正确（要打安卓包必须；不打也顺手跑一次没坏处）
-6. 最后提醒我：先从 U 盘拷资源（Assets/Art/，连 .meta 一起），再打开工程
+6. 最后执行 git lfs pull 确认美术资源已拉全，再提醒我打开工程
 任何一步失败都停下来告诉我，不要跳过。
 ```
 
@@ -110,15 +110,14 @@ PR #<编号> 确认没问题了。请：
 ```
 
 > ⚠️ 当前出的是 **32 位（armeabi-v7a）+ Mono** 包，**部分新机型装不上**。要让更多手机能装：Player Settings 里把 Scripting Backend 改成 **IL2CPP**、Target Architectures 勾上 **ARM64**（打包会慢很多）。
-## 5. U 盘资源同步
+## 5. 美术资源同步（Git LFS）
 
 ```
-我要从 U 盘同步美术资源到工程。请按 Docs/Team-Git-Workflow.md 第 7 节：
-1. 先确认团结引擎已关闭（没关就让我先关）
-2. 运行 tools\sync-art.ps1 -Direction Pull -UsbRoot "<我的 U 盘目录>"，它会自动检查"引擎已关闭"和"每个资源都有配对的 .meta"，然后把 Assets/Art 同步进工程
-3. 脚本报错就把原文贴给我，不要绕过它硬拷
-4. 完成后告诉我同步了哪些文件，并提醒我"现在可以打开工程了"
-注意：这些文件不进 Git（已被 .gitignore 忽略）；以后要把工程里的资源推给别人，用同一个脚本的 -Direction Push。
+帮我同步美术资源（本项目走 Git LFS）：
+1. git lfs pull 拉取最新的图片/音频/字体（git pull 通常已自动拉取，这步是兜底）
+2. git lfs ls-files 列出当前仓库里的 LFS 文件给我看一眼
+3. 如果我本地有新增/修改的美术资源还没提交，列出来问我要不要提交并推送
+注意：美术资源经 LFS 随 Git 提交，不要再用 U 盘拷贝——U 盘方案 2026-10-17 起暂停（tools\sync-art.ps1 保留备用）。
 ```
 
 ---

@@ -14,11 +14,11 @@
 | 内容 | 在哪 |
 | --- | --- |
 | 代码、场景、Prefab、材质、工程设置 | **Git 仓库** |
-| 图片、音频、字体、视频 | **U 盘**（不进 Git） |
+| 图片、音频、字体、视频 | **Git LFS**（随仓库走，真实文件存 LFS 服务器） |
 | `Library/`、`Temp/`、`Logs/`、`UserSettings/` | 引擎自动生成，已被忽略，不用管 |
 | `.codely-cli/`（Codely 扩展目录） | 本地生成、**不进 Git**，但**必须存在**（见第 4 节） |
 
-原因：大文件进 Git 会让仓库爆炸、clone 变慢；而它们本来也不适合做文本合并。
+原因：美术/音频是二进制大文件，直接进 Git 会让仓库爆炸、clone 变慢，也无法做文本合并——所以交给 Git LFS：仓库里只存指针，真实文件由 LFS 服务器分发，`git clone` / `git pull` 时自动下载。
 
 ---
 
@@ -41,7 +41,7 @@
 | 场景 `.scene` | Git，**不走分支** | 主场景＝仓库管理员；测试场景＝各人自己的 | 扩展名是 `.scene` |
 | `ProjectSettings/` | Git | **仅仓库管理员** | 别人要加 Tag/Layer 口头告知 |
 | `Packages/` | Git | **仅仓库管理员** | 赛前把基础包装齐；比赛中尽量不装新包 |
-| 美术 / 音频 / 字体 / 视频 | **U 盘拷贝** | 一人管理文件、一人导入引擎 | 见第 7 节三条硬约束 |
+| 美术 / 音频 / 字体 / 视频 | **Git LFS，随仓库提交** | 一人管理文件、一人导入引擎 | 二进制不可合并，同一份资源仍由一人改 |
 | 烘焙 / Lightmap / NavMesh / ReflectionProbe | `.gitignore` 排除 | 谁都不用 | 比赛不做光照烘焙与寻路 |
 | ScriptableObject `.asset` | Git，**不走分支** | 每个文件唯一负责人 | 数值优先用表格（CSV/Excel）维护 |
 | 动画 `.anim` / `.controller` | Git，不走分支 | 每个文件唯一负责人 | 2D 优先序列帧/代码，少用 Animator |
@@ -56,7 +56,7 @@
 规则是**跟着"资源本体"走**：
 
 - **走 Git 的文件**（`.cs`/`.prefab`/`.scene`/`.asset`/`.shader` 等）→ 它们的 `.meta` **必须进 Git**，严禁删除或忽略；
-- **`Assets/Art/` 下的资源**（走 U 盘的那批）→ 它的 `.meta` **随 U 盘一起拷，不进 Git**。
+- **`Assets/Art/` 下的美术/音频/字体资源**（走 Git LFS 的那批）→ 资源本体经 LFS 进 Git，它的 `.meta` 是普通文本、**正常进 Git**。
 
 两种情况的共同点：**`.meta` 绝不能和资源分家**。meta 丢了或对不上，引擎里所有引用都会变粉（Missing）。
 
@@ -77,6 +77,7 @@
 | --- | --- |
 | 团结引擎 Hub + 引擎 | 必须是 **1.10.4**（内部版本 `2022.3.62t16`，版本不一致打不开工程） |
 | Git | 任意较新版本 |
+| Git LFS | **必须装**（Windows 版 Git 自带；macOS `brew install git-lfs`），装完执行一次 `git lfs install` |
 | **Codely + TJGenerators（团结AI资产生成）扩展** | **必须装**，理由见 4.3 |
 
 ### 4.3 验证 Codely 扩展（最关键的一步）
@@ -89,7 +90,7 @@ Test-Path ".\.codely-cli\extensions\TJGenerators\Packages\cn.tuanjie.ai.generato
 
 原因：`Packages/manifest.json` 里有一行 `file:../.codely-cli/...` 指向这个扩展提供的 Unity 包，而 `.codely-cli/` **不进 Git，只由 Codely 生成**。文件不存在 → 包解析失败 → **工程打不开**。
 
-### 4.4 两条一次性 Git 配置
+### 4.4 三条一次性 Git 配置
 
 **① 关闭自动换行转换**（避免跨系统出现"整文件都显示改了"的假差异）：
 
@@ -97,13 +98,21 @@ Test-Path ".\.codely-cli\extensions\TJGenerators\Packages\cn.tuanjie.ai.generato
 git config --global core.autocrlf false
 ```
 
-**② 注册场景/Prefab 的智能合并工具**：右键 `tools\setup-git-merge-driver.ps1` → 「使用 PowerShell 运行」
+> 依据 Unity 官方社区文章[《Mac 和 Windows 使用 Git 合作开发 Unity 项目》](https://developer.unity.cn/projects/69b64ca2edbc2a5fdf540311)：Windows 设 `true`、Mac 设 `input` 也可行；但本项目 `.gitattributes` 已用 `* text=auto eol=lf` 强制仓库统一 LF，比依赖各人 autocrlf 更确定，所以全员统一设 `false` 即可，两端行为一致。
+
+**② 开启 Windows 长路径支持**（Windows 默认有 260 字符 MAX_PATH 限制，Unity 工程嵌套路径容易超限）：
+
+```
+git config --global core.longpaths true
+```
+
+**③ 注册场景/Prefab 的智能合并工具**：右键 `tools\setup-git-merge-driver.ps1` → 「使用 PowerShell 运行」
 
 这个脚本把团结引擎自带的 SmartMerge 配到你的 Git 里，让场景/Prefab 冲突时按"对象"合并而不是按文本行硬合并。**不运行的话，一旦真冲突会直接报 `fatal: unknown merge driver`，连合并都做不了。**
 
 > 该 `.ps1` 必须保持 **UTF-8 with BOM** 保存：Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 GBK 解码，中文变乱码并直接语法报错。所以**不要用编辑器随手重存它**，一定要重存就选"UTF-8 with BOM"。
 
-> 顺带说明：**不需要**安装 Git LFS。
+> **必须安装 Git LFS**：美术/音频/字体都走 LFS，不装的话 clone 下来图片音频全是几百字节的指针文件、引擎里全部 missing。Windows 的 Git for Windows 已自带 LFS；macOS 用 `brew install git-lfs`。装完后执行一次 `git lfs install` 即可（每台机器一次）。
 
 > **要打安卓包的同学**：再右键运行一次 `tools\fix-android-ndk.ps1` —— 团结 CLI 装 android 模块时常见两种毛病（NDK 没真装上 / NDK 装深了一层），两者都表现为 `Android NDK not found`；这个脚本会检查并自动修复。
 
@@ -115,12 +124,15 @@ git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
 
 首次打开时 `Library/` 会重新生成（需要等几分钟），这是正常的。
 
-### 4.6 拷 U 盘资源（必须在打开工程之前）
+### 4.6 拉取 LFS 资源（打开工程之前确认）
 
-**关掉引擎 → 从 U 盘把资源拷到 `Assets/Art/Images|Audio|Models|Videos|Fonts/` → 再打开工程。**
+装好 git-lfs 后，`git clone` 会自动把 LFS 资源一起拉下来。确认方式：
 
-- 顺序颠倒 → 打开时一片 missing；
-- **必须连 `.meta` 一起拷** → 否则所有人的 Prefab 引用会断链（很难补救）。
+```
+git lfs pull
+```
+
+输出 "Nothing to pull" 或看到下载进度都正常，之后再打开工程。日常 `git pull` 也会自动拉 LFS 文件；如果某次图片/音频在引擎里显示 missing，先跑一次 `git lfs pull`。
 
 ### 4.7 打开并自检
 
@@ -143,6 +155,12 @@ git clone https://github.com/MapleSuger4431/Tuanjie2DProject.git
 
 1. **不要用记事本/编辑器随手"另存" `tools\setup-git-merge-driver.ps1`**。确实要重存时，编码必须选 **UTF-8 with BOM**，否则队友运行时会报 `The string is missing the terminator` 之类的语法错误。
 2. 如果某台机器上 `git log` 里的中文提交信息显示成乱码，先在终端执行 `chcp 65001`（切到 UTF-8 代码页）再看。
+
+**跨平台文件名约定**（依据 Unity 官方社区文章）：
+
+- 文件名避免使用 `#`、`:`、`*`、`?`、`<`、`>`、`|` 等特殊字符（Windows 不允许，Mac 允许，混用会导致 Windows 队友 checkout 失败）。
+- 不使用符号链接（Mac 可创建，Windows 需要管理员权限，Git 两端行为不一致）。
+- 改文件名大小写必须走 `git mv`，否则一端可能看不到变更（两系统默认都不区分大小写）。
 
 ---
 
@@ -192,6 +210,8 @@ git push
 ---
 
 ## 7. U 盘资源同步（三条硬约束）
+
+> ⚠️ **暂停使用（2026-10-17 起）**：美术资源已改走 **Git LFS** 随仓库分发，U 盘方案暂时停用。本节内容与 `tools\sync-art.ps1` 保留作为备用参考，需要恢复时直接用。
 
 1. **必须连 `.meta` 一起拷贝** —— 这是 GUID 一致性的唯一保障；漏拷 meta 会让所有人的 Prefab 引用断链。
 2. **拷贝前必须关闭引擎**，拷贝完成后再打开。
@@ -263,17 +283,17 @@ git commit -m "fix: 采用我这一版的测试场景"
 | 现象 | 原因与处理 |
 | --- | --- |
 | `git push` 被拒绝（rejected） | 你在 main 上直接推代码 / 落后于远程；先 `git pull`，代码改动改用分支 |
-| 场景/图片显示 missing、粉色 | U 盘资源没拷到位，或没连 `.meta` 一起拷；关引擎重拷后再打开 |
+| 场景/图片显示 missing、粉色 | LFS 资源没拉下来：先 `git lfs pull`，仍不行就关引擎重开 |
 | 合并报 `fatal: unknown merge driver` | 没运行 `tools\setup-git-merge-driver.ps1` |
 | 打包报 `Android NDK not found`，且 NDK 目录是空的 | 模块没真正装上 → `tuanjie.exe install-modules <引擎版本> --module android-ndk` |
 | 打包报 `Android NDK not found`，但 NDK 目录里有内容 | NDK 被装深了一层（`NDK\android-ndk-rXX\`）→ 右键运行 `tools\fix-android-ndk.ps1` 自动修复 |
 | 打包报 `Package Name has not been set up correctly` | 包名不合法（每段不能以数字开头）→ 在 Player Settings 里设成 `com.xxx.yyy` 形式 |
 | 本地仓库还是旧内容（引擎版本写 1.8.4、没有 `Docs/Git-Basics.md`） | 仓库在 2026-10-15 重置过历史，旧 clone 的 `git pull` 拉不动 → **删掉本地目录重新 `git clone`**（不是 pull） |
-| 拿到的工程打不开，或少了 `ProjectSettings`、`Packages`、`tools` | 那是从 U 盘拷的**残缺快照** → **工程一律用 `git clone` 获取**；U 盘只用来分发 `Assets/Art/` 下的资源 |
+| 拿到的工程打不开，或少了 `ProjectSettings`、`Packages`、`tools` | 那是从 U 盘拷的**残缺快照** → **工程一律用 `git clone` 获取**（美术资源也随仓库经 LFS 分发） |
 | 在 U 盘目录里跑 `git` 报 `dubious ownership ... does not record ownership` | U 盘文件系统不记录文件所有权 → **不要直接操作 U 盘上的 git 仓库**，先整个拷到本地磁盘再跑命令 |
 | 打开工程报 `cn.tuanjie.ai.generators ... cannot be found` | 没装 Codely 的 TJGenerators 扩展（见 4.3） |
 | 打开工程报某个 Unity 包 `cannot be found` | 该版本团结引擎不支持；改用编辑器 `Window → Package Manager` 安装（UI 只列可用版本） |
-| 改了东西但 `git status` 看不到 | 它被 `.gitignore` 忽略了（如 `Assets/Art/` 下的图），本来就不走 Git |
+| 改了东西但 `git status` 看不到 | 它被 `.gitignore` 忽略了（如 `.fbx`/`.mp4` 等 2D 项目明确不用的格式），本来就不走 Git |
 | 出现 `CONFLICT` | 停手，按第 8 节处理，或截图发群 |
 | 切分支后引擎报奇怪错误 | 关引擎 → 删 `Library` → 重新打开 |
 | 想把某文件移出 Git 跟踪 | `git rm --cached <文件>`（文件本身保留在磁盘上） |
@@ -285,6 +305,7 @@ git commit -m "fix: 采用我这一版的测试场景"
 | 我要做什么 | 命令 |
 | --- | --- |
 | 更新别人的改动 | `git pull` |
+| 拉取 LFS 大文件（图片/音频） | `git lfs pull` |
 | 看当前状态/改了哪些文件 | `git status` |
 | 暂存并提交 | `git add .` → `git commit -m "说明"` |
 | 上传到 GitHub | `git push`（新分支首次用 `git push -u origin 分支名`） |

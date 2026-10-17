@@ -43,9 +43,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-# U盘同步的大体积资源（严禁Git追踪；整个 Art 目录连同其 .meta 一并忽略，随U盘同步）
-/[Aa]ssets/Art/
-/[Aa]ssets/Art.meta
+# 美术资源（Assets/Art/ 等）走 Git LFS 正常追踪，不做整目录忽略
 # 2D项目明确不用的文件（彻底排除）
 /[Aa]ssets/**/*.fbx
 /[Aa]ssets/**/*.obj
@@ -69,5 +67,5 @@ crashlytics-build.properties
 # Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
 _ReSharper.*
 *.DotSettings.user
-# 兜底：Assets 下的 .meta 必须提交，防止上方规则误伤（Assets/Art/ 整目录忽略，不受此影响）
+# 兜底：Assets 下的 .meta 必须提交，防止上方规则误伤
 !/[Aa]ssets/**/*.meta
