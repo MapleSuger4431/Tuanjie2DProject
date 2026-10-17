@@ -914,7 +914,28 @@ PlayerSettings:
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: AESIR_ARCHITECTURE
+    ArmLinux: AESIR_ARCHITECTURE
+    ArmLinuxServer: AESIR_ARCHITECTURE
+    EmbeddedLinux: AESIR_ARCHITECTURE
+    HMIAndroid: AESIR_ARCHITECTURE
+    LinuxHeadlessSimulation: AESIR_ARCHITECTURE
+    Nintendo Switch: AESIR_ARCHITECTURE
+    Nintendo Switch 2: AESIR_ARCHITECTURE
+    OpenHarmony: AESIR_ARCHITECTURE
+    PS4: AESIR_ARCHITECTURE
+    PlayableAds: AESIR_ARCHITECTURE
+    QNX: AESIR_ARCHITECTURE
+    Stadia: AESIR_ARCHITECTURE
+    Standalone: ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;AESIR_ARCHITECTURE
+    VisionOS: AESIR_ARCHITECTURE
+    WebGL: AESIR_ARCHITECTURE
+    WeixinMiniGame: AESIR_ARCHITECTURE
+    Windows Store Apps: AESIR_ARCHITECTURE
+    XboxOne: AESIR_ARCHITECTURE
+    iPhone: AESIR_ARCHITECTURE
+    tvOS: AESIR_ARCHITECTURE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

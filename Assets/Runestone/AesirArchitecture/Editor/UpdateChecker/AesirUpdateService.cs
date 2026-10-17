@@ -1,0 +1,1835 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Networking;
+
+namespace Runestone.AesirArchitecture.Editor
+{
+    /// <summary>
+    /// Aesir 包自动更新服务 — 供 <see cref="AesirUpdateWindow" /> 调用的无状态工具集。
+    /// <para>
+    /// 适用场景：用户通过复制 / unitypackage 导入方式将包装在 <see cref="InstallRootRelativePath" />
+    /// （Assets/Runestone）下、代码可被修改的非 UPM 安装。经 Package Manager（Git URL）安装的副本
+    /// 不位于 Assets 下，本工具扫描不到，应改用 Package Manager 更新。
+    /// </para>
+    /// <para>
+    /// 版本检测按「直连 GitHub → GitHub 镜像站 → 免费 CDN 中转」三层顺序兜底（unitypackage 下载始终走
+    /// GitHub Release 直链），首个成功即返回，并记录最终线路与各层尝试结果供界面展示：直连层依次尝试
+    /// Releases API、releases/latest 的 302 探测、仓库内 update-info.json 的直连 raw；直连不可用时才落镜像站
+    /// （内容实时）；最后才是 jsDelivr 等 CDN 中转（分支缓存最长约 12 小时，界面会给出延迟提示）。
+    /// 见 <see cref="CheckLatestReleaseAsync" />。
+    /// </para>
+    /// <para>
+    /// 更新流程：检测远程版本 → 对比本地版本（直接读取包内 package.json）→ 拉取并展示「本地 → 远程」
+    /// 更新日志（<see cref="BuildChangelogDigestAsync" />）→ 确认框二次确认（弹框决策与确认文案由
+    /// <see cref="AesirUpdateController" /> 编排层承担）→
+    /// 下载 .unitypackage（直连 → 镜像站逐线路兜底，可随时取消）→ 静默导入 →
+    /// 按"上次安装清单 − 新版清单"精确差集清理残留（导入成功后才清理，不误伤用户新增文件）→
+    /// 逐包登记安装清单。
+    /// </para>
+    /// </summary>
+    public static class AesirUpdateService
+    {
+        #region 常量
+
+        /// <summary>GitHub 仓库路径（owner/repo）。</summary>
+        public const string RepoPath = "yuumixcode/AesirFramework";
+
+        /// <summary>GitHub Releases 最新版 API（降级源之二，未认证限流 60 次/时/IP）。</summary>
+        public static readonly string LatestReleaseApiUrl =
+            $"https://api.github.com/repos/{RepoPath}/releases/latest";
+
+        /// <summary>GitHub releases/latest 页面地址（302 到最新 tag，可完全绕开 API 限流）。</summary>
+        public static readonly string LatestReleasePageUrl = $"https://github.com/{RepoPath}/releases/latest";
+
+        /// <summary>Releases 网页地址（供用户手动下载 / 查看更新日志）。</summary>
+        public static readonly string ReleasesPageUrl = $"https://github.com/{RepoPath}/releases";
+
+        /// <summary>GitHub Release 资产下载地址前缀（资产命名约定见 ReleaseSnapshot.GetUnityPackageUrl）。</summary>
+        public static readonly string GitHubDownloadUrlBase =
+            $"https://github.com/{RepoPath}/releases/download";
+
+        /// <summary>jsDelivr CDN 域名（按大陆可达性经验排序；fastly 会 301 跳转到主域名，自动跟随）。</summary>
+        public static readonly string[] JsDelivrDomains =
+        {
+            "cdn.jsdelivr.net", "testingcf.jsdelivr.net", "gcore.jsdelivr.net", "fastly.jsdelivr.net"
+        };
+
+        /// <summary>update-info.json 在仓库内的路径（CI 发版后以 [skip ci] 提交回 main）。</summary>
+        public const string UpdateInfoRelativePath = ".github/update-info.json";
+
+        /// <summary>
+        /// 默认安装根（项目相对路径）——快路径首查位置。实际安装根经
+        /// <see cref="AesirAssetPaths" /> 锚点定位（Runestone 可移动到项目任意文件夹），扫描入口用
+        /// <see cref="ScanInstalledPackagesFromAllRoots" />；本常量供单根扫描的默认参数与测试 fixture 使用。
+        /// </summary>
+        public const string InstallRootRelativePath = "Assets/Runestone";
+
+        /// <summary>
+        /// 主安装根（项目相对路径）——提示文案用；委托 <see cref="AesirAssetPaths.PrimaryInstallRoot" />
+        /// 动态解析（默认根优先，无任何本地安装时回退 <see cref="InstallRootRelativePath" />）。
+        /// </summary>
+        public static string PrimaryInstallRoot => AesirAssetPaths.PrimaryInstallRoot;
+
+        /// <summary>项目根目录下的更新状态目录名（点前缀，Unity 不导入）。</summary>
+        public const string StateDirName = ".aesir";
+
+        /// <summary>本地安装清单文件名（记录每次更新成功后各包的完整文件列表）。</summary>
+        public const string ManifestFileName = "installed-manifest.json";
+
+        /// <summary>jsDelivr 检测超时（秒）——不可达时通常立刻失败，超时不宜过长。</summary>
+        public const int JsDelivrCheckTimeoutSeconds = 5;
+
+        /// <summary>
+        /// GitHub 直连的 302 重定向探测与 GitHub Raw 日志兜底超时（秒）——有意高于单次检测尝试
+        /// （<see cref="DetectionAttemptTimeoutSeconds" />）：这两条链路直连 github.com，
+        /// 大陆网络环境下重定向握手与 raw 下载普遍偏慢，5 秒基线会误伤。
+        /// </summary>
+        public const int GitHubCheckTimeoutSeconds = 12;
+
+        /// <summary>unitypackage 下载总时长上限（秒）——大文件慢速连接给足余量；另有"无进展"上限见 <see cref="DownloadStallTimeoutSeconds" />。</summary>
+        public const int DownloadTimeoutSeconds = 120;
+
+        /// <summary>包内 CHANGELOG 文件名（Keep a Changelog 格式）。</summary>
+        public const string ChangelogFileName = "CHANGELOG.md";
+
+        /// <summary>
+        /// AesirFramework 全部已知包的统一登记（唯一真源）：见 <see cref="AesirGetStartedService.KnownPackages" />
+        /// ——目录名、包 id、显示名与描述齐全；本类与 Getting Started 概览卡片共用同一份登记。
+        /// 目录名同时是 Release 资产命名（&lt;目录名&gt;-v&lt;版本&gt;.unitypackage）与默认安装目录名。
+        /// </summary>
+        /// <summary>
+        /// GitHub Raw 内容地址前缀（CHANGELOG 拉取的兜底源；大陆可达性不如 jsDelivr，排在最后）。
+        /// </summary>
+        public static readonly string GitHubRawUrlBase = $"https://raw.githubusercontent.com/{RepoPath}";
+
+        #endregion
+
+        #region 数据模型
+
+        /// <summary>
+        /// update-info.json 结构：版本信息 + 各包文件清单（仓库内文件，jsDelivr / GitHub 均可拉取）。
+        /// <para>数组而非 Dictionary — JsonUtility 不支持字典序列化。</para>
+        /// </summary>
+        [Serializable]
+        public sealed class UpdateInfo
+        {
+            /// <summary>版本号（如 0.15.0）。</summary>
+            public string version;
+
+            /// <summary>Release 标签名（如 v0.15.0）。</summary>
+            public string tag;
+
+            /// <summary>各包文件清单。</summary>
+            public FilesManifest.PackageEntry[] packages;
+
+            /// <summary>按包目录名查找条目；不存在返回 null。</summary>
+            public FilesManifest.PackageEntry GetPackage(string dirName) =>
+                packages?.FirstOrDefault(p => p != null && p.name == dirName);
+        }
+
+        /// <summary>
+        /// 一次成功检测的结果快照：来源 + tag +（可能缺失的）清单。
+        /// unitypackage 下载地址按命名约定从 tag 构造，不依赖 API 的资产列表。
+        /// <para>标记 <see cref="SerializableAttribute" /> — 编辑器窗口字段持有快照时可跨域重载保留。</para>
+        /// </summary>
+        [Serializable]
+        public sealed class ReleaseSnapshot
+        {
+            /// <summary>版本与清单信息；302 重定向路径只有 tag，此字段为 null（更新时跳过残留清理）。</summary>
+            public UpdateInfo Info;
+
+            /// <summary>来源描述（如 "GitHub API" / "镜像 ghproxy.net" / "jsDelivr (cdn.jsdelivr.net)"）。</summary>
+            public string Source;
+
+            /// <summary>来源所属线路类别（直连 GitHub / 镜像站 / CDN 中转）。</summary>
+            public ReleaseRouteKind Kind;
+
+            /// <summary>Release 标签名（如 v0.15.0）。</summary>
+            public string Tag;
+
+            /// <summary>
+            /// 指定包目录的 unitypackage 下载地址。
+            /// 命名约定由 CI 保证：&lt;包目录名&gt;-v&lt;版本&gt;.unitypackage。
+            /// </summary>
+            public string GetUnityPackageUrl(string dirName) =>
+                $"{GitHubDownloadUrlBase}/{Tag}/{dirName}-v{Tag.TrimStart('v')}.unitypackage";
+        }
+
+        /// <summary>
+        /// files-manifest 结构的本地安装清单（.aesir/installed-manifest.json）。
+        /// 与 <see cref="UpdateInfo" /> 共用 <see cref="PackageEntry" />。
+        /// </summary>
+        [Serializable]
+        public sealed class FilesManifest
+        {
+            /// <summary>各包清单。</summary>
+            public PackageEntry[] packages;
+
+            /// <summary>按包目录名查找条目；不存在返回 null。</summary>
+            public PackageEntry GetPackage(string dirName) =>
+                packages?.FirstOrDefault(p => p != null && p.name == dirName);
+
+            /// <summary>单个包的安装清单。</summary>
+            [Serializable]
+            public sealed class PackageEntry
+            {
+                /// <summary>包目录名（如 AesirArchitecture），同时是主键。</summary>
+                public string name;
+
+                /// <summary>该清单对应的包版本。</summary>
+                public string version;
+
+                /// <summary>包内全部条目的项目相对路径（含目录条目，与 unitypackage 内 pathname 同源）。</summary>
+                public string[] files;
+            }
+        }
+
+        /// <summary>扫描到的本地已安装包。</summary>
+        [Serializable]
+        public sealed class InstalledPackage
+        {
+            /// <summary>包目录的 Assets 相对路径（如 Assets/Runestone/AesirArchitecture）。</summary>
+            public string AssetsPath;
+
+            /// <summary>包目录名（如 AesirArchitecture）。</summary>
+            public string DirName;
+
+            /// <summary>package.json 中的包 id（如 cn.runestone.aesir.architecture）。</summary>
+            public string PackageId;
+
+            /// <summary>package.json 中的版本号。</summary>
+            public string Version;
+        }
+
+        /// <summary>
+        /// 一次更新流程的执行结果：成功 / 用户取消均以正常返回收尾（取消时 <see cref="Cancelled" /> 为 true，
+        /// 已导入的包保持有效）；下载失败等异常仍向上抛出（由窗口层弹错误框 + 手动下载指引）。
+        /// </summary>
+        [Serializable]
+        public sealed class UpdateResult
+        {
+            /// <summary>已完整导入的包目录名（按执行顺序；取消/失败时之前完成的包仍然有效）。</summary>
+            public List<string> CompletedDirNames = new List<string>();
+
+            /// <summary>用户是否在下载阶段取消了流程（导入是同步步骤，取消不会产生半导入的包）。</summary>
+            public bool Cancelled;
+
+            /// <summary>尚未执行的包目录名（仅取消时有值；用于窗口如实告知哪些包未动）。</summary>
+            public List<string> SkippedDirNames = new List<string>();
+        }
+
+        #endregion
+
+        #region 路径
+
+        /// <summary>Unity 项目根目录（Application.dataPath 的上一级）。</summary>
+        public static string ProjectRootPath =>
+            Directory.GetParent(Application.dataPath)?.FullName ?? Application.dataPath;
+
+        /// <summary>将项目相对路径转为绝对路径。</summary>
+        public static string ToAbsolutePath(string projectRelativePath) =>
+            Path.GetFullPath(Path.Combine(ProjectRootPath, projectRelativePath));
+
+        #endregion
+
+        #region 本地安装扫描
+
+        /// <summary>
+        /// 扫描全部本地安装根（<see cref="AesirAssetPaths.InstallRoots" />——经锚点资产定位，
+        /// Runestone 可移动到项目任意文件夹；默认根优先）下的 Aesir 包安装。
+        /// 跨根同包 id 去重，先扫描的根胜出（默认根在最前）。
+        /// </summary>
+        public static List<InstalledPackage> ScanInstalledPackagesFromAllRoots()
+        {
+            var results = new List<InstalledPackage>();
+            foreach (var root in AesirAssetPaths.InstallRoots)
+            {
+                foreach (var pkg in ScanInstalledPackages(root))
+                {
+                    if (results.All(p => p.PackageId != pkg.PackageId))
+                    {
+                        results.Add(pkg);
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// 扫描 <paramref name="installRootRelativePath" /> 下的 Aesir 包安装。
+        /// 识别依据：子目录中存在 package.json 且包 id 以 cn.runestone.aesir. 开头。
+        /// </summary>
+        public static List<InstalledPackage> ScanInstalledPackages(string installRootRelativePath =
+            InstallRootRelativePath)
+        {
+            var results = new List<InstalledPackage>();
+            var rootAbs = ToAbsolutePath(installRootRelativePath);
+            if (!Directory.Exists(rootAbs))
+            {
+                return results;
+            }
+
+            foreach (var dir in Directory.GetDirectories(rootAbs).OrderBy(p => p, StringComparer.Ordinal))
+            {
+                var pkgJsonPath = Path.Combine(dir, "package.json");
+                if (!File.Exists(pkgJsonPath))
+                {
+                    continue;
+                }
+
+                var (name, version) = ParsePackageJson(pkgJsonPath);
+                if (string.IsNullOrEmpty(name) ||
+                    !name.StartsWith(AesirAssetPaths.PackageIdPrefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                results.Add(new InstalledPackage
+                {
+                    DirName = Path.GetFileName(dir),
+                    PackageId = name,
+                    Version = version,
+                    AssetsPath = ToAssetsRelativePath(dir)
+                });
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// 解析 package.json 的 name 与 version 字段。
+        /// <para>轻量字段提取（要求自包含，不引入 JSON 库）。</para>
+        /// </summary>
+        public static (string name, string version) ParsePackageJson(string path)
+        {
+            try
+            {
+                var json = File.ReadAllText(path);
+                return (ExtractJsonField(json, "name"), ExtractJsonField(json, "version"));
+            }
+            catch (Exception)
+            {
+                return ("", "");
+            }
+        }
+
+        /// <summary>从 JSON 文本中按字段名提取第一个双引号字符串值（不依赖第三方 JSON 库）。</summary>
+        public static string ExtractJsonField(string json, string fieldName)
+        {
+            var key = "\"" + fieldName + "\"";
+            var idx = json.IndexOf(key, StringComparison.Ordinal);
+            if (idx < 0)
+            {
+                return "";
+            }
+
+            var colonIdx = json.IndexOf(':', idx + key.Length);
+            if (colonIdx < 0)
+            {
+                return "";
+            }
+
+            var quoteStart = json.IndexOf('"', colonIdx + 1);
+            if (quoteStart < 0)
+            {
+                return "";
+            }
+
+            var quoteEnd = json.IndexOf('"', quoteStart + 1);
+            if (quoteEnd < 0)
+            {
+                return "";
+            }
+
+            return json.Substring(quoteStart + 1, quoteEnd - quoteStart - 1);
+        }
+
+        /// <summary>将磁盘绝对路径转为 Assets 相对路径（形如 Assets/Runestone/Xxx）。</summary>
+        static string ToAssetsRelativePath(string absolutePath)
+        {
+            var projectRoot = ProjectRootPath;
+            var full = Path.GetFullPath(absolutePath);
+            var projectRootFull = Path.GetFullPath(projectRoot);
+            var relative = full.StartsWith(projectRootFull, StringComparison.Ordinal)
+                ? full.Substring(projectRootFull.Length)
+                    .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                : full;
+            return relative.Replace(Path.DirectorySeparatorChar, '/');
+        }
+
+        #endregion
+
+        #region 版本比较
+
+        /// <summary>
+        /// 取全部待更新包（本地版本低于远程版本），按包 id 排序保证依赖顺序（Architecture 先于 Modules）。
+        /// 远程版本为空时返回空列表。
+        /// </summary>
+        public static List<InstalledPackage> ComputeOutdatedPackages(List<InstalledPackage> packages,
+            string remoteVersion) =>
+            string.IsNullOrEmpty(remoteVersion)
+                ? new List<InstalledPackage>()
+                : packages.Where(p => CompareVersion(p.Version, remoteVersion) < 0)
+                    .OrderBy(p => p.PackageId, StringComparer.Ordinal).ToList();
+
+        /// <summary>
+        /// 计算「全部更新」的执行目标：全部待更新包 <see cref="ComputeOutdatedPackages" />，
+        /// 加上 <see cref="AesirGetStartedService.KnownPackages" /> 中本地未安装的包（补装目标，
+        /// <see cref="InstalledPackage.Version" /> 为空）；合并后按包 id 排序保证依赖顺序。
+        /// <para>
+        /// 语义：「全部更新」= 让整个框架（全部已知包）到达远程版本——旧的更新、缺的补装。
+        /// 补装目标经确认框明示（「未安装 → vX（新安装）」），用户可选择取消后单独更新已安装的包。
+        /// 补装包的 unitypackage 导入始终落位默认安装根（Unity 机制固有）。
+        /// </para>
+        /// </summary>
+        public static List<InstalledPackage> ComputeUpdateTargets(List<InstalledPackage> installedPackages,
+            string remoteVersion)
+        {
+            if (string.IsNullOrEmpty(remoteVersion))
+            {
+                return new List<InstalledPackage>();
+            }
+
+            var targets = ComputeOutdatedPackages(installedPackages, remoteVersion);
+            foreach (var known in AesirGetStartedService.KnownPackages)
+            {
+                // 本地已安装（含刚计入的过期包）的不再补装
+                if (installedPackages.Any(p => p != null && p.PackageId == known.Id))
+                {
+                    continue;
+                }
+
+                targets.Add(new InstalledPackage
+                {
+                    DirName = known.DirName,
+                    PackageId = known.Id,
+                    Version = null,
+                    // 导入校验/差集清理用默认安装根：unitypackage 装回 Assets/Runestone 是 Unity 固有行为
+                    AssetsPath = $"{InstallRootRelativePath}/{known.DirName}"
+                });
+            }
+
+            return targets.OrderBy(p => p.PackageId, StringComparer.Ordinal).ToList();
+        }
+
+        /// <summary>目标是否为补装（本地未安装、由「全部更新」新安装的包）——以 <see cref="InstalledPackage.Version" /> 为空判定。</summary>
+        public static bool IsFreshInstall(InstalledPackage package) =>
+            string.IsNullOrEmpty(package?.Version);
+
+        /// <summary>
+        /// 比较两个语义化版本号（允许 v/V 前缀，缺省段按 0 处理）。
+        /// 数字段相同时正式版高于预发布版（<c>1.0.0-rc1 &lt; 1.0.0</c>），两侧均为预发布按标识文本排序。
+        /// 返回值：a &lt; b 为负，相等为 0，a &gt; b 为正。
+        /// </summary>
+        public static int CompareVersion(string a, string b)
+        {
+            var partsA = SplitVersion(a, out var prereleaseA);
+            var partsB = SplitVersion(b, out var prereleaseB);
+            for (var i = 0; i < 3; i++)
+            {
+                var cmp = partsA[i].CompareTo(partsB[i]);
+                if (cmp != 0)
+                {
+                    return Math.Sign(cmp);
+                }
+            }
+
+            if (prereleaseA == prereleaseB)
+            {
+                return 0;
+            }
+
+            // SemVer：预发布版的优先级低于同号正式版（否则装过 rc 后正式版会被误判为"已是最新"）
+            if (prereleaseA == null)
+            {
+                return 1;
+            }
+
+            if (prereleaseB == null)
+            {
+                return -1;
+            }
+
+            return string.CompareOrdinal(prereleaseA, prereleaseB);
+        }
+
+        static int[] SplitVersion(string version, out string prerelease)
+        {
+            var result = new int[3];
+            prerelease = null;
+            if (string.IsNullOrEmpty(version))
+            {
+                return result;
+            }
+
+            var core = version.TrimStart('v', 'V');
+            var dashIndex = core.IndexOf('-');
+            if (dashIndex >= 0)
+            {
+                prerelease = core.Substring(dashIndex + 1);
+                core = core.Substring(0, dashIndex);
+            }
+
+            var segments = core.Split('.');
+            for (var i = 0; i < result.Length && i < segments.Length; i++)
+            {
+                int.TryParse(segments[i], out result[i]);
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region 远程版本检测（直连 GitHub → 镜像站 → CDN 中转）
+
+        /// <summary>
+        /// 检测线路类别——决定界面上的实时性提示（越靠前越实时）。
+        /// </summary>
+        public enum ReleaseRouteKind
+        {
+            /// <summary>
+            /// 直连 GitHub（api.github.com / github.com / raw.githubusercontent.com）：
+            /// 发布即刻可见，版本信息 100% 实时。
+            /// </summary>
+            GitHubDirect = 0,
+
+            /// <summary>GitHub 镜像站（第三方代理 GitHub 内容）：内容实时，可用性取决于镜像站自身。</summary>
+            GitHubMirror = 1,
+
+            /// <summary>免费 CDN 中转（jsDelivr 等）：分支内容有缓存，可能有数小时延迟。</summary>
+            CdnRelay = 2
+        }
+
+        /// <summary>单次检测尝试的记录（界面「检测详情」与故障定位用）。</summary>
+        [Serializable]
+        public sealed class DetectionAttempt
+        {
+            /// <summary>源展示名（如 "GitHub API" / "镜像 ghproxy.net" / "jsDelivr (cdn.jsdelivr.net)"）。</summary>
+            public string Source;
+
+            /// <summary>所属线路类别。</summary>
+            public ReleaseRouteKind Kind;
+
+            /// <summary>本次尝试是否成功。</summary>
+            public bool Succeeded;
+
+            /// <summary>成功说明（解析到的 tag）或失败原因。</summary>
+            public string Detail;
+
+            /// <summary>耗时（毫秒）。</summary>
+            public long ElapsedMs;
+        }
+
+        /// <summary>
+        /// 一次版本检测的完整结果：快照 + 线路信息 + 各层尝试记录。
+        /// <para>标记 <see cref="SerializableAttribute" /> — 窗口状态字段持有后可跨域重载保留。</para>
+        /// </summary>
+        [Serializable]
+        public sealed class ReleaseCheckResult
+        {
+            /// <summary>检测结果快照（tag + 可能的清单）。</summary>
+            public ReleaseSnapshot Snapshot;
+
+            /// <summary>最终返回结果的线路类别。</summary>
+            public ReleaseRouteKind RouteKind;
+
+            /// <summary>最终返回结果的源展示名。</summary>
+            public string RouteName;
+
+            /// <summary>本次检测中直连 GitHub 是否可用（可用即结果 100% 实时，无延迟顾虑）。</summary>
+            public bool GitHubDirectAvailable;
+
+            /// <summary>各层尝试记录（按实际尝试顺序）。</summary>
+            public DetectionAttempt[] Attempts;
+
+            /// <summary>各层尝试的可读摘要（一行一次尝试，成功在前标注 ✓）。</summary>
+            public string BuildAttemptsLog()
+            {
+                if (Attempts == null || Attempts.Length == 0)
+                {
+                    return "（无尝试记录）";
+                }
+
+                var builder = new StringBuilder();
+                foreach (var attempt in Attempts)
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append('\n');
+                    }
+
+                    builder.Append(attempt.Succeeded ? "✓ " : "✗ ").Append(attempt.Source).Append("：")
+                        .Append(attempt.Detail).Append("（").Append(attempt.ElapsedMs).Append(" ms）");
+                }
+
+                return builder.ToString();
+            }
+        }
+
+        /// <summary>
+        /// 单次检测尝试的超时（秒）——单源不可达时快速失败并落到下一层，
+        /// 避免层层长等待把整体检测拖到几十秒。
+        /// </summary>
+        public const int DetectionAttemptTimeoutSeconds = 5;
+
+        /// <summary>
+        /// 整轮版本检测的总超时（秒）——超时后不再发起新的源请求（已完成的尝试记录保留、界面照常展示），
+        /// 避免"直连 3 源 + 镜像 2 源 + CDN 4 源"全部卡住时把窗口长时间停住。
+        /// <para>
+        /// 最坏时长 ≈ 本轮已发起请求的剩余超时之和（预算到点后只跳过后续源，不再等待新请求）：
+        /// 逐源 5 秒基线 + 302 探测的 12 秒豁免，实测上限约 32 秒。
+        /// </para>
+        /// </summary>
+        public const int DetectionTotalTimeoutSeconds = 30;
+
+        /// <summary>
+        /// 下载无进展超时（秒）——下载过程中连续该时长没有任何字节进展即中止
+        /// （总时长上限见 <see cref="DownloadTimeoutSeconds" />）。服务端慢速滴水或连接挂起时，
+        /// <c>UnityWebRequest.timeout</c> 不会触发，只有墙钟判据能兜住。
+        /// </summary>
+        public const int DownloadStallTimeoutSeconds = 30;
+
+        /// <summary>
+        /// 直连 GitHub 的 update-info.json 地址（GitHub 自有域名，无 API 限流、带文件清单；
+        /// 缓存仅数分钟，远优于 CDN 中转）。
+        /// </summary>
+        public static readonly string GitHubRawUpdateInfoUrl =
+            $"https://raw.githubusercontent.com/{RepoPath}/main/{UpdateInfoRelativePath}";
+
+        /// <summary>
+        /// GitHub 镜像站前缀（第三方代理 raw.githubusercontent.com；「前缀 + 完整 GitHub 地址」形态）。
+        /// 顺序即尝试顺序——直连不通时镜像站仍返回实时内容。
+        /// </summary>
+        public static readonly string[] GitHubMirrorPrefixes =
+            { "https://ghproxy.net/", "https://gh-proxy.com/" };
+
+        /// <summary>jsDelivr CDN 上的 update-info.json 地址（分支引用，缓存最长约 12 小时）。</summary>
+        public static string BuildJsDelivrUpdateInfoUrl(string domain) =>
+            $"https://{domain}/gh/{RepoPath}@main/{UpdateInfoRelativePath}";
+
+        /// <summary>线路类别的展示标签（界面「获取线路」用）。</summary>
+        public static string GetRouteKindLabel(ReleaseRouteKind kind)
+        {
+            switch (kind)
+            {
+                case ReleaseRouteKind.GitHubDirect:
+                    return "直连 GitHub";
+                case ReleaseRouteKind.GitHubMirror:
+                    return "镜像站";
+                default:
+                    return "CDN 中转";
+            }
+        }
+
+        /// <summary>
+        /// 连接状态文案：直连可用 = 本次结果 100% 实时；否则说明结果来自兜底线路。
+        /// </summary>
+        public static string BuildConnectionStatusText(bool gitHubDirectAvailable) =>
+            gitHubDirectAvailable ? "GitHub 直连：可用 —— 版本信息 100% 实时。" : "GitHub 直连：不可用 —— 已通过兜底线路获取，结果可能不是最新。";
+
+        /// <summary>获取线路文案：最终结果是经哪条线路拿到的（直连 / 镜像站 / CDN 中转）。</summary>
+        public static string BuildRouteText(string routeName, ReleaseRouteKind kind) =>
+            $"获取线路：{routeName}（{GetRouteKindLabel(kind)}）。";
+
+        /// <summary>CDN 中转延迟提示（仅当结果来自 CDN 中转时展示）。</summary>
+        public static string BuildCdnDelayHintText() =>
+            "本次版本信息经 CDN 中转获取，可能有数小时延迟（jsDelivr 分支缓存最长约 12 小时）。" + "如需确认是否为最新版，请点「打开 Releases 页面」查看。";
+
+        /// <summary>检测结果摘要（连接状态 + 获取线路两行，界面合并展示）。</summary>
+        public static string BuildDetectionSummary(string routeName,
+            ReleaseRouteKind kind,
+            bool gitHubDirectAvailable) =>
+            BuildConnectionStatusText(gitHubDirectAvailable) + "\n" + BuildRouteText(routeName, kind);
+
+        /// <summary>
+        /// 检测远程最新 Release（tag + 可能的清单），按「直连 GitHub → 镜像站 → CDN 中转」三层顺序兜底，
+        /// 首个成功即返回；单次尝试超时 <see cref="DetectionAttemptTimeoutSeconds" /> 秒。
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///     第一层直连 GitHub（最实时，依次尝试）：① Releases API（结构化、发布即刻可见，未认证 60 次/时/IP）；
+        ///     ② releases/latest 的 302 重定向探测（完全绕开 API 限流）；③ 仓库内 update-info.json 的直连 raw
+        ///     （无 API 限流且带文件清单，缓存仅数分钟）。
+        ///     </para>
+        ///     <para>
+        ///     第二层镜像站（<see cref="GitHubMirrorPrefixes" /> 代理 raw 内容，内容实时）；
+        ///     第三层免费 CDN 中转（<see cref="JsDelivrDomains" />，分支缓存最长约 12 小时）。
+        ///     直连可用时绝不用后两层——这保证「能连 GitHub 就是最新」。
+        ///     </para>
+        ///     <para>
+        ///     只有 tag 的结果（API / 302）会再按同层顺序补齐文件清单（清单缺失会跳过"差集清理残留"）；
+        ///     补齐只接受 tag 与本次检测一致者——CDN 可能仍是旧版本，错配清单会误删文件。
+        ///     </para>
+        ///     <para>全部失败时抛出含各源错误明细的异常。</para>
+        /// </remarks>
+        /// <param name="fetchTextAsync">
+        /// 文本拉取委托（默认走真实网络 <see cref="GetTextAsync" />）；测试注入 fake 以覆盖兜底顺序。
+        /// </param>
+        /// <param name="probeLatestTagAsync">
+        /// 302 探测委托（默认走真实网络 <see cref="ProbeLatestTagFromRedirect" />）。
+        /// </param>
+        /// <param name="clock">
+        /// 时钟委托（默认 <see cref="DefaultClock" />，编辑器启动秒数）；测试注入以覆盖整轮超时分支。
+        /// </param>
+        public static async Task<ReleaseCheckResult> CheckLatestReleaseAsync(
+            Func<string, int, Task<string>> fetchTextAsync = null,
+            Func<Task<string>> probeLatestTagAsync = null,
+            Func<double> clock = null)
+        {
+            // 显式 lambda 而非方法组：拉取方法带可选参数，方法组转换不接受缺省实参
+            fetchTextAsync ??= (url, timeoutSeconds) => GetTextAsync(url, timeoutSeconds);
+            probeLatestTagAsync ??= () => ProbeLatestTagFromRedirect();
+            clock ??= DefaultClock;
+            var totalBudget = new TimeoutBudget(DetectionTotalTimeoutSeconds, clock());
+            var attempts = new List<DetectionAttempt>();
+
+            // 整轮预算守卫：超时后不再发起新请求（已完成的尝试照常留痕，界面能看到为什么停下）
+            bool HasBudget(string name, ReleaseRouteKind kind)
+            {
+                if (!totalBudget.IsExpired(clock()))
+                {
+                    return true;
+                }
+
+                attempts.Add(RecordAttempt(name, kind, false, $"跳过：整轮检测已超时（{DetectionTotalTimeoutSeconds} 秒）",
+                    Stopwatch.StartNew()));
+                return false;
+            }
+
+            // ── 第一层：直连 GitHub（最实时；能连上就是最新）──
+            ReleaseSnapshot snapshot = null;
+            if (HasBudget("GitHub API", ReleaseRouteKind.GitHubDirect))
+            {
+                snapshot = await TryTagSourceAsync("GitHub API", ReleaseRouteKind.GitHubDirect,
+                    async () => ExtractJsonField(
+                        await fetchTextAsync(LatestReleaseApiUrl, DetectionAttemptTimeoutSeconds),
+                        "tag_name"), attempts);
+            }
+
+            if (snapshot == null && HasBudget("GitHub 重定向", ReleaseRouteKind.GitHubDirect))
+            {
+                snapshot = await TryTagSourceAsync("GitHub 重定向", ReleaseRouteKind.GitHubDirect,
+                    probeLatestTagAsync, attempts);
+            }
+
+            if (snapshot == null && HasBudget("GitHub Raw", ReleaseRouteKind.GitHubDirect))
+            {
+                snapshot = await TryUpdateInfoSourceAsync("GitHub Raw", ReleaseRouteKind.GitHubDirect,
+                    GitHubRawUpdateInfoUrl, fetchTextAsync, attempts);
+            }
+
+            // ── 第二层：镜像站（第三方代理 GitHub 内容，内容实时）──
+            if (snapshot == null)
+            {
+                foreach (var prefix in GitHubMirrorPrefixes)
+                {
+                    var mirrorName = $"镜像 {new Uri(prefix).Host}";
+                    if (!HasBudget(mirrorName, ReleaseRouteKind.GitHubMirror))
+                    {
+                        break;
+                    }
+
+                    snapshot = await TryUpdateInfoSourceAsync(mirrorName, ReleaseRouteKind.GitHubMirror,
+                        prefix + GitHubRawUpdateInfoUrl, fetchTextAsync, attempts);
+                    if (snapshot != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            // ── 第三层：免费 CDN 中转（有缓存延迟，故排最后）──
+            if (snapshot == null)
+            {
+                foreach (var domain in JsDelivrDomains)
+                {
+                    var cdnName = $"jsDelivr ({domain})";
+                    if (!HasBudget(cdnName, ReleaseRouteKind.CdnRelay))
+                    {
+                        break;
+                    }
+
+                    snapshot = await TryUpdateInfoSourceAsync(cdnName, ReleaseRouteKind.CdnRelay,
+                        BuildJsDelivrUpdateInfoUrl(domain), fetchTextAsync, attempts);
+                    if (snapshot != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (snapshot == null)
+            {
+                var headline = totalBudget.IsExpired(clock())
+                    ? $"版本检测超时（超过 {DetectionTotalTimeoutSeconds} 秒）"
+                    : "所有更新源均不可用";
+                throw new Exception(headline + "：\n" +
+                                    new ReleaseCheckResult
+                                        { Attempts = attempts.ToArray() }.BuildAttemptsLog());
+            }
+
+            // tag-only 结果（API / 302）补齐文件清单：清单缺失会跳过"差集清理残留"。
+            // 同样受整轮预算约束——预算已耗尽时不再补，tag 才是更新必需的信息
+            if (snapshot.Info == null && !totalBudget.IsExpired(clock()))
+            {
+                await TryEnrichManifestAsync(snapshot, fetchTextAsync, attempts, totalBudget, clock);
+            }
+
+            return new ReleaseCheckResult
+            {
+                Snapshot = snapshot,
+                RouteKind = snapshot.Kind,
+                RouteName = snapshot.Source,
+                GitHubDirectAvailable = snapshot.Kind == ReleaseRouteKind.GitHubDirect,
+                Attempts = attempts.ToArray()
+            };
+        }
+
+        /// <summary>尝试从"只给 tag"的源（API / 302 探测）取最新 tag；失败记录原因并返回 null。</summary>
+        static async Task<ReleaseSnapshot> TryTagSourceAsync(string name,
+            ReleaseRouteKind kind,
+            Func<Task<string>> fetchTagAsync,
+            List<DetectionAttempt> attempts)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                var tag = await fetchTagAsync();
+                if (!string.IsNullOrEmpty(tag))
+                {
+                    attempts.Add(RecordAttempt(name, kind, true, tag, stopwatch));
+                    return new ReleaseSnapshot { Source = name, Kind = kind, Tag = tag };
+                }
+
+                attempts.Add(RecordAttempt(name, kind, false, "响应中未解析到 tag", stopwatch));
+            }
+            catch (Exception e)
+            {
+                attempts.Add(RecordAttempt(name, kind, false, e.Message, stopwatch));
+            }
+
+            return null;
+        }
+
+        /// <summary>尝试从 update-info.json（tag + 清单）取版本信息；失败记录原因并返回 null。</summary>
+        static async Task<ReleaseSnapshot> TryUpdateInfoSourceAsync(string name,
+            ReleaseRouteKind kind,
+            string url,
+            Func<string, int, Task<string>> fetchTextAsync,
+            List<DetectionAttempt> attempts)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                var info = ParseUpdateInfo(await fetchTextAsync(url, DetectionAttemptTimeoutSeconds));
+                if (info?.tag != null)
+                {
+                    attempts.Add(RecordAttempt(name, kind, true, info.tag, stopwatch));
+                    return new ReleaseSnapshot { Source = name, Kind = kind, Tag = info.tag, Info = info };
+                }
+
+                attempts.Add(RecordAttempt(name, kind, false, "响应中无 tag 字段", stopwatch));
+            }
+            catch (Exception e)
+            {
+                attempts.Add(RecordAttempt(name, kind, false, e.Message, stopwatch));
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 为只有 tag 的检测结果补齐文件清单（best-effort，按 直连 raw → 镜像站 → CDN 顺序）。
+        /// 遇到首个可解析但 tag 不一致的源即停止——列表按实时性排序，其后各源不会更新，
+        /// 继续尝试只会白等（CDN 分支缓存最长约 12 小时，正是典型的陈旧源）。
+        /// </summary>
+        static async Task TryEnrichManifestAsync(ReleaseSnapshot snapshot,
+            Func<string, int, Task<string>> fetchTextAsync,
+            List<DetectionAttempt> attempts,
+            TimeoutBudget totalBudget,
+            Func<double> clock)
+        {
+            var candidates = new List<(string name, ReleaseRouteKind kind, string url)>
+            {
+                ("GitHub Raw", ReleaseRouteKind.GitHubDirect, GitHubRawUpdateInfoUrl)
+            };
+            foreach (var prefix in GitHubMirrorPrefixes)
+            {
+                candidates.Add(($"镜像 {new Uri(prefix).Host}", ReleaseRouteKind.GitHubMirror,
+                    prefix + GitHubRawUpdateInfoUrl));
+            }
+
+            foreach (var domain in JsDelivrDomains)
+            {
+                candidates.Add(($"jsDelivr ({domain})", ReleaseRouteKind.CdnRelay,
+                    BuildJsDelivrUpdateInfoUrl(domain)));
+            }
+
+            foreach (var (name, kind, url) in candidates)
+            {
+                if (totalBudget.IsExpired(clock()))
+                {
+                    attempts.Add(RecordAttempt(name, kind, false,
+                        $"跳过补齐清单：整轮检测已超时（{DetectionTotalTimeoutSeconds} 秒）", Stopwatch.StartNew()));
+                    return;
+                }
+
+                var stopwatch = Stopwatch.StartNew();
+                try
+                {
+                    var info = ParseUpdateInfo(await fetchTextAsync(url, DetectionAttemptTimeoutSeconds));
+                    if (info?.tag == null)
+                    {
+                        attempts.Add(RecordAttempt(name, kind, false, "补齐清单：响应中无 tag 字段", stopwatch));
+                        continue;
+                    }
+
+                    if (CompareVersion(info.tag, snapshot.Tag) != 0)
+                    {
+                        attempts.Add(RecordAttempt(name, kind, false,
+                            $"补齐清单：该源版本 {info.tag} 与本次检测 {snapshot.Tag} 不一致，跳过（不采用陈旧清单）", stopwatch));
+                        return;
+                    }
+
+                    snapshot.Info = info;
+                    attempts.Add(RecordAttempt(name, kind, true, $"补齐清单（{info.tag}）", stopwatch));
+                    return;
+                }
+                catch (Exception e)
+                {
+                    attempts.Add(RecordAttempt(name, kind, false, $"补齐清单：{e.Message}", stopwatch));
+                }
+            }
+        }
+
+        static DetectionAttempt RecordAttempt(string name,
+            ReleaseRouteKind kind,
+            bool succeeded,
+            string detail,
+            Stopwatch stopwatch) =>
+            new DetectionAttempt
+            {
+                Source = name,
+                Kind = kind,
+                Succeeded = succeeded,
+                Detail = detail,
+                ElapsedMs = stopwatch.ElapsedMilliseconds
+            };
+
+        /// <summary>
+        /// 解析 update-info.json；内容为空或格式异常时返回 null（调用方按"源不可用"处理）。
+        /// </summary>
+        public static UpdateInfo ParseUpdateInfo(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+
+            try
+            {
+                var info = JsonUtility.FromJson<UpdateInfo>(json);
+                return info?.tag != null || info?.version != null ? info : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 向 GitHub releases/latest 发起禁止重定向的 HEAD 请求，从 302 Location 中提取最新 tag。
+        /// 完全绕开 API 限流（该路径不走 api.github.com）。
+        /// </summary>
+        public static async Task<string> ProbeLatestTagFromRedirect(Func<double> clock = null)
+        {
+            clock ??= DefaultClock;
+            using var request = UnityWebRequest.Head(LatestReleasePageUrl);
+            request.redirectLimit = 0;
+            request.timeout = GitHubCheckTimeoutSeconds;
+            var budget = new TimeoutBudget(GitHubCheckTimeoutSeconds, clock());
+            var operation = request.SendWebRequest();
+            while (!operation.isDone)
+            {
+                if (budget.IsExpired(clock()))
+                {
+                    request.Abort();
+                    throw new Exception($"请求超时（超过 {GitHubCheckTimeoutSeconds} 秒）：{LatestReleasePageUrl}");
+                }
+
+                await Task.Yield();
+            }
+
+            if (request.responseCode < 300 || request.responseCode >= 400)
+            {
+                throw new Exception($"预期 302 重定向，实际状态码 {request.responseCode}");
+            }
+
+            var location = request.GetResponseHeader("Location");
+            return ExtractTagFromLocation(location) ??
+                   throw new Exception($"Location 头中未解析到 tag: {location}");
+        }
+
+        /// <summary>
+        /// 从 releases/latest 重定向地址中提取 tag（如 .../releases/tag/v0.15.0 → v0.15.0）；
+        /// 不匹配返回 null。
+        /// </summary>
+        public static string ExtractTagFromLocation(string location)
+        {
+            if (string.IsNullOrEmpty(location))
+            {
+                return null;
+            }
+
+            var match = Regex.Match(location, @"releases/tag/([^/?#]+)");
+            return match.Success ? match.Groups[1].Value : null;
+        }
+
+        #endregion
+
+        #region 网络下载
+
+        /// <summary>默认时钟：编辑器启动以来的秒数（测试可注入自定义时钟以验证超时分支）。</summary>
+        public static double DefaultClock() => EditorApplication.timeSinceStartup;
+
+        /// <summary>
+        /// 墙钟超时预算。用于给"整轮检测""单次请求""下载"设硬上限——
+        /// <c>UnityWebRequest.timeout</c> 只覆盖"完全无数据"的情形，服务端慢速滴水时不会触发，
+        /// 会把进度条长时间挂在屏幕上（用户实测反馈）。
+        /// </summary>
+        public readonly struct TimeoutBudget
+        {
+            readonly double _deadline;
+
+            /// <summary>以 <paramref name="limitSeconds" /> 为上限、自 <paramref name="now" /> 起算建立预算。</summary>
+            public TimeoutBudget(double limitSeconds, double now)
+            {
+                LimitSeconds = limitSeconds;
+                _deadline = now + limitSeconds;
+            }
+
+            /// <summary>预算时长（秒）。</summary>
+            public double LimitSeconds { get; }
+
+            /// <summary>当前时刻是否已超时。</summary>
+            public bool IsExpired(double now) => now >= _deadline;
+
+            /// <summary>剩余时间（秒，最小 0）。</summary>
+            public double Remaining(double now) => Math.Max(0d, _deadline - now);
+        }
+
+        /// <summary>
+        /// GET 文本内容（UnityWebRequest，编辑器主线程异步等待）。超时秒数由调用方显式给出
+        /// （各检测源有各自的超时基线，不给默认值以防新调用方不慎超出 5 秒检测基线）。
+        /// 除 <c>request.timeout</c>（无数据超时）外再加墙钟硬上限：超时即 <c>Abort</c> 并抛超时异常。
+        /// </summary>
+        public static async Task<string> GetTextAsync(string url,
+            int timeoutSeconds,
+            Func<double> clock = null)
+        {
+            clock ??= DefaultClock;
+            using var request = UnityWebRequest.Get(url);
+            request.timeout = timeoutSeconds;
+            var budget = new TimeoutBudget(timeoutSeconds, clock());
+            var operation = request.SendWebRequest();
+            while (!operation.isDone)
+            {
+                if (budget.IsExpired(clock()))
+                {
+                    request.Abort();
+                    throw new Exception($"请求超时（超过 {timeoutSeconds} 秒）：{url}");
+                }
+
+                await Task.Yield();
+            }
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                throw new Exception($"网络请求失败 ({request.responseCode}): {request.error}");
+            }
+
+            return request.downloadHandler.text;
+        }
+
+        /// <summary>
+        /// GET 二进制内容（用于下载 unitypackage），通过回调上报 0~1 下载进度。
+        /// 双重墙钟上限：总时长 <paramref name="timeoutSeconds" /> 与"无进展"
+        /// <paramref name="stallTimeoutSeconds" />——任一超限即 <c>Abort</c> 并抛超时异常，
+        /// 保证上层进度条必定收尾（不会出现长时间卡住的进度条）。
+        /// </summary>
+        /// <param name="isCanceled">
+        /// 取消探测委托（每帧评估一次）：返回 true 时 <c>Abort</c> 请求并抛
+        /// <see cref="OperationCanceledException" />——给卡在慢速线路上的用户提供逃生门，
+        /// 不必等待超时判据触发。
+        /// </param>
+        public static async Task<byte[]> DownloadBytesAsync(string url,
+            Action<float> onProgress = null,
+            int timeoutSeconds = DownloadTimeoutSeconds,
+            int stallTimeoutSeconds = DownloadStallTimeoutSeconds,
+            Func<double> clock = null,
+            Func<bool> isCanceled = null)
+        {
+            clock ??= DefaultClock;
+            using var request = UnityWebRequest.Get(url);
+            request.timeout = timeoutSeconds;
+            var totalBudget = new TimeoutBudget(timeoutSeconds, clock());
+            var operation = request.SendWebRequest();
+
+            var lastProgress = -1f;
+            var lastProgressAt = clock();
+            while (!operation.isDone)
+            {
+                if (isCanceled != null && isCanceled())
+                {
+                    request.Abort();
+                    throw new OperationCanceledException($"已取消下载：{url}");
+                }
+
+                var now = clock();
+                if (totalBudget.IsExpired(now))
+                {
+                    request.Abort();
+                    throw new Exception(
+                        $"下载超时（总时长超过 {timeoutSeconds} 秒，已下载 {request.downloadProgress:P0}）：{url}");
+                }
+
+                var progress = request.downloadProgress;
+                if (progress > lastProgress)
+                {
+                    lastProgress = progress;
+                    lastProgressAt = now;
+                }
+                else if (now - lastProgressAt >= stallTimeoutSeconds)
+                {
+                    request.Abort();
+                    throw new Exception($"下载超时（连续 {stallTimeoutSeconds} 秒无进展，已下载 {progress:P0}）：{url}");
+                }
+
+                onProgress?.Invoke(progress);
+                await Task.Yield();
+            }
+
+            onProgress?.Invoke(1f);
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                throw new Exception($"下载失败 ({request.responseCode}): {request.error}");
+            }
+
+            return request.downloadHandler.data;
+        }
+
+        /// <summary>
+        /// 下载指定包的 unitypackage：按「GitHub Release 直链 → GitHub 镜像站代理」顺序逐线路尝试，
+        /// 单条线路失败（超时 / 连接失败）自动落到下一线路，每条线路独立适用双重墙钟超时。
+        /// 用户取消（<paramref name="isCanceled" /> 返回 true）立即抛 <see cref="OperationCanceledException" />，
+        /// 不再尝试后续线路。全部线路失败时抛出含各线路错误明细与手动下载指引的异常——
+        /// 用户网络全部线路不可达时仍有明确的自助路径。
+        /// </summary>
+        /// <param name="onProgress">进度回调（当前线路展示名, 0~1 进度）；换线路时进度从零重报。</param>
+        /// <remarks>
+        /// 镜像站（<see cref="GitHubMirrorPrefixes" />）以「前缀 + 完整 GitHub 地址」形态代理 Release 资产，
+        /// 与版本检测的镜像站兜底共用域名清单；属第三方公益服务，可用性与限速不受本框架控制，
+        /// 故仅作为直连失败后的兜底、绝不排在直连之前。jsDelivr 不代理 Release 资产，不在此列。
+        /// </remarks>
+        public static async Task<byte[]> DownloadUnityPackageAsync(ReleaseSnapshot snapshot,
+            string packageDirName,
+            Action<string, float> onProgress = null,
+            Func<bool> isCanceled = null)
+        {
+            var directUrl = snapshot.GetUnityPackageUrl(packageDirName);
+            var assetName = $"{packageDirName}-v{snapshot.Tag.TrimStart('v')}.unitypackage";
+            var routes = new List<(string Name, string Url)> { ("GitHub Release 直链", directUrl) };
+            foreach (var prefix in GitHubMirrorPrefixes)
+            {
+                routes.Add(($"镜像 {new Uri(prefix).Host}", prefix + directUrl));
+            }
+
+            var errors = new List<string>();
+            foreach (var (name, url) in routes)
+            {
+                try
+                {
+                    return await DownloadBytesAsync(url, p => onProgress?.Invoke(name, p),
+                        DownloadTimeoutSeconds, DownloadStallTimeoutSeconds, null, isCanceled);
+                }
+                catch (OperationCanceledException)
+                {
+                    // 用户主动取消：不属于线路失败，不再尝试后续线路
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"{name}：{e.Message}");
+                }
+            }
+
+            throw new Exception($"unitypackage 全部下载线路均失败（{assetName}）：\n" + string.Join("\n", errors) +
+                                "\n\n" + $"自助方案：打开 {ReleasesPageUrl} 手动下载 {assetName}，" +
+                                "下载完成后双击导入本项目即可完成更新；或待网络恢复后重试本更新器。");
+        }
+
+        #endregion
+
+        #region 更新日志（CHANGELOG）
+
+        /// <summary>
+        /// CHANGELOG 中的一个版本段落（Keep a Changelog 格式的 <c>## [x.y.z] - 日期</c> 小节）。
+        /// </summary>
+        [Serializable]
+        public sealed class ChangelogSection
+        {
+            /// <summary>版本号（如 0.21.0，无 v 前缀）。</summary>
+            public string Version;
+
+            /// <summary>发布日期（标题行 <c>-</c> 后的文本，可为空）。</summary>
+            public string Date;
+
+            /// <summary>段落正文（不含标题行；已剔除首尾空行与 <c>---</c> 分隔线）。</summary>
+            public string Content;
+        }
+
+        /// <summary>CHANGELOG 版本段落标题行：<c>## [0.21.0] - 2026-09-13</c>（日期可缺省）。</summary>
+        static readonly Regex ChangelogHeaderRegex =
+            new Regex(@"^##\s+\[([^\]]+)\]\s*(?:-\s*(.+?))?\s*$", RegexOptions.Compiled);
+
+        /// <summary>版本号形态判定：纯数字点分段（Unreleased 等非版本标题据此排除）。</summary>
+        static readonly Regex VersionNumberRegex = new Regex(@"^\d+(\.\d+)*$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// 解析 Keep a Changelog 格式的 markdown，按 <c>## [x.y.z]</c> 切分版本段落（保持文件原顺序：新 → 旧）。
+        /// <para>
+        /// 非版本标题（<c>## [Unreleased]</c>、<c>## 当前版本</c> 等）不产生段落；遇到任意其他二级标题即结束当前段落。
+        /// 输入为空或异常时返回空列表。
+        /// </para>
+        /// </summary>
+        public static List<ChangelogSection> ParseChangelogSections(string markdown)
+        {
+            var sections = new List<ChangelogSection>();
+            if (string.IsNullOrEmpty(markdown))
+            {
+                return sections;
+            }
+
+            ChangelogSection current = null;
+            var contentLines = new List<string>();
+            using var reader = new StringReader(markdown);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var match = ChangelogHeaderRegex.Match(line);
+                if (match.Success)
+                {
+                    FlushSection();
+                    var version = match.Groups[1].Value.Trim();
+                    if (VersionNumberRegex.IsMatch(version))
+                    {
+                        current = new ChangelogSection
+                        {
+                            Version = version,
+                            Date = match.Groups[2].Success ? match.Groups[2].Value.Trim() : ""
+                        };
+                        contentLines.Clear();
+                    }
+
+                    continue;
+                }
+
+                // 其他二级标题（如"## 当前版本"）结束当前版本段落
+                if (line.StartsWith("## ", StringComparison.Ordinal))
+                {
+                    FlushSection();
+                    continue;
+                }
+
+                if (current != null)
+                {
+                    contentLines.Add(line);
+                }
+            }
+
+            FlushSection();
+            return sections;
+
+            void FlushSection()
+            {
+                if (current == null)
+                {
+                    return;
+                }
+
+                var start = 0;
+                var end = contentLines.Count;
+                while (start < end && IsBlankOrRule(contentLines[start]))
+                {
+                    start++;
+                }
+
+                while (end > start && IsBlankOrRule(contentLines[end - 1]))
+                {
+                    end--;
+                }
+
+                current.Content = string.Join("\n", contentLines.GetRange(start, end - start));
+                sections.Add(current);
+                current = null;
+            }
+        }
+
+        static bool IsBlankOrRule(string line) =>
+            string.IsNullOrWhiteSpace(line) || line.Trim() == "---";
+
+        /// <summary>
+        /// 从段落列表中筛出位于 (localVersion, remoteVersion] 区间的版本段落（保持原顺序：新 → 旧）。
+        /// <paramref name="remoteVersion" /> 为空时不设上限。
+        /// </summary>
+        public static List<ChangelogSection> CollectNewerSections(IReadOnlyList<ChangelogSection> sections,
+            string localVersion,
+            string remoteVersion)
+        {
+            var result = new List<ChangelogSection>();
+            if (sections == null)
+            {
+                return result;
+            }
+
+            foreach (var section in sections)
+            {
+                if (CompareVersion(section.Version, localVersion) <= 0)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(remoteVersion) &&
+                    CompareVersion(section.Version, remoteVersion) > 0)
+                {
+                    continue;
+                }
+
+                result.Add(section);
+            }
+
+            return result;
+        }
+
+        /// <summary>将版本段落渲染回可读的 markdown 文本（标题行 + 正文，段落间空行分隔）。</summary>
+        public static string RenderChangelogText(IReadOnlyList<ChangelogSection> sections)
+        {
+            if (sections == null || sections.Count == 0)
+            {
+                return "";
+            }
+
+            var builder = new StringBuilder();
+            foreach (var section in sections)
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append('\n');
+                }
+
+                builder.Append("## [").Append(section.Version).Append(']');
+                if (!string.IsNullOrEmpty(section.Date))
+                {
+                    builder.Append(" - ").Append(section.Date);
+                }
+
+                builder.Append("\n\n").Append(section.Content).Append('\n');
+            }
+
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// 拉取指定 Release 版本的包内 CHANGELOG.md（jsDelivr 多域名 → GitHub Raw 兜底，首个成功即返回）。
+        /// 全部失败时抛出含各源错误明细的异常。
+        /// </summary>
+        public static async Task<string> FetchPackageChangelogAsync(string tag, string packageDirName)
+        {
+            var relativePath = $"{InstallRootRelativePath}/{packageDirName}/{ChangelogFileName}";
+            var errors = new List<string>();
+
+            foreach (var domain in JsDelivrDomains)
+            {
+                try
+                {
+                    return await GetTextAsync($"https://{domain}/gh/{RepoPath}@{tag}/{relativePath}",
+                        JsDelivrCheckTimeoutSeconds);
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"jsDelivr ({domain}): {e.Message}");
+                }
+            }
+
+            try
+            {
+                return await GetTextAsync($"{GitHubRawUrlBase}/{tag}/{relativePath}",
+                    GitHubCheckTimeoutSeconds);
+            }
+            catch (Exception e)
+            {
+                errors.Add($"GitHub Raw: {e.Message}");
+            }
+
+            throw new Exception("更新日志拉取失败：\n" + string.Join("\n", errors));
+        }
+
+        /// <summary>读取本地包内 CHANGELOG.md 全文；文件不存在返回 null。</summary>
+        public static string LoadLocalChangelog(string packageAssetsPath)
+        {
+            var path = ToAbsolutePath(packageAssetsPath + "/" + ChangelogFileName);
+            return File.Exists(path) ? File.ReadAllText(path) : null;
+        }
+
+        /// <summary>
+        /// 生成「本地版本 → 远程版本」的更新日志摘要文本（每包一节，按传入顺序）。
+        /// <para>
+        /// 远程优先：按 tag 拉取包内 CHANGELOG.md 并提取比本地新的段落；远程拉取失败时回退本地包内
+        /// CHANGELOG 的最新段落并标注来源。日志属辅助信息，任何单包失败不影响其余包与其摘要输出。
+        /// </para>
+        /// <para>
+        /// 整轮墙钟预算 <see cref="DetectionTotalTimeoutSeconds" /> 秒：拉取阶段逃逸在检测预算之外
+        /// （每包最多 4 个 jsDelivr 域 × 5s + GitHub Raw 12s，双包串行最坏约 64 秒）会让坏网络用户
+        /// 长时间停在不可取消的进度条上（本页与检测阶段均用 <c>DisplayProgressBar</c>，无取消按钮）——
+        /// 预算耗尽后剩余包不再发起远程拉取，直接回退本地日志，把最坏时长压到"预算 + 单次请求超时"。
+        /// 预算只拦截"下一个包"的拉取，在途请求仍按自身超时收尾，故总时长上限为预算 + 单次请求超时。
+        /// </para>
+        /// </summary>
+        /// <param name="clock">时钟委托（默认 <see cref="DefaultClock" />）；测试注入以覆盖预算耗尽分支。</param>
+        public static async Task<string> BuildChangelogDigestAsync(string remoteTag,
+            IReadOnlyList<InstalledPackage> outdatedPackages,
+            Func<double> clock = null)
+        {
+            clock ??= DefaultClock;
+            var budget = new TimeoutBudget(DetectionTotalTimeoutSeconds, clock());
+            var builder = new StringBuilder();
+            foreach (var pkg in outdatedPackages)
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append('\n');
+                }
+
+                builder.Append("【").Append(pkg.DirName).Append("】v").Append(pkg.Version).Append(" → ")
+                    .Append(remoteTag).Append('\n');
+
+                string remoteMarkdown = null;
+                if (!budget.IsExpired(clock()))
+                {
+                    try
+                    {
+                        remoteMarkdown = await FetchPackageChangelogAsync(remoteTag, pkg.DirName);
+                    }
+                    catch (Exception e)
+                    {
+                        AesirArchitectureDebug.LogWarning("AesirUpdater",
+                            $"{pkg.DirName} 远程更新日志拉取失败，回退本地日志。\n{e.Message}");
+                    }
+                }
+                else
+                {
+                    AesirArchitectureDebug.LogWarning("AesirUpdater",
+                        $"更新日志拉取整轮预算（{DetectionTotalTimeoutSeconds} 秒）已耗尽，" +
+                        $"{pkg.DirName} 不再远程拉取，回退本地日志。");
+                }
+
+                if (remoteMarkdown != null)
+                {
+                    var sections = CollectNewerSections(ParseChangelogSections(remoteMarkdown), pkg.Version,
+                        remoteTag);
+                    builder.Append(sections.Count > 0 ? RenderChangelogText(sections) : "（无新增版本段落）\n");
+                }
+                else
+                {
+                    var localSections = ParseChangelogSections(LoadLocalChangelog(pkg.AssetsPath));
+                    if (localSections.Count > 0)
+                    {
+                        builder.Append("（远程日志拉取失败，以下为本地包内最新段落）\n\n")
+                            .Append(RenderChangelogText(new List<ChangelogSection> { localSections[0] }));
+                    }
+                    else
+                    {
+                        builder.Append("（更新日志不可用：远程拉取失败，本地包内无 CHANGELOG.md）\n");
+                    }
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        #endregion
+
+        #region 清单与残留清理
+
+        /// <summary>本地安装清单的项目相对路径。</summary>
+        public static string StateFilePath => StateDirName + "/" + ManifestFileName;
+
+        /// <summary>解析本地清单 JSON；内容为空或格式异常时返回 null（调用方按"无记录"处理）。</summary>
+        public static FilesManifest ParseFilesManifest(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+
+            try
+            {
+                var manifest = JsonUtility.FromJson<FilesManifest>(json);
+                return manifest?.packages is { Length: > 0 } ? manifest : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>读取本地安装清单；文件不存在或损坏返回 null。</summary>
+        public static FilesManifest LoadLocalManifest()
+        {
+            var path = ToAbsolutePath(StateFilePath);
+            return File.Exists(path) ? ParseFilesManifest(File.ReadAllText(path)) : null;
+        }
+
+        /// <summary>写入本地安装清单（自动创建 .aesir 状态目录）。</summary>
+        public static void SaveLocalManifest(FilesManifest manifest)
+        {
+            Directory.CreateDirectory(ToAbsolutePath(StateDirName));
+            File.WriteAllText(ToAbsolutePath(StateFilePath), JsonUtility.ToJson(manifest, true));
+        }
+
+        /// <summary>
+        /// 将远程清单中的一个包条目合并进本地清单（按 name 替换或追加）。
+        /// 返回合并后的新清单实例（输入参数不被修改）。
+        /// </summary>
+        public static FilesManifest MergePackageEntry(FilesManifest localManifest,
+            FilesManifest.PackageEntry entry)
+        {
+            var result = new FilesManifest
+            {
+                packages = localManifest?.packages != null
+                    ? localManifest.packages.ToArray()
+                    : Array.Empty<FilesManifest.PackageEntry>()
+            };
+
+            var index = Array.FindIndex(result.packages, p => p != null && p.name == entry.name);
+            if (index >= 0)
+            {
+                result.packages[index] = entry;
+            }
+            else
+            {
+                Array.Resize(ref result.packages, result.packages.Length + 1);
+                result.packages[^1] = entry;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 计算需要删除的残留条目：上次安装清单中存在、新版清单中不存在、且位于指定包目录内。
+        /// <para>
+        /// 上次清单为空（首次安装 / 无历史记录）时返回空列表 — 没有历史就无法界定"该删什么"，
+        /// 宁可残留也不误删。用户在包内新增的文件不在任何清单中，天然不会被删除。
+        /// </para>
+        /// <para>
+        /// 新清单为空（null / 无 files 字段）同样返回空列表 — 与上次清单守卫对称：
+        /// 远程 update-info.json 半截 JSON / 格式漂移会被 JsonUtility 反序列化成空清单，
+        /// 若无此守卫，刚导入的整个包会被差集逻辑连文件带空目录删光（唯一"数据损坏级"路径）。
+        /// 清单缺失时更新流程本就不执行差集清理（见 <see cref="UpdatePackagesAsync" /> 调用点），
+        /// 此守卫为双保险。
+        /// </para>
+        /// <para>
+        /// <b>返回的是本地路径</b>：清单内的路径恒为"仓库相对路径"（如 <c>Assets/Runestone/AesirArchitecture/…</c>，
+        /// 与 unitypackage 内 pathname 同源），而安装根可被用户移动到任意文件夹。因此先按
+        /// <paramref name="packageDirName" /> 从清单条目中辨认出清单侧的包前缀，再把前缀替换为
+        /// <paramref name="packageAssetsPath" />（本地实际路径）后返回——否则移动安装形态下
+        /// 前缀永远不匹配，差集清理会静默失效（既删不掉残留，也不会有任何提示）。
+        /// </para>
+        /// </summary>
+        /// <param name="previousFiles">上次安装清单的文件列表（仓库相对路径）</param>
+        /// <param name="newFiles">新版清单的文件列表（仓库相对路径）</param>
+        /// <param name="packageAssetsPath">该包在本地的项目相对路径（如 <c>Assets/Runestone/AesirArchitecture</c>）</param>
+        /// <param name="packageDirName">该包的目录名（如 <c>AesirArchitecture</c>），用于在清单中辨认包前缀</param>
+        public static List<string> ComputeStaleFiles(string[] previousFiles,
+            string[] newFiles,
+            string packageAssetsPath,
+            string packageDirName)
+        {
+            var stale = new List<string>();
+            if (previousFiles == null || previousFiles.Length == 0)
+            {
+                return stale;
+            }
+
+            if (newFiles == null || newFiles.Length == 0)
+            {
+                return stale;
+            }
+
+            var manifestPrefix = FindManifestPackagePrefix(previousFiles, packageDirName) ??
+                                 packageAssetsPath.TrimEnd('/') + "/";
+            var localPrefix = packageAssetsPath.TrimEnd('/') + "/";
+
+            var current = new HashSet<string>(newFiles, StringComparer.Ordinal);
+            foreach (var path in previousFiles)
+            {
+                if (current.Contains(path) || !path.StartsWith(manifestPrefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                // 清单侧前缀 → 本地前缀（安装根未被移动时两者相同，替换为恒等操作）
+                stale.Add(localPrefix + path.Substring(manifestPrefix.Length));
+            }
+
+            return stale;
+        }
+
+        /// <summary>
+        /// 从清单条目中辨认清单侧的包前缀（形如 <c>Assets/Runestone/AesirArchitecture/</c>）。
+        /// 以 <paramref name="packageDirName" /> 作为完整路径段匹配，避免子串误配（如
+        /// <c>AesirArchitecture.Samples</c> 之类同前缀目录）。找不到时返回 <c>null</c>，
+        /// 由调用方回退到"按本地路径前缀"的旧口径。
+        /// </summary>
+        /// <param name="manifestFiles">清单文件列表（仓库相对路径）</param>
+        /// <param name="packageDirName">包目录名</param>
+        /// <returns>清单侧包前缀（含结尾斜杠）；无法辨认时返回 <c>null</c></returns>
+        static string FindManifestPackagePrefix(string[] manifestFiles, string packageDirName)
+        {
+            if (string.IsNullOrEmpty(packageDirName))
+            {
+                return null;
+            }
+
+            var segment = "/" + packageDirName + "/";
+            foreach (var file in manifestFiles)
+            {
+                if (string.IsNullOrEmpty(file))
+                {
+                    continue;
+                }
+
+                var index = file.IndexOf(segment, StringComparison.Ordinal);
+                if (index >= 0)
+                {
+                    return file.Substring(0, index + segment.Length);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 删除残留条目：文件直接删除（连带同名 .meta）；目录仅在其为空时删除。
+        /// 返回实际删除的条目数。传入的路径必须是项目相对路径。
+        /// </summary>
+        public static int DeleteStaleEntries(IEnumerable<string> stalePaths)
+        {
+            var deleted = 0;
+            foreach (var path in stalePaths)
+            {
+                var abs = ToAbsolutePath(path);
+                var metaAbs = abs + ".meta";
+                if (File.Exists(abs))
+                {
+                    File.Delete(abs);
+                    if (File.Exists(metaAbs))
+                    {
+                        File.Delete(metaAbs);
+                    }
+
+                    deleted++;
+                }
+                else if (Directory.Exists(abs) && Directory.GetFileSystemEntries(abs).Length == 0)
+                {
+                    Directory.Delete(abs);
+                    if (File.Exists(metaAbs))
+                    {
+                        File.Delete(metaAbs);
+                    }
+
+                    deleted++;
+                }
+            }
+
+            return deleted;
+        }
+
+        /// <summary>
+        /// 自底向上删除指定包目录下的空目录（连带 .meta，不删除包根目录本身）。
+        /// 返回删除的目录数。用于残留文件删除后收尾清理空目录。
+        /// </summary>
+        public static int PruneEmptyDirectories(string packageAssetsPath)
+        {
+            var rootAbs = ToAbsolutePath(packageAssetsPath);
+            if (!Directory.Exists(rootAbs))
+            {
+                return 0;
+            }
+
+            var pruned = 0;
+            // 按路径长度降序 = 先处理最深目录；子目录删除后父目录变空，会在同趟内继续被删
+            foreach (var dir in Directory.GetDirectories(rootAbs, "*", SearchOption.AllDirectories)
+                         .OrderByDescending(d => d.Length))
+            {
+                if (Directory.GetFileSystemEntries(dir).Length != 0)
+                {
+                    continue;
+                }
+
+                Directory.Delete(dir);
+                var meta = dir + ".meta";
+                if (File.Exists(meta))
+                {
+                    File.Delete(meta);
+                }
+
+                pruned++;
+            }
+
+            return pruned;
+        }
+
+        #endregion
+
+        #region 更新执行
+
+        /// <summary>当前项目根目录是否存在 .git（若是 AesirFramework 开发仓库，执行更新会覆盖本地源码）。</summary>
+        public static bool IsGitRepository() => Directory.Exists(ToAbsolutePath(".git"));
+
+        /// <summary>
+        /// 执行更新：逐包（下载 → 静默导入 → 按清单差集清理残留 → 登记安装清单）。
+        /// 下载经 <see cref="DownloadUnityPackageAsync" /> 逐线路兜底（直连 → 镜像站代理）；
+        /// 用户取消时以 <see cref="UpdateResult" />（<see cref="UpdateResult.Cancelled" /> = true）正常返回，
+        /// 已导入的包保持有效、剩余目标如实列入 <see cref="UpdateResult.SkippedDirNames" />；
+        /// 其他失败仍向上抛出（由窗口层弹错误框，异常消息含手动下载指引）。
+        /// </summary>
+        /// <param name="snapshot">
+        /// 检测结果快照；<see cref="ReleaseSnapshot.Info" /> 同时承载新清单，
+        /// 302 重定向降级路径无清单，残留清理自动跳过。
+        /// </param>
+        /// <param name="targets">
+        /// 执行目标列表，须已按依赖顺序排列（Architecture 先于 Modules）；
+        /// 可含补装目标（<see cref="InstalledPackage.Version" /> 为空，见 <see cref="ComputeUpdateTargets" />）。
+        /// </param>
+        /// <param name="onProgress">进度回调（阶段描述 + 0~1 进度）。</param>
+        /// <param name="onImportStarting">
+        /// 导入开始回调（编排层在此收起自家进度条——导入期间 Unity 会显示自己的导入进度条，两条并存会互相覆盖；
+        /// 导入结束后下一次 <paramref name="onProgress" /> 回调重新显示）。进度条收放权属编排层，服务不直接触碰 UI。
+        /// </param>
+        /// <param name="isCanceled">取消探测委托（下载阶段每帧评估；用户点进度条「取消」后返回 true）。</param>
+        public static async Task<UpdateResult> UpdatePackagesAsync(ReleaseSnapshot snapshot,
+            IReadOnlyList<InstalledPackage> targets,
+            Action<string, float> onProgress,
+            Action onImportStarting,
+            Func<bool> isCanceled = null)
+        {
+            var result = new UpdateResult();
+
+            var localManifest = LoadLocalManifest();
+
+            // 逐包下载导入（targets 已按依赖顺序排列）
+            for (var i = 0; i < targets.Count; i++)
+            {
+                var pkg = targets[i];
+                var assetName = $"{pkg.DirName}-v{snapshot.Tag.TrimStart('v')}.unitypackage";
+
+                var progressBase = 0.1f + 0.8f * i / targets.Count;
+                var progressSpan = 0.8f / targets.Count;
+                onProgress?.Invoke($"[{pkg.DirName}] 下载 {assetName} ...", progressBase);
+                byte[] bytes;
+                try
+                {
+                    bytes = await DownloadUnityPackageAsync(snapshot, pkg.DirName,
+                        (route, p) => onProgress?.Invoke($"[{pkg.DirName}] 经{route}下载 {assetName} ...",
+                            progressBase + progressSpan * p), isCanceled);
+                }
+                catch (OperationCanceledException)
+                {
+                    // 用户取消：已导入的包保持有效，剩余目标（含当前包）如实回报给窗口层提示
+                    result.Cancelled = true;
+                    for (var j = i; j < targets.Count; j++)
+                    {
+                        result.SkippedDirNames.Add(targets[j].DirName);
+                    }
+
+                    return result;
+                }
+
+                var tempDir = ToAbsolutePath("Temp/AesirUpdate");
+                Directory.CreateDirectory(tempDir);
+                var tempFile = Path.Combine(tempDir, assetName);
+                File.WriteAllBytes(tempFile, bytes);
+
+                onProgress?.Invoke($"[{pkg.DirName}] 导入 {assetName} ...",
+                    progressBase + progressSpan * 0.95f);
+                // 导入期间 Unity 会显示自己的导入进度条：经回调交由编排层收起自家进度条，避免两条进度条互相覆盖；
+                // 导入结束后由下一次 onProgress 回调重新显示本工具的进度条
+                onImportStarting?.Invoke();
+                AssetDatabase.ImportPackage(tempFile, false);
+                File.Delete(tempFile);
+
+                // 导入后先校验再清理：包目录缺失说明导入静默失败（unitypackage 损坏等），
+                // 此时跳过残留清理与清单登记（旧清单保留，下次更新的差集依据不丢失），
+                // 并告警指向手动恢复路径（从 Releases 重新下载对应版本导入）
+                var newEntry = snapshot.Info?.GetPackage(pkg.DirName);
+                if (!Directory.Exists(ToAbsolutePath(pkg.AssetsPath)))
+                {
+                    AesirArchitectureDebug.LogError("AesirUpdater",
+                        $"{pkg.DirName}: 导入后未找到包目录 {pkg.AssetsPath}，" + "导入可能已失败。本次未执行残留清理与清单登记；" +
+                        $"如需恢复，请从 {ReleasesPageUrl} 重新下载对应版本的 unitypackage 导入。");
+                    continue;
+                }
+
+                // 残留清理：仅当本次检测带清单且本地存在上次安装清单时有明确删除依据。
+                // 清理在导入成功之后执行——导入失败不会造成"旧文件已删、新文件未进"的双失局面
+                if (newEntry != null)
+                {
+                    var stale = ComputeStaleFiles(localManifest?.GetPackage(pkg.DirName)?.files,
+                        newEntry.files, pkg.AssetsPath, pkg.DirName);
+                    var deleted = DeleteStaleEntries(stale);
+                    PruneEmptyDirectories(pkg.AssetsPath);
+                    if (deleted > 0)
+                    {
+                        AesirArchitectureDebug.Log("AesirUpdater", $"{pkg.DirName}: 清理 {deleted} 个残留条目");
+                    }
+                }
+
+                // 3. 逐包登记新清单：更新中途域重载时，已导入包的状态保证正确落盘
+                if (newEntry != null)
+                {
+                    localManifest = MergePackageEntry(localManifest, newEntry);
+                    SaveLocalManifest(localManifest);
+                }
+
+                result.CompletedDirNames.Add(pkg.DirName);
+
+                // 每包结束后明确报出下一步（含"无更多包"），避免多包更新时进度条停在上一包的导入文案上
+                if (i + 1 < targets.Count)
+                {
+                    onProgress?.Invoke(
+                        $"[{pkg.DirName}] 已完成（{i + 1}/{targets.Count}），准备更新 {targets[i + 1].DirName} ...",
+                        progressBase + progressSpan);
+                }
+                else
+                {
+                    onProgress?.Invoke($"[{pkg.DirName}] 已完成（{i + 1}/{targets.Count}）", 0.95f);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+    }
+}

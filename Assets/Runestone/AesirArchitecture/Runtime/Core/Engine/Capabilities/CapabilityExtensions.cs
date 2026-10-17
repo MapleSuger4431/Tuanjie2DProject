@@ -1,0 +1,154 @@
+using System;
+
+namespace Runestone.AesirArchitecture
+{
+    /// <summary>
+    /// 能力扩展方法集合
+    /// </summary>
+    /// <remarks>
+    /// 能力接口组合模式是本架构角色系统的核心设计。
+    /// <para>
+    /// 角色类型（如 Model、Service、Command、Query 等）通过组合不同的细粒度能力接口
+    /// （<see cref="ICanGetModel" />、<see cref="ICanGetService" />、<see cref="ICanExecuteCommand" />、
+    /// <see cref="ICanExecuteQuery" />）来声明自己可以执行的操作，而非通过继承庞大的基类获得全部权限。
+    /// </para>
+    /// <para>
+    /// 本类中的扩展方法通过接口约束（<c>where T : ICanXxx</c>）确保类型安全——
+    /// 只有显式声明了对应能力接口的类型才能调用相应的扩展方法，将访问控制前置到编译期。
+    /// </para>
+    /// </remarks>
+    public static class CapabilityExtensions
+    {
+        /// <summary>
+        /// 获取已注册的 Model。未注册时由 <see cref="IContext.GetModel{T}" /> 抛出异常；
+        /// 已注册但尚未初始化时，抛出注册顺序错误或循环依赖异常。
+        /// </summary>
+        /// <typeparam name="T">要获取的 Model 类型，必须实现 <see cref="IModel" /></typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <returns>已注册且已初始化完成的 Model 实例</returns>
+        /// <exception cref="InvalidOperationException">
+        /// 目标 Model 已注册但尚未初始化时抛出——通常表示注册顺序错误或存在循环依赖，被依赖的 Model 应先注册。
+        /// </exception>
+        public static T GetModel<T>(this ICanGetModel self) where T : class, IModel
+        {
+            var model = self.Context.GetModel<T>();
+
+            if (!model.Initialized)
+            {
+                throw new InvalidOperationException(
+                    $"{AesirArchitectureDebug.ErrorTag} [{self.GetType().Name}] 尝试获取 Model [{typeof(T).Name}]，" +
+                    "但该 Model 尚未初始化。这通常表示注册顺序错误或存在循环依赖——" +
+                    $"被依赖的 Model 应先注册。请检查 Configure() 中 RegisterModel<{typeof(T).Name}>() 的调用顺序。");
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// 获取已注册的 Service。未注册时由 <see cref="IContext.GetService{T}" /> 抛出异常；
+        /// 已注册但尚未初始化时抛出——Service 间依赖为注册顺序问题，
+        /// 手动实现 <see cref="ICanGetService" /> 的 Model 在初始化阶段调用则属两阶段初始化的必然约束。
+        /// </summary>
+        /// <typeparam name="T">要获取的 Service 类型，必须实现 <see cref="IService" /></typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <returns>已注册且已初始化完成的 Service 实例</returns>
+        /// <exception cref="InvalidOperationException">
+        /// 目标 Service 已注册但尚未初始化时抛出。可能为 Service 间依赖的注册顺序问题（被依赖者应先注册）；
+        /// 若调用方是自行实现 <see cref="ICanGetService" /> 的 Model 且调用发生在其 <c>OnInitialize</c> 中则属必然——
+        /// 框架按「先全部 Model、后全部 Service」两阶段初始化，Model 阶段任何 Service 都尚未初始化，
+        /// 应延迟到运行期方法调用中获取。注意标准 <see cref="IModel" /> 并不继承 <see cref="ICanGetService" />，
+        /// 故此原因仅对手动补齐该能力的 Model 成立。
+        /// </exception>
+        public static T GetService<T>(this ICanGetService self) where T : class, IService
+        {
+            var service = self.Context.GetService<T>();
+
+            if (!service.Initialized)
+            {
+                throw new InvalidOperationException(
+                    $"{AesirArchitectureDebug.ErrorTag} [{self.GetType().Name}] 尝试获取 Service [{typeof(T).Name}]，" +
+                    "但该 Service 尚未初始化。可能原因与修复方式：\n" + "① Service 间依赖注册顺序靠后——被依赖的 Service 应先注册，" +
+                    $"请检查 Configure() 中 RegisterService<{typeof(T).Name}>() 的调用顺序；\n" +
+                    "② 调用方是自行实现 ICanGetService 的 Model（IModel 本身不含该能力）且获取发生在其 OnInitialize 中——" +
+                    "Context 按「先全部 Model、后全部 Service」两阶段初始化，Model 阶段所有 Service 均未初始化（与注册顺序无关），" +
+                    "请改为延迟到运行期方法调用中再获取。");
+            }
+
+            return service;
+        }
+
+        /// <summary>
+        /// 执行带参命令
+        /// </summary>
+        /// <typeparam name="T">命令类型，必须实现 <see cref="ICommand" /></typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <param name="command">要执行的命令实例</param>
+        /// <remarks>
+        /// 执行前经 <see cref="ICanSetContext.SetContext" /> 注入当前上下文，
+        /// 使命令在 <c>Execute</c> 内部具备 <c>GetModel</c> / <c>GetService</c> 能力。
+        /// </remarks>
+        public static void ExecuteCommand<T>(this ICanExecuteCommand self, T command) where T : ICommand
+        {
+            command.SetContext(self.Context);
+            command.Execute();
+        }
+
+        /// <summary>
+        /// 执行无参命令
+        /// </summary>
+        /// <typeparam name="T">
+        /// 命令类型，必须实现 <see cref="ICommand" /> 并具有无参公共构造函数（<c>new()</c>），
+        /// 因为框架需要通过无参构造创建命令实例
+        /// </typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <remarks>
+        /// 执行前经 <see cref="ICanSetContext.SetContext" /> 注入当前上下文，
+        /// 使命令在 <c>Execute</c> 内部具备 <c>GetModel</c> / <c>GetService</c> 能力。
+        /// </remarks>
+        public static void ExecuteCommand<T>(this ICanExecuteCommand self) where T : ICommand, new()
+        {
+            var command = new T();
+            command.SetContext(self.Context);
+            command.Execute();
+        }
+
+        /// <summary>
+        /// 执行带参查询
+        /// </summary>
+        /// <typeparam name="TResult">查询返回值类型</typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <param name="query">要执行的查询实例</param>
+        /// <returns>查询执行结果</returns>
+        /// <remarks>
+        /// 执行前经 <see cref="ICanSetContext.SetContext" /> 注入当前上下文，
+        /// 使查询在 <c>Execute</c> 内部具备 <c>GetModel</c> / <c>GetService</c> 能力。
+        /// </remarks>
+        public static TResult ExecuteQuery<TResult>(this ICanExecuteQuery self, IQuery<TResult> query)
+        {
+            query.SetContext(self.Context);
+            return query.Execute();
+        }
+
+        /// <summary>
+        /// 执行无参查询
+        /// </summary>
+        /// <typeparam name="TQuery">
+        /// 查询类型，必须实现 <see cref="IQuery{TResult}" /> 并具有无参公共构造函数（<c>new()</c>），
+        /// 因为框架需要通过无参构造创建查询实例
+        /// </typeparam>
+        /// <typeparam name="TResult">查询返回值类型</typeparam>
+        /// <param name="self">调用方实例，必须已持有有效的上下文引用</param>
+        /// <returns>查询执行结果</returns>
+        /// <remarks>
+        /// 执行前经 <see cref="ICanSetContext.SetContext" /> 注入当前上下文，
+        /// 使查询在 <c>Execute</c> 内部具备 <c>GetModel</c> / <c>GetService</c> 能力。
+        /// </remarks>
+        public static TResult ExecuteQuery<TQuery, TResult>(this ICanExecuteQuery self)
+            where TQuery : IQuery<TResult>, new()
+        {
+            var query = new TQuery();
+            query.SetContext(self.Context);
+            return query.Execute();
+        }
+    }
+}
