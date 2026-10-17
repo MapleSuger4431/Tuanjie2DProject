@@ -146,10 +146,10 @@ PR #<编号> 确认没问题了。请：
 
 ```
 帮我检查并修复本地仓库版本。请：
-1. 执行 git log --oneline -1 和 git rev-parse HEAD，告诉我最新提交是不是 dac1de4
+1. 执行 git fetch origin，然后比较 git rev-parse HEAD 与 git rev-parse origin/main —— 两者不相同就说明我本地不是最新
 2. 检查这两个文件是否存在：Docs/Git-Basics.md、tools/fix-android-ndk.ps1（旧版本没有它们）
 3. 检查 ProjectSettings/ProjectVersion.txt 里 m_TuanjieEditorVersion 是不是 1.10.4（旧版本是 1.8.4）
-如果是最新的，告诉我已是最新就结束。
+如果三项都正常，告诉我已是最新就结束。
 如果是旧版本（仓库在 2026-10-15 重置过历史，git pull 拉不动）：
 4. 先执行 git status；如果有未提交的改动就停下来问我怎么处理，不要自己删
 5. 确认没有要保留的改动后，删掉本地项目目录，重新 clone：
