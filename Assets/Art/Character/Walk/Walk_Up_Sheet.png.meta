@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: Xi9LsXmoBSgJua3lrXYlD+/b7yKiTcTtNTMWEzcD9Nhutd0cgS/PjWU=
+guid: WXpJsCj+Bi3dZjslDt1ZwpMcdf7jhSw2DLjfwFk6CBNVeP9SyL0/b7w=
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     maxPlaceholderSize: 32
     resizeAlgorithm: 0
     textureFormat: -1
@@ -150,7 +150,7 @@ TextureImporter:
         x: 0
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -171,7 +171,7 @@ TextureImporter:
         x: 229
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -192,7 +192,7 @@ TextureImporter:
         x: 458
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -213,7 +213,7 @@ TextureImporter:
         x: 687
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -234,7 +234,7 @@ TextureImporter:
         x: 916
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -255,7 +255,7 @@ TextureImporter:
         x: 1145
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -276,7 +276,7 @@ TextureImporter:
         x: 1374
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -297,7 +297,7 @@ TextureImporter:
         x: 1603
         y: 0
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -315,10 +315,10 @@ TextureImporter:
       name: Walk_Up_08
       rect:
         serializedVersion: 2
-        x: 1832
-        y: 0
+        x: 0
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -336,10 +336,10 @@ TextureImporter:
       name: Walk_Up_09
       rect:
         serializedVersion: 2
-        x: 2061
-        y: 0
+        x: 229
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -357,10 +357,10 @@ TextureImporter:
       name: Walk_Up_10
       rect:
         serializedVersion: 2
-        x: 2290
-        y: 0
+        x: 458
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -378,10 +378,10 @@ TextureImporter:
       name: Walk_Up_11
       rect:
         serializedVersion: 2
-        x: 2519
-        y: 0
+        x: 687
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -399,10 +399,10 @@ TextureImporter:
       name: Walk_Up_12
       rect:
         serializedVersion: 2
-        x: 2748
-        y: 0
+        x: 916
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -420,10 +420,10 @@ TextureImporter:
       name: Walk_Up_13
       rect:
         serializedVersion: 2
-        x: 2977
-        y: 0
+        x: 1145
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -441,10 +441,10 @@ TextureImporter:
       name: Walk_Up_14
       rect:
         serializedVersion: 2
-        x: 3206
-        y: 0
+        x: 1374
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -462,10 +462,10 @@ TextureImporter:
       name: Walk_Up_15
       rect:
         serializedVersion: 2
-        x: 3435
-        y: 0
+        x: 1603
+        y: 247
         width: 229
-        height: 138
+        height: 247
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
