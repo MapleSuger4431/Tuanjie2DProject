@@ -12,7 +12,7 @@ namespace Game.View
     /// 蒙版点击 / × 按钮双通道关闭。
     /// 经 <c>UIModule.Show&lt;MenuSettingsPanel&gt;(UIPaths.MenuSettingsPanel)</c> 打开。
     /// 设置值经 <see cref="GameSettings" />（PlayerPrefs）持久化、即时生效；
-    /// 语言切换会即时刷新本面板全部标签（中文 ↔ English）。
+    /// 语言切换经本地化广播刷新本面板与全游戏文本（中文 ↔ English）。
     /// </para>
     /// </summary>
     [AddComponentMenu("")]
@@ -114,21 +114,20 @@ namespace Game.View
             sfxSlider.onValueChanged.AddListener(GameSettings.SetSfxVolume);
             musicSlider.onValueChanged.AddListener(GameSettings.SetMusicVolume);
 
-            // 语言：点选后保存并刷新全部标签
+            // 语言：点选即保存并广播（GameSettings.SetLanguage 触发本地化事件，本面板与全游戏文本即时刷新）
             chineseButtonImage = chineseButton.GetComponent<Image>();
             englishButtonImage = englishButton.GetComponent<Image>();
 
-            chineseButton.onClick.AddListener(() =>
-            {
-                GameSettings.SetLanguage(GameSettings.Language.Chinese);
-                RefreshVisuals();
-            });
+            Localization.OnLanguageChanged += RefreshVisuals;
 
-            englishButton.onClick.AddListener(() =>
-            {
-                GameSettings.SetLanguage(GameSettings.Language.English);
-                RefreshVisuals();
-            });
+            chineseButton.onClick.AddListener(() => GameSettings.SetLanguage(GameSettings.Language.Chinese));
+            englishButton.onClick.AddListener(() => GameSettings.SetLanguage(GameSettings.Language.English));
+        }
+
+        protected override void OnDestroy()
+        {
+            Localization.OnLanguageChanged -= RefreshVisuals;
+            base.OnDestroy();
         }
 
         protected override void OnShow(object payload)
@@ -147,11 +146,11 @@ namespace Game.View
             musicSlider.SetValueWithoutNotify(GameSettings.MusicVolume);
 
             bool zh = GameSettings.CurrentLanguage == GameSettings.Language.Chinese;
-            titleText.text = zh ? "设置" : "Settings";
-            resolutionRowLabel.text = zh ? "分辨率" : "Resolution";
-            sfxLabel.text = zh ? "音效" : "SFX";
-            musicLabel.text = zh ? "音乐" : "Music";
-            languageLabel.text = zh ? "语言" : "Language";
+            titleText.text = Localization.Get(Localization.Key.SettingsTitle);
+            resolutionRowLabel.text = Localization.Get(Localization.Key.SettingsResolution);
+            sfxLabel.text = Localization.Get(Localization.Key.SettingsSfx);
+            musicLabel.text = Localization.Get(Localization.Key.SettingsMusic);
+            languageLabel.text = Localization.Get(Localization.Key.SettingsLanguage);
 
             // 语言选中态高亮（按钮 Transition 为 None，由 Image.color 直接呈现选中色）
             if (chineseButtonImage != null)

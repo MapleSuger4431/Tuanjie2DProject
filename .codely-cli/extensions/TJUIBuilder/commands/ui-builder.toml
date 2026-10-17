@@ -1,0 +1,53 @@
+description = "Unity UI 界面构建（默认 UGUI，可选 UI Toolkit）。管理 UI 文档生成、面板构建、图片生成、风格参考提取等模块的多阶段流水线。"
+
+prompt = """
+激活 `unity-ui-builder` 技能并严格遵循其指引，完成 Unity UI 界面构建（默认 UGUI，可选 UI Toolkit）。
+
+## 前置检查：TJGenerators MCP Server
+
+TJUIBuilder 的 AI 图片生成能力由 **TJGenerators MCP Server** 提供。在执行任何构建任务前，先检查 MCP Server 是否已配置：
+
+1. 读取 `.codely-cli/settings.json`（项目级）和 `~/.codely-cli/settings.json`（用户级），检查 `mcpServers.TJGenerators` 是否存在
+2. 如果不存在，提示用户添加以下配置并**重启 Codely CLI 会话**后重试，然后停止：
+   ```json
+   { "mcpServers": { "TJGenerators": { "httpUrl": "https://ai-generator.tuanjie.cn/mcp" } } }
+   ```
+3. 如果已配置，继续执行构建任务（MCP 工具不可达等运行时错误按 `modules/shared/references/mcp-image-generation.md` 错误处理表处理）
+
+## 技能模块
+
+技能覆盖以下模块：
+- ui-doc-builder：UI需求.md（含 ui_mode 选择）→ UI设计文档.md + image_requirements.json
+- ui-panel-builder：按 ui_mode 分流——UGUI 模式构建 Canvas Prefab + C# Panel 脚本；UI Toolkit 模式构建 UXML/USS + C# Panel 脚本（2 阶段流水线）
+- ui-image-generator：AI UI 图片生成（3 阶段流水线，与 ui_mode 无关）
+- ui-style-reference：参考图 OpenCV 组件树提取（6 阶段流水线）
+- ui-mockup-generator：AI 效果图生成
+- ui-layout-intent-designer：画板布局设计
+
+根据 UI需求.md 状态判定全新构建或增量构建。ui_mode（UGUI / UI Toolkit）在 ui-doc-builder Step 0 采集，选定后整条管线使用同一模式。各流水线阶段由独立 subagent 执行，每阶段产出经验证后才进入下一阶段。
+
+## 完整流水线
+
+流水线分为「视觉输入分支」和「主链路」两部分。`ui-doc-builder` Step 0 采集用户选择的视觉输入方式后，进入对应分支；分支完成后汇入主链路，主链路三步固定不变。
+
+### 视觉输入分支（Step 0 选择后，四选一）
+
+| 路线 | 分支模块 | 分支产出 |
+|------|---------|---------|
+| AI 直接规划 | 无（跳过分支） | — |
+| 上传参考图 | ui-style-reference（6 阶段） | UI参考图分析.md |
+| AI 效果图 | ui-mockup-generator → 用户确认 → ui-style-reference（6 阶段） | UI参考图分析.md |
+| 画板手动设计 | ui-layout-intent-designer | UI布局意图.md |
+
+### 主链路（所有分支汇入，固定三步）
+
+1. ui-doc-builder Step 1-3 → 吸收分支产出（如有）→ 生成 UI设计文档.md + image_requirements.json
+2. ui-image-generator Stage 01-03 → AI 生成 UI 图片
+3. ui-panel-builder → 按 ui_mode 分流：
+   - UGUI 模式（默认）：Stage 01-ugui-prefab → Stage 02-ugui-csharp（Canvas Prefab + C# Panel 脚本）
+   - UI Toolkit 模式：Stage 01-uxml-uss → Stage 02-csharp-integration（UXML/USS + C# Panel 脚本）
+
+⚠️ ui-image-generator 完成后**必须继续执行 ui-panel-builder**。ui-panel-builder 是流水线最终产出模块，其 Stage 01 会验证 ui-image-generator 产出的图片已存在。ui-image-generator 不是流水线终点。
+
+任务：{{args}}
+"""

@@ -1,0 +1,4 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Input/DropdownBase.uss" />
+    <ui:DropdownField name="DropdownBaseRoot" class="br-dropdown-base" choices="Option A,Option B,Option C" index="0" />
+</ui:UXML>

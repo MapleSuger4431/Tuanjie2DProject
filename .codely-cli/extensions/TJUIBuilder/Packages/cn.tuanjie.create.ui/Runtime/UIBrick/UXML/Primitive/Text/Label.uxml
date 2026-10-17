@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Text/Label.uss" />
+    <ui:Label name="LabelRoot" class="br-label" text="Label" />
+</ui:UXML>

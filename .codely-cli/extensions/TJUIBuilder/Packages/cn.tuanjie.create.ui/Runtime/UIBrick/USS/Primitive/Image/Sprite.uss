@@ -1,0 +1,16 @@
+.br-sprite {
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.br-sprite--cover {
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.br-sprite--contain {
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.br-sprite--fill {
+    -unity-background-scale-mode: stretch-to-fill;
+}

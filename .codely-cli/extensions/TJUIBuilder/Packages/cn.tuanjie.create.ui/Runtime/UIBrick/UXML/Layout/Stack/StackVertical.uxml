@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Layout/Stack/StackVertical.uss" />
+    <ui:VisualElement name="StackVerticalRoot" class="br-stack-vertical">
+        <ui:VisualElement name="ContentSlot" class="br-stack-vertical__content" />
+    </ui:VisualElement>
+</ui:UXML>

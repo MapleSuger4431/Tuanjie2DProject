@@ -487,6 +487,114 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Board",
+            "id": "6b71e5a4-93f2-4c08-b0d7-51a9c3e47f26",
+            "actions": [
+                {
+                    "name": "Point",
+                    "type": "Value",
+                    "id": "1f0d4c8b-7e26-4a93-9f15-8c2b60d74a37",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Place",
+                    "type": "Button",
+                    "id": "a47c92e1-5b38-4d60-8a24-3f7e1c09b5d2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pan",
+                    "type": "Button",
+                    "id": "d38b6f05-2c91-4e7a-b4d8-9a05e7c21f64",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "5e2a7d34-8f60-4b19-92c7-6d0b4fa83e15",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ResetView",
+                    "type": "Button",
+                    "id": "c90d5b17-4a38-4e62-91f0-2b7c8d36e5a9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7c4e1a92-0637-4d58-9b2a-f51e8c7306d4",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2b8f63d1-9a45-4c07-8e39-07d5a1b62c48",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Place",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f61c07b9-3e28-4a5d-90b4-6c8e2f57d103",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "93a5e280-71b6-4fd4-8c15-0b3d76a9e482",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d07b6f8-2a13-4e95-b7c6-81f5d09e237a",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ResetView",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

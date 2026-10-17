@@ -1,0 +1,57 @@
+{
+  "brickId": "primitive.container.panel",
+  "layer": "primitive",
+  "category": "container",
+  "defaultClasses": [
+    "br-panel"
+  ],
+  "slots": [
+    "content"
+  ],
+  "stylePath": "USS/Primitive/Container/Panel.uss",
+  "snippetPath": "UXML/Primitive/Container/Panel.uxml",
+  "assetPropsSchema": {
+    "backgroundImage": "asset?"
+  },
+  "stylePropsSchema": {
+    "variant": [
+      "solid",
+      "gradient",
+      "raised",
+      "sunken"
+    ],
+    "imageType": [
+      "simple",
+      "sliced",
+      "tiled",
+      "filled"
+    ]
+  },
+  "bindingPropsSchema": {
+    "visible": {
+      "bindable": true,
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "any",
+    "canNestUnder": [
+      "layout.*"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "fill",
+        "hug",
+        "fixed"
+      ]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

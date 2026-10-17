@@ -18,7 +18,8 @@ EditorBuildSettings:
     path: Assets/Scenes/MainScene.scene
     guid: 28028487558dc49a6b3b8310ff150dca
   m_BuildProfiles: []
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 8a77d52bfd3034044badff3f36e485e1, type: 2}
   m_SlimFeaturesWeixinMiniGame:
     ACLDecompression: 0
     AllocateOverhead: 1

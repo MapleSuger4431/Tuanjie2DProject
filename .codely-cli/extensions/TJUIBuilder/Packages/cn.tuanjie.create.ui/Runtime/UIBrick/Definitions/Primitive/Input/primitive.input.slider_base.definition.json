@@ -1,0 +1,33 @@
+﻿{
+  "brickId": "primitive.input.slider_base",
+  "layer": "primitive",
+  "category": "input",
+  "defaultClasses": ["br-slider-base"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Input/SliderBase.uss",
+  "snippetPath": "UXML/Primitive/Input/SliderBase.uxml",
+  "assetPropsSchema": {},
+  "stylePropsSchema": {
+    "state": ["disabled"]
+  },
+  "bindingPropsSchema": {
+    "value": { "bindable": true, "runtimeType": "number" },
+    "visible": { "bindable": true, "runtimeType": "bool" },
+    "enabled": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["hug"]
+    }
+  },
+  "eventSchema": {
+    "changed": "ui_event"
+  },
+  "aiSelectable": true,
+  "aiPriority": "high"
+}

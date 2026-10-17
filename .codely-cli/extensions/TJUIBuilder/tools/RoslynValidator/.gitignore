@@ -1,0 +1,20 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# macOS
+.DS_Store
+
+# Test configs (temporary)
+test_*.json
+Example/

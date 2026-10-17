@@ -1,0 +1,32 @@
+.br-label {
+    color: rgb(244, 246, 250);
+    font-size: 14px;
+}
+
+.br-label--muted {
+    color: rgb(168, 176, 196);
+}
+
+.br-label--disabled {
+    color: rgba(244, 246, 250, 0.42);
+}
+
+.br-label--xs {
+    font-size: 11px;
+}
+
+.br-label--sm {
+    font-size: 12px;
+}
+
+.br-label--md {
+    font-size: 14px;
+}
+
+.br-label--lg {
+    font-size: 18px;
+}
+
+.br-label--xl {
+    font-size: 30px;
+}

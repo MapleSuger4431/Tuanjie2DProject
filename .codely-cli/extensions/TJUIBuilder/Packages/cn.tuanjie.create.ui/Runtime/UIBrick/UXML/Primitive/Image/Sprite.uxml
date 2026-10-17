@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Image/Sprite.uss" />
+    <ui:VisualElement name="SpriteRoot" class="br-sprite" />
+</ui:UXML>

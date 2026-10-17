@@ -16,10 +16,12 @@ namespace GameRuntimeTest.Board
         [SerializeField] RectTransform rightPanel;
         [SerializeField] NextPieceView nextPieceView;
         [SerializeField] Text placedCountText;
+        [SerializeField] Text timeText;
         [SerializeField] Text hintText;
 
         PieceModel _piece;
         BoardModel _board;
+        BoardTimeModel _time;
 
         protected override void OnInit()
         {
@@ -41,10 +43,15 @@ namespace GameRuntimeTest.Board
 
             _piece = this.GetModel<PieceModel>();
             _board = this.GetModel<BoardModel>();
+            _time = this.GetModel<BoardTimeModel>();
 
             _piece.Next.AddListenerAndInvoke(OnNextChanged)
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             _board.CoveredCount.AddListenerAndInvoke(OnCoveredCountChanged)
+                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
+            _time.Elapsed.AddListenerAndInvoke(_ => OnTimeChanged())
+                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
+            _time.State.AddListenerAndInvoke(_ => OnTimeChanged())
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
 
             if (hintText != null)
@@ -58,8 +65,22 @@ namespace GameRuntimeTest.Board
 
         void OnCoveredCountChanged(int count)
         {
-            if (placedCountText != null)
-                placedCountText.text = $"已放置：{count}";
+            if (placedCountText == null) return;
+
+            placedCountText.text = _board != null ? $"已用：{count}/{_board.PieceLimit}" : $"已用：{count}";
+        }
+
+        /// <summary>秒表一行文本：未开始 / 计时中 / 已结束共用，用时越短越好。</summary>
+        void OnTimeChanged()
+        {
+            if (timeText == null || _time == null) return;
+
+            string suffix;
+            if (_time.State.Value == BoardTimeModel.StopwatchState.Running) suffix = string.Empty;
+            else if (_time.State.Value == BoardTimeModel.StopwatchState.Finished) suffix = "（已结束）";
+            else suffix = "（未开始）";
+
+            timeText.text = $"用时：{_time.FormatElapsed()}{suffix}";
         }
 
         /// <summary>面板本体铺满整屏，三块占位白板各自锚定自己的区域。</summary>

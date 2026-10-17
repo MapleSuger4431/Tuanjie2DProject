@@ -1,0 +1,80 @@
+{
+  "brickId": "ugui.panel",
+  "layer": "primitive",
+  "category": "container",
+  "assemblyOnly": true,
+  "requiredComponents": [
+    "Image",
+    "RectTransform"
+  ],
+  "parameters": {
+    "sprite": {
+      "target": "sprite",
+      "type": "Sprite"
+    },
+    "color": {
+      "target": "color",
+      "type": "Color",
+      "default": "#FFFFFFFF"
+    },
+    "type": {
+      "target": "type",
+      "type": "Image.Type",
+      "default": "Sliced"
+    },
+    "fillCenter": {
+      "target": "fillCenter",
+      "type": "bool",
+      "default": true
+    },
+    "raycastTarget": {
+      "target": "raycastTarget",
+      "type": "bool",
+      "default": false
+    },
+    "preserveAspect": {
+      "target": "preserveAspect",
+      "type": "bool",
+      "default": false
+    },
+    "width": { "handler": "SetSizeDelta", "axis": "x", "type": "float" },
+    "height": { "handler": "SetSizeDelta", "axis": "y", "type": "float" },
+    "shadowEnabled": { "handler": "EnsureShadow", "type": "bool" },
+    "shadowColor": { "handler": "SetShadowProp", "prop": "effectColor", "type": "Color" },
+    "shadowDistance": { "handler": "SetShadowProp", "prop": "effectDistance", "type": "Vector2" },
+    "outlineEnabled": { "handler": "EnsureOutline", "type": "bool" },
+    "outlineColor": { "handler": "SetOutlineProp", "prop": "effectColor", "type": "Color" },
+    "outlineDistance": { "handler": "SetOutlineProp", "prop": "effectDistance", "type": "Vector2" },
+    "borderRadius": { "handler": "SetBorderRadius", "type": "float" }
+  },
+  "eventBindings": {},
+  "bindingProps": {
+    "visible": {
+      "target": "gameObject.SetActive",
+      "runtimeType": "bool"
+    }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "any",
+    "canNestUnder": [
+      "ugui.stack_vertical",
+      "ugui.stack_horizontal",
+      "ugui.grid",
+      "ugui.scroll_view",
+      "ugui.modal",
+      "ugui.panel"
+    ]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": [
+        "fill"
+      ],
+      "heightMode": [
+        "fill",
+        "hug",
+        "fixed"
+      ]
+    }
+  }
+}

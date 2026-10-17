@@ -1,0 +1,31 @@
+﻿{
+  "brickId": "primitive.image.sprite",
+  "layer": "primitive",
+  "category": "image",
+  "defaultClasses": ["br-sprite"],
+  "slots": [],
+  "stylePath": "USS/Primitive/Image/Sprite.uss",
+  "snippetPath": "UXML/Primitive/Image/Sprite.uxml",
+  "assetPropsSchema": {
+    "spriteAsset": "asset?"
+  },
+  "stylePropsSchema": {
+    "fitMode": ["cover", "contain", "fill"]
+  },
+  "bindingPropsSchema": {
+    "visible": { "bindable": true, "runtimeType": "bool" }
+  },
+  "compositionPolicy": {
+    "allowedChildren": "none",
+    "canNestUnder": ["layout.*"]
+  },
+  "layoutContract": {
+    "self": {
+      "widthMode": ["hug", "fill"],
+      "heightMode": ["hug", "fill"]
+    }
+  },
+  "eventSchema": {},
+  "aiSelectable": true,
+  "aiPriority": "medium"
+}

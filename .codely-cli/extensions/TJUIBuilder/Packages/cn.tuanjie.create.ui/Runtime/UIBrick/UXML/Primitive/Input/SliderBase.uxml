@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../USS/Primitive/Input/SliderBase.uss" />
+    <ui:Slider name="SliderBaseRoot" class="br-slider-base" low-value="0" high-value="1" />
+</ui:UXML>
