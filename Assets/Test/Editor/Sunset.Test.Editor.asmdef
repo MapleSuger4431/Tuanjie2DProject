@@ -1,0 +1,18 @@
+{
+    "name": "Sunset.Test.Editor",
+    "rootNamespace": "Sunset.Test.Editor",
+    "references": [
+        "Sunset.Test"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
