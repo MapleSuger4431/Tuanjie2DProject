@@ -11,5 +11,8 @@ namespace Game.Core
 
         /// <summary>操作说明弹窗面板：Resources/UIPrefabs/MenuHelpPanel。</summary>
         public const string MenuHelpPanel = "UIPrefabs/MenuHelpPanel";
+
+        /// <summary>设置面板：Resources/UIPrefabs/MenuSettingsPanel。</summary>
+        public const string MenuSettingsPanel = "UIPrefabs/MenuSettingsPanel";
     }
 }
