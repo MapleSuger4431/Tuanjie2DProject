@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>边际棋盘 · Edge Grid</title>
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="title">边际棋盘 <span>Edge Grid</span></div>
+    <div class="stats">
+      <div class="stat"><label>关卡</label><b id="hud-level">1</b></div>
+      <div class="stat"><label>计时</label><b id="hud-time">00:00</b></div>
+      <div class="stat"><label>块数</label><b id="hud-pieces">0/40</b></div>
+      <div class="stat"><label>属性</label><b id="hud-element">🧊 冰</b></div>
+      <div class="stat"><label>金币</label><b id="hud-coin">0/1</b></div>
+      <div class="stat"><span id="hud-reach" class="reach"></span></div>
+    </div>
+    <button id="btn-help" class="ghost-btn">？帮助</button>
+  </header>
+
+  <aside id="sidebar">
+    <section class="panel">
+      <h3>下一块</h3>
+      <canvas id="preview" width="120" height="120"></canvas>
+      <p class="hint">移动鼠标预览 · 左键铺设<br><kbd>R</kbd> 旋转 · <kbd>Z</kbd> 撤销<br>可覆盖普通格子</p>
+    </section>
+
+    <section class="panel">
+      <h3>AI 方向偏好</h3>
+      <div id="pref">
+        <button data-p="right" class="active">右>下>左>上</button>
+        <button data-p="down">下>左>上>右</button>
+        <button data-p="left">左>上>右>下</button>
+        <button data-p="up">上>右>下>左</button>
+      </div>
+      <p class="hint">岔路口按此优先级选路，死路会回溯</p>
+    </section>
+
+    <section class="panel legend">
+      <h3>地形</h3>
+      <div><i style="background:#4c6b3c"></i>陆地 · 都能走</div>
+      <div><i style="background:#62c8f2"></i>冰 · 冰属性可走</div>
+      <div><i style="background:#e0682e"></i>火 · 火属性可走</div>
+      <div><i style="background:#141a30;border:1px solid #2a3560"></i>空 · 不能走（可铺）</div>
+      <div><i style="background:#300a14;border:1px solid #7a2038"></i>绝对禁止 · 不可走不可盖</div>
+      <h3>特效</h3>
+      <div><em class="pink">⇄</em> 属性转化（冰↔火）</div>
+      <div><em class="purple">◎</em> 传送门 → 最近的另一个</div>
+      <div><em class="yellow">↑4 ↓3 ↖2</em> 强制位移</div>
+      <div><em class="cyan">≫</em> 滑行到最外围</div>
+    </section>
+  </aside>
+
+  <main id="scene"></main>
+
+  <footer id="bottombar">
+    <button id="btn-run" class="primary">出发（Space）</button>
+    <button id="btn-undo">撤销（Z）</button>
+    <button id="btn-reset">重置本关</button>
+    <span class="hint">铺路连通起点与终点 → 看「可达」预检 → 出发！手速也是成绩。</span>
+  </footer>
+
+  <div id="toast"></div>
+
+  <div id="settle" class="overlay hidden">
+    <div class="card settle-card">
+      <h2>第 <span id="settle-level"></span> 关完成</h2>
+      <div id="settle-stars" class="stars">★★★</div>
+      <p id="settle-detail" class="hint"></p>
+      <p class="hint">★ 到达终点 · ★ 捡到金币 · ★ 限时达成</p>
+      <button id="btn-next" class="primary">下一关</button>
+    </div>
+  </div>
+
+  <div id="help" class="overlay">
+    <div class="card">
+      <h2>边际棋盘 · 玩法</h2>
+      <ol>
+        <li><b>目标：</b>引导带元素属性的 AI 从绿色起点走到金色终点，全程计时，越快评价越高。</li>
+        <li><b>铺棋盘：</b>系统像俄罗斯方块一样不断发 2~5 格的拼块（3×3 内随机形状）。左键放置（可覆盖普通格子），<kbd>R</kbd> 旋转，<kbd>Z</kbd> 撤销。每关块数有上限（默认 40），用完必须出发。</li>
+        <li><b>地形：</b>陆地都能走；冰只有 🧊 冰属性、火只有 🔥 火属性能走；空和「绝对禁止」格不能走，绝对禁止格还不能被覆盖。</li>
+        <li><b>属性转化：</b>踩上粉色 ⇄ 格，AI 冰↔火切换，是打通冰火隔离带的关键（第一关中央固定一个）。</li>
+        <li><b>其他特效：</b>◎ 传送门传到最近的另一个；↑4/↓3/↖2 强制位移；≫ 沿进入方向滑到最外围。特效会连锁触发，连锁超过 20 步判失败。</li>
+        <li><b>AI 走法：</b>岔路口按方向偏好（默认 右>下>左>上，可切换）贪心选路，死路会记住并回溯。用地形和特效"喂"出它的路！</li>
+        <li><b>预检：</b>顶栏实时显示「✓ 可达 / ✗ 不可达」，与正式出发同一套规则。</li>
+        <li><b>结算：</b>★ 到达终点，★ 捡到金币，★ 用时低于 90 秒。失败则回到铺设阶段，棋盘保留、计时不停。</li>
+      </ol>
+      <button id="help-close" class="primary">知道了（Esc）</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
