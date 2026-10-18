@@ -36,6 +36,7 @@ namespace Game.Editor
         const string MapSpritePath = UiImgDir + "/map_1920x1080_fit.png";   // 选关大地图背景
         const string BackSpritePath = UiImgDir + "/back.png";                // 返回图标
         const string SettingsSpritePath = UiImgDir + "/setting-transparent.png"; // 设置图标
+        const string StarSpritePath = UiImgDir + "/star.png";                // 星级图标（详情弹窗 3 星显示）
 
         // 关卡节点图标（2026-10-18 用户拍板：节点 = 水晶主题图 + 编号徽章叠加的图标按钮，目前 3 关）。
         // 索引 = 关卡号-1；新增关卡在此加一行路径，生成器会把整个数组回填进 LevelSelectPanel。
@@ -211,11 +212,29 @@ namespace Game.Editor
             Stretch(title, new Vector2(0.05f, 0.74f), new Vector2(0.95f, 0.95f));
             var titleText = NewTmp(title, string.Empty, 48f);
 
-            var preview = NewRect("PreviewImage", content);
-            Stretch(preview, new Vector2(0.10f, 0.50f), new Vector2(0.90f, 0.72f));
-            var previewImage = preview.gameObject.AddComponent<Image>();
-            previewImage.color = new Color(0.22f, 0.26f, 0.32f);
-            previewImage.raycastTarget = false;
+            // 星级行（2026-10-18 用户需求：标题与记录之间 3 个星星体现关卡成绩）。
+            // 原预览图占位节点（PreviewImage）已让位于此——要恢复预览图时在此重建节点并回填脚本的 previewImage 字段。
+            // 星星 56×56、水平居中间隔 20px；初始暗灰，点亮与否由 LevelDetailPanel.ShowStars 按 LevelSelectModel.GetBestStars 染色。
+            var starsRow = NewRect("StarsRow", content);
+            Stretch(starsRow, new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.74f));
+            var starImages = new Image[3];
+            for (var i = 0; i < 3; i++)
+            {
+                var star = NewRect("Star" + (i + 1), starsRow);
+                star.anchorMin = star.anchorMax = star.pivot = new Vector2(0.5f, 0.5f);
+                star.sizeDelta = new Vector2(56f, 56f);
+                star.anchoredPosition = new Vector2((i - 1) * 76f, 0f);
+                var starImage = star.gameObject.AddComponent<Image>();
+                var starSprite = LoadSprite(StarSpritePath);
+                if (starSprite != null)
+                {
+                    starImage.sprite = starSprite;
+                    starImage.preserveAspect = true;
+                }
+                starImage.color = new Color(0.40f, 0.40f, 0.44f);
+                starImage.raycastTarget = false;
+                starImages[i] = starImage;
+            }
 
             // 最短用时：通关后展示该关历史最好成绩（未通关时这里显示「暂无记录」）
             var record = NewRect("RecordLabel", content);
@@ -246,7 +265,11 @@ namespace Game.Editor
 
             var so = new SerializedObject(script);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
-            so.FindProperty("previewImage").objectReferenceValue = previewImage;
+            // 星级图标数组回填（previewImage 字段保留在脚本中但本布局不再回填——见 StarsRow 注释）
+            var starsArr = so.FindProperty("starImages");
+            starsArr.arraySize = starImages.Length;
+            for (var i = 0; i < starImages.Length; i++)
+                starsArr.GetArrayElementAtIndex(i).objectReferenceValue = starImages[i];
             so.FindProperty("recordLabel").objectReferenceValue = recordText;
             so.FindProperty("lastLabel").objectReferenceValue = lastText;
             so.FindProperty("enterButton").objectReferenceValue = enterBtn;
