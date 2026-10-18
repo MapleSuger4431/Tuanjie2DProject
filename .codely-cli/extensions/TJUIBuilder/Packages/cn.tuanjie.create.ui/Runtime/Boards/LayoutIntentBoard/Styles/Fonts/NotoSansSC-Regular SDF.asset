@@ -179,19 +179,19 @@ Texture2D:
   m_ForcedFallbackFormat: 4
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
+  serializedVersion: 5
   m_Width: 1
   m_Height: 1
   m_CompleteImageSize: 1
   m_MipsStripped: 0
   m_WebStreaming: 0
-  m_StreamingEntry:
-    guid: 00000000000000000000000000000000
-    hash:
-      serializedVersion: 2
-      Hash: 00000000000000000000000000000000
-    formats: 
+  m_PriorityLevel: 0
+  m_UploadedMode: 0
+  m_DataStreamData:
+    size: 0
+    path: 
   m_TextureFormat: 1
+  m_TextureManagerMultiFormatSetting: 
   m_MipCount: 1
   m_IsReadable: 1
   m_IsPreProcessed: 0
