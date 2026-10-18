@@ -171,9 +171,8 @@ namespace Game.View
                 return;
             }
 
-            // 走 SceneTransition：先收起选关界面与本弹窗再加载，避免 UIRoot 常驻导致旧界面叠进关卡
-            SceneTransition.LoadSingle(path,
-                onFailed: () => Debug.LogWarning($"[LevelDetail] 场景 \"{path}\" 切换失败"));
+            // 走 LoadingPanel：加载过场先盖住选关界面与本弹窗再加载，避免 UIRoot 常驻导致旧界面叠进关卡
+            LoadingPanel.Begin(path);
         }
 
         /// <summary>用时文本：mm:ss.d，与关卡内秒表（BoardTimeModel.FormatElapsed）同款口径。</summary>
