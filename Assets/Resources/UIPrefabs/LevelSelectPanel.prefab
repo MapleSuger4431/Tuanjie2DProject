@@ -325,7 +325,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: f72191f6ea06da84fadff816abfc235d, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -439,6 +439,14 @@ MonoBehaviour:
   settingsButton: {fileID: 8598568650046466959}
   levelNodePrefab: {fileID: 7742660482792571309, guid: 6e5d26a34e101f54dbe23838fc3a1af1, type: 3}
   titleLabel: {fileID: 579203849347439891}
+  crystalSprites:
+  - {fileID: 21300000, guid: ba4ec1e73b41003429425a6ac4664058, type: 3}
+  - {fileID: 21300000, guid: f15ba2938be423d4499afe7fd49c7838, type: 3}
+  - {fileID: 21300000, guid: 433f15aae8446c748bd9339e75d8a3d7, type: 3}
+  badgeSprites:
+  - {fileID: 21300000, guid: fd583027efd933a4ebb0ebadf8d603c0, type: 3}
+  - {fileID: 21300000, guid: 73fa80c95c339d84288fa3d875ea1ed3, type: 3}
+  - {fileID: 21300000, guid: 0b8a6b82913f7784c8d1e29a128aca71, type: 3}
   backButtonLabel: {fileID: 0}
   settingsButtonLabel: {fileID: 0}
 --- !u!1 &7025484026132415789

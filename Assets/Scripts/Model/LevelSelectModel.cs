@@ -24,14 +24,14 @@ namespace Game.Model
     /// </summary>
     public sealed class LevelSelectModel : AbstractModel
     {
-        // 占位关卡表：节点位置按地图蜿蜒路线排布，美术地图到位后微调 nodePos 即可
+        // 占位关卡表：2026-10-18 节点位置已按背景图特征点像素扫描定位（用户拍板，沿发光路排布）——
+        // 1 关=左下三棵树环绕的圆形平台、2 关=中上岩浆区中心、3 关=右下紫色虚影中心。
+        // 目前只设 3 个关卡（节点图标按 crystal/badge 素材三组一一对应）
         public readonly LevelDef[] Levels =
         {
-            new LevelDef { levelId = 1, displayName = "LEVEL 1", sceneName = "Level_01", nodePos = new Vector2(0.12f, 0.72f) },
-            new LevelDef { levelId = 2, displayName = "LEVEL 2", sceneName = "Level_02", nodePos = new Vector2(0.35f, 0.58f) },
-            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.52f, 0.76f) },
-            new LevelDef { levelId = 4, displayName = "LEVEL 4", sceneName = "Level_04", nodePos = new Vector2(0.72f, 0.52f) },
-            new LevelDef { levelId = 5, displayName = "LEVEL 5", sceneName = "Level_05", nodePos = new Vector2(0.88f, 0.28f) },
+            new LevelDef { levelId = 1, displayName = "LEVEL 1", sceneName = "Level_01", nodePos = new Vector2(0.111f, 0.273f) },
+            new LevelDef { levelId = 2, displayName = "LEVEL 2", sceneName = "Level_02", nodePos = new Vector2(0.548f, 0.871f) },
+            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.843f, 0.311f) },
         };
 
         LevelProgressModel _progress;
