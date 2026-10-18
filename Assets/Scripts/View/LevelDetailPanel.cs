@@ -31,17 +31,19 @@ namespace Game.View
         [SerializeField]
         TMP_Text titleLabel;
 
-        [Tooltip("关卡预览图（占位，后续按关卡换图）")]
+        [Tooltip("关卡预览图（当前布局未启用：2026-10-18 星级行占了原预览区；恢复时在 LevelSelectUIBuilder.BuildLevelDetailPanel 重建节点并回填）")]
         [SerializeField]
         Image previewImage;
 
+        [Tooltip("星级图标，3 个（标题与记录文本之间水平排布）；点亮=白色原色、未获得=暗灰，由 ShowStars 控制")]
+        [SerializeField]
+        Image[] starImages;
+
+        // 记录标签：2026-10-18 用户定稿——只保留「最短用时」一个（LastLabel 节点/字段/文案键均已清理）；
+        // 布局以预制体手调版为准，重跑 LevelSelectUIBuilder 会覆盖手调，勿随意重跑。
         [Tooltip("最短用时文本")]
         [SerializeField]
         TMP_Text recordLabel;
-
-        [Tooltip("上次用时文本（未通关时留空）")]
-        [SerializeField]
-        TMP_Text lastLabel;
 
         [Tooltip("进入按钮")]
         [SerializeField]
@@ -102,18 +104,44 @@ namespace Game.View
 
             titleLabel.text = Localization.Get(Localization.Key.LevelName, _current.levelId);
 
-            // 记录取自 LevelProgressModel（随存档持久化）：每次打开都读最新值，
-            // 因此刚通关回选关再点开这关，看到的就是刷新后的最短用时
-            var cleared = _model.HasRecord(_current.levelId);
+            // 成绩显示走下面两个公开接口（搜索关键字：ShowStars / ShowRecord）
+            ShowRecord(_current);
+            ShowStars(_model.GetBestStars(_current.levelId));
+        }
+
+        // ============================================================
+        //  关卡成绩接口（外部绑定/查询入口）
+        //  数据源：LevelSelectModel → LevelProgressModel（随存档持久化），
+        //  每次打开都读最新值——刚通关回选关再点开这关，看到的就是刷新后的成绩。
+        //  当前星级口径（用户拍板）：通关 = 1 星；3 个星位留给后续星级规则扩展。
+        // ============================================================
+
+        /// <summary>暗灰星（未获得）。</summary>
+        static readonly Color DimStarColor = new Color(0.40f, 0.40f, 0.44f);
+
+        /// <summary>
+        /// 刷新星级显示：第 count 个之前的星点亮（白色原色），其余暗灰。
+        /// OnShow 自动调用（数据源 LevelSelectModel.GetBestStars）；外部（测试/结算页等）也可直接调用。
+        /// </summary>
+        public void ShowStars(int starCount)
+        {
+            if (starImages == null || starImages.Length == 0) return;
+            var lit = Mathf.Clamp(starCount, 0, starImages.Length);
+            for (var i = 0; i < starImages.Length; i++)
+                starImages[i].color = i < lit ? Color.white : DimStarColor;
+        }
+
+        /// <summary>
+        /// 读取指定关卡的存档记录并打印到弹窗：最短用时 + 上次用时（未通关显示「暂无记录」、上次留空）。
+        /// OnShow 自动调用；外部也可直接调用来刷新。
+        /// </summary>
+        public void ShowRecord(LevelDef def)
+        {
+            var cleared = _model.HasRecord(def.levelId);
 
             recordLabel.text = cleared
-                ? Localization.Get(Localization.Key.LevelBestTime, FormatTime(_model.GetBestTime(_current.levelId)))
+                ? Localization.Get(Localization.Key.LevelBestTime, FormatTime(_model.GetBestTime(def.levelId)))
                 : Localization.Get(Localization.Key.LevelNoRecord);
-
-            if (lastLabel != null)
-                lastLabel.text = cleared
-                    ? Localization.Get(Localization.Key.LevelLastTime, FormatTime(_model.GetLastTime(_current.levelId)))
-                    : string.Empty;
         }
 
         protected override void OnHide()
