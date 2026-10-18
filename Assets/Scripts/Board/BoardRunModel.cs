@@ -354,5 +354,11 @@ namespace Game.Board
             _time?.StopTiming();
             RunFinished.Invoke();
         }
+
+        /// <summary>
+        /// 作弊器 / 测试入口：不经 AI 行走直接结算（运行时类 <see cref="LevelCheat" /> 的按钮与验证脚本调用）。
+        /// 与真实结算完全同链路：停表、置结果、广播 <see cref="RunFinished" />，记录 / 星级 / 成就照常发生。
+        /// </summary>
+        public void ForceFinish(RunResult value) => Finish(value);
     }
 }
