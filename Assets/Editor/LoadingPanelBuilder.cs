@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 加载过场面板生成器（重跑 = 覆盖产物，禁止在产物上手改结构；要改就改这里再重建）：
 /// 生成 Assets/Resources/UIPrefabs/LoadingPanel.prefab——主菜单 → 选关切换的过场加载界面。
-/// 结构：封面背景铺底 + 深紫压暗（拦截全部输入）→ 右下角旋转宝石环（18 帧序列，用户圈定区约 68%/83% 屏位）内嵌四态等距方块组 →
+/// 结构：封面背景铺底 + 深紫压暗（拦截全部输入）→ 右缘旋转宝石环（18 帧序列，贴右边界的加载指示）内嵌四态等距方块组 →
 /// 四角星自转点缀 → 环左侧双文字条（中文「游戏加载中」+ 英文「LOADING」呼吸，左对齐文字块与环垂直对中）。
 /// 素材：Assets/Arts/封面设计图/加载组件.png（2026-10-18 语义化重命名：Ring_01..18 / Ring_Static / Text_Cn / Text_En / Tiles / Star）。
 /// </summary>
@@ -53,35 +53,35 @@ public static class LoadingPanelBuilder
 
         // 右下角旋转宝石环（18 帧序列，运行时按帧率换帧）——位置为用户圈定区（约 68%/83% 屏位）
         var ringRt = CreateRect(root, "Ring");
-        Center(ringRt, new Vector2(348f, -360f), new Vector2(300f, 300f));
+        Center(ringRt, new Vector2(737.5f, -360f), new Vector2(225f, 225f));
         var ring = ringRt.gameObject.AddComponent<Image>();
         ring.sprite = SheetSprite("Ring_01");
         ring.raycastTarget = false;
 
         // 环心：四态等距方块组（冰/火/魔晶/石——棋盘玩法的意象缩影）
         var tilesRt = CreateRect(root, "Tiles");
-        Center(tilesRt, new Vector2(348f, -360f), new Vector2(177f, 187f));
+        Center(tilesRt, new Vector2(737.5f, -360f), new Vector2(133f, 140f));
         var tiles = tilesRt.gameObject.AddComponent<Image>();
         tiles.sprite = SheetSprite("Tiles");
         tiles.raycastTarget = false;
 
         // 四角星：压在环右上缘，运行时自转
         var starRt = CreateRect(root, "Star");
-        Center(starRt, new Vector2(474f, -243f), new Vector2(50f, 79f));
+        Center(starRt, new Vector2(832f, -272f), new Vector2(37.5f, 59f));
         var star = starRt.gameObject.AddComponent<Image>();
         star.sprite = SheetSprite("Star");
         star.raycastTarget = false;
 
-        // 中文文字条「游戏加载中」——环左侧、与环垂直对中（左对齐文字块的上行）
+        // 中文文字条「游戏加载中」——环左侧、与环垂直对中（左对齐文字块的上行，整组等比 0.75）
         var textCnRt = CreateRect(root, "TextCn");
-        Center(textCnRt, new Vector2(-149.5f, -310f), new Vector2(561f, 135f));
+        Center(textCnRt, new Vector2(359.5f, -322.5f), new Vector2(421f, 101f));
         var textCn = textCnRt.gameObject.AddComponent<Image>();
         textCn.sprite = SheetSprite("Text_Cn");
         textCn.raycastTarget = false;
 
         // 英文文字条「LOADING」（运行时呼吸）——文字块下行，与中文条左缘对齐
         var textEnRt = CreateRect(root, "TextEn");
-        Center(textEnRt, new Vector2(-207.5f, -436f), new Vector2(445f, 81f));
+        Center(textEnRt, new Vector2(316f, -417.5f), new Vector2(334f, 61f));
         var textEn = textEnRt.gameObject.AddComponent<Image>();
         textEn.sprite = SheetSprite("Text_En");
         textEn.raycastTarget = false;
