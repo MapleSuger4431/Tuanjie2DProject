@@ -10,7 +10,7 @@ namespace Game.Board
     /// <summary>
     /// 关卡内右下角的成就 / 消息小窗（**Panel 形态**：根只有 RectTransform，无自带 Canvas，挂 UIRoot 的 Top 层）。
     /// <para>
-    /// 常驻打开（由 <see cref="BoardRuntimeDriver" /> 随关卡拉起），不做 Show/Hide 反复开关——
+    /// 常驻打开（由 <see cref="BoardRuntimeDriver" /> 随关卡拉起、由 <c>MainMenuBoot</c> 随主菜单拉起），不做 Show/Hide 反复开关——
     /// <c>destroyOnHide</c> 默认 true，反复开关会销毁重建；这里只切右下角那张卡片的显隐与透明度。
     /// 切场景由 <see cref="Game.Core.SceneTransition" /> 的 sceneLoaded 钩子统一收掉，本类不写清理代码。
     /// </para>
@@ -20,8 +20,10 @@ namespace Game.Board
     /// ② **排队播放**——播放中来的消息入队，当前条播完立刻播下一条，不叠加（队列满丢弃最旧的）。
     /// </para>
     /// 结构由 <c>Assets/Editor/LevelTipPanelBuilder.cs</c> 重建，改 UI 改生成器。
+    /// 挂 <see cref="GameContext" />（不是关卡专属 Context）：成就通知在关卡内解锁，但主菜单 / 选关也要能弹。
+    /// </para>
     /// </summary>
-    public sealed class LevelTipPanel : AesirBasePanelViewController<BoardContext>
+    public sealed class LevelTipPanel : AesirBasePanelViewController<GameContext>
     {
         /// <summary>播放阶段：空闲 → 淡入 → 停留 → 淡出 →（队列还有就回到淡入）。</summary>
         enum Stage

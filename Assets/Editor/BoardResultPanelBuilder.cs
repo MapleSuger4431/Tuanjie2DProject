@@ -14,13 +14,16 @@ namespace Game.Editor
     /// <para>
     /// 产物：LevelClearPanel（通关成功，带星级与用时）、LevelFailPanel（通关失败），
     /// 两者都是 **Panel 形态**：根只有 RectTransform（无 Canvas / CanvasScaler / GraphicRaycaster，
-    /// 那些由 UIRoot 的层 Canvas 提供），挂 Popup 层，全屏 Mask 拦截射线。
+    /// 那些由 UIRoot 的层 Canvas 提供），挂 **Top 层**（tip 型弹出卡，与右下角成就小窗同层），
+    /// 全屏淡蒙版（拦截射线、淡淡压暗游戏画面）+ 羊皮纸卡片居中弹入（无外层描边背板）。
     /// 重跑即覆盖产物；要改结构改这里，禁止在产物 prefab 上手加节点。
     /// </para>
     /// <para>
-    /// 皮肤 = 参考文档「旧魔导书 Grimoire」那套：全屏暗紫蒙版 + 深紫描边背板（<see cref="UiSpritePainter" />）
-    /// + 做旧羊皮纸内页（Tip_Parchment）+ 古铜金分隔线 + 暗紫描金按钮牌匾，文字走深紫（纸面浅色，
-    /// 与棋盘运行时面板那套「深底浅字」相反）。失败页复用同一副壳，只是把内页染成灰紫红、标题转暗红。
+    /// 皮肤 = 参考文档「旧魔导书 Grimoire」那套：全屏淡紫蒙版 + 做旧羊皮纸卡片（Tip_Parchment 自带毛边，
+    /// 用户拍板去掉外层深紫描边背板）+ 古铜金分隔线。标题与两个出口按钮是**金匾**（金底深紫字），
+    /// 按用户要求横跨/压在羊皮纸的紫色水印边框带上做亮色凸显；正文成绩行留在水印安全线以内的纸面上，
+    /// 文字走深紫（纸面浅色，与棋盘运行时面板那套「深底浅字」相反）。失败页复用同一副壳，
+    /// 只是把内页染成灰紫红、标题转暗红。
     /// 同时同步结算文案到 GameText 表（zh-CN / en）——文案真源在表里，预制体文本节点一律留空。
     /// </para>
     /// </summary>
@@ -36,56 +39,64 @@ namespace Game.Editor
         /// <summary>项目中文字体资产（TMPChineseText 扩展落地），不足时回退 TMP 默认字体。</summary>
         const string TmpChineseFontPath = "Assets/Codely/Fonts/NotoSansSC-Regular SDF.asset";
 
-        /// <summary>星级图标（与选关节点同一套美术）。</summary>
-        const string StarSpritePath = "Assets/Resources/UIPrefabs/UIimg/star.png";
-
         /// <summary>羊皮纸卷轴内页（与关卡成就小窗同一张，1024×576、9-slice 边 40）。</summary>
         const string ParchmentPath = "Assets/Art/Board/UI/Tip_Parchment.png";
 
         // ---- 布局（1920×1080 设计分辨率；卡片按像素固定尺寸居中，内部按「距左/距顶/宽/高」摆放）----
-        const float FrameWidth = 1000f;
-        const float FrameHeight = 760f;
-        const float CardInset = 28f;
+        // 标题金匾与按钮金匾按用户要求**压在羊皮纸的紫色水印边框带上**（亮金底凸显，不躲开水印）；
+        // 其余成绩内容收在水印安全线（四边内渗约 120px）以内。
+        // 用户拍板：外层不再包深紫描边背板（原 Frame），羊皮纸本身就是卡片。
+        const float CardWidth = 944f;
+        const float CardHeight = 784f;
+
+        /// <summary>星星图标：项目专门的星星图（与选关详情弹窗同一张，RGBA 透明通道已验证健康）。</summary>
+        const string StarSpritePath = "Assets/Resources/UIPrefabs/UIimg/star.png";
+
+        // 标题金匾：横跨顶部水印带，标题文字居中落在匾上
+        const float TitlePlaqueWidth = 700f;
+        const float TitlePlaqueHeight = 124f;
+        const float TitlePlaqueTop = 36f;
 
         const float TitleLeft = 60f;
-        const float TitleTop = 62f;
-        const float TitleHeight = 92f;
-        const float TitleFontSize = 62f;
+        const float TitleTop = 36f;
+        const float TitleHeight = 124f;
+        const float TitleFontSize = 64f;
 
-        const float DividerLeft = 150f;
-        const float DividerTop = 168f;
+        const float DividerLeft = 170f;
+        const float DividerTop = 182f;
         const float DividerWidth = CardWidth - DividerLeft * 2f;
         const float DividerHeight = 4f;
 
-        const float CardWidth = FrameWidth - CardInset * 2f;
+        // 三颗大星铺满整行（用户拍板：变大 + 在这一行里填充三颗星）；间距 312 → 星翼横跨卡片 62..882，占宽 87%
+        const float StarRowLeft = 80f;
+        const float StarRowTop = 204f;
+        const float StarRowWidth = 784f;
+        const float StarRowHeight = 196f;
+        const float StarSize = 196f;
+        const float StarGap = 312f;
 
-        const float StarRowLeft = 120f;
-        const float StarRowTop = 190f;
-        const float StarRowWidth = 700f;
-        const float StarRowHeight = 150f;
-        const float StarSize = 130f;
-        const float StarGap = 200f;
-
-        const float RowLeft = 90f;
-        const float RowWidth = 760f;
+        const float RowLeft = 130f;
+        const float RowWidth = 684f;
         const float RowHeight = 46f;
         const float RowFontSize = 36f;
 
-        const float StepsTop = 360f;
-        const float PiecesTop = 414f;
-        const float TimeTop = 468f;
-        const float FailStepsTop = 330f;
-        const float FailPiecesTop = 384f;
+        const float StepsTop = 420f;
+        const float PiecesTop = 474f;
+        const float TimeTop = 528f;
+        const float FailStepsTop = 310f;
+        const float FailPiecesTop = 364f;
 
-        const float ButtonBottom = 56f;
-        const float ButtonWidth = 330f;
-        const float ButtonHeight = 88f;
-        const float ButtonLeftX = 105f;
-        const float ButtonRightX = 505f;
-        const float ButtonFontSize = 34f;
+        // 按钮金匾：压在底部水印带上（用户拍板：原 104 高太矮，加高到 128）
+        const float ButtonBottom = 60f;
+        const float ButtonWidth = 380f;
+        const float ButtonHeight = 128f;
+        const float ButtonLeftX = 60f;
+        const float ButtonRightX = 504f;
+        const float ButtonFontSize = 38f;
 
         // ---- 配色（旧魔导书：羊皮纸浅面 → 文字走深紫）----
-        static readonly Color MaskColor = new Color(0.043f, 0f, 0.086f, 0.80f);
+        // tip 型面板的淡蒙版：只淡淡压暗一层，游戏画面隐约可见（用户拍板：不要全屏深色蒙版）
+        static readonly Color MaskColor = new Color(0.043f, 0f, 0.086f, 0.40f);
         static readonly Color GoldColor = new Color(0.78f, 0.63f, 0.33f, 0.9f);
 
         static readonly Color ClearCardTint = Color.white;
@@ -96,8 +107,8 @@ namespace Game.Editor
         static readonly Color FailTitleColor = new Color(0.369f, 0.106f, 0.129f, 1f);
         static readonly Color FailTextColor = new Color(0.353f, 0.216f, 0.235f, 1f);
 
-        /// <summary>牌匾是深底，文字反过来走浅金。</summary>
-        static readonly Color ButtonLabelColor = new Color(0.98f, 0.94f, 0.86f, 1f);
+        /// <summary>金匾是亮底，标题与按钮文字反过来走深紫（与暗紫牌匾那套浅金字相反）。</summary>
+        static readonly Color ButtonLabelColor = new Color(0.165f, 0.078f, 0.212f, 1f);
 
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
@@ -154,8 +165,9 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 星级行：卡片上部横向三等分，每格一枚固定 130×130 的星（PreserveAspect 保住星星比例），
-        /// 图标走项目美术 star.png；点亮动画在 <see cref="LevelStarRow" /> 里。
+        /// 星级行：整行铺满三颗 196×196 的大星（PreserveAspect 保住星星比例），
+        /// 图标走项目星星图标 UIimg/star.png（用户拍板：用专门的那颗，与选关详情弹窗一致）；
+        /// 点亮动画在 <see cref="LevelStarRow" /> 里。
         /// </summary>
         static LevelStarRow BuildStars(RectTransform card)
         {
@@ -165,7 +177,7 @@ namespace Game.Editor
             var component = row.gameObject.AddComponent<LevelStarRow>();
             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
             if (sprite == null)
-                Debug.LogWarning($"[BoardResultPanelBuilder] 未找到星级图标 {StarSpritePath}，星级行退化为纯色块");
+                Debug.LogWarning($"[BoardResultPanelBuilder] 未找到星星图标 {StarSpritePath}，星级行退化为纯色块");
 
             var count = LevelStarRules.MaxStars;
             var images = new Image[count];
@@ -190,8 +202,10 @@ namespace Game.Editor
                 starsProperty.GetArrayElementAtIndex(i).objectReferenceValue = images[i];
 
             so.FindProperty("starSprite").objectReferenceValue = sprite;
-            // 羊皮纸是浅底：未点亮的星若是「白色半透」会和纸面糊在一起，改成深灰紫才看得出空位
-            so.FindProperty("offColor").colorValue = new Color(0.33f, 0.28f, 0.38f, 0.6f);
+            // 羊皮纸是浅底：未点亮的星染暗灰（与选关详情弹窗同款），才看得出空位
+            so.FindProperty("offColor").colorValue = new Color(0.40f, 0.40f, 0.44f, 1f);
+            // star.png 本身是金色渐变徽章：点亮色用白，直接呈现原色（再乘金色整颗会发暗发浊）
+            so.FindProperty("onColor").colorValue = Color.white;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             component.Reset();      // 落盘前先归位到「全部熄灭」，避免预制体存着中间态
@@ -210,7 +224,7 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 两种结算面板共用的壳：全屏根 → Mask（暗紫半透，拦截射线）→ 深紫描边背板 → 羊皮纸内页
+        /// 两种结算面板共用的壳：全屏根 → Mask（淡紫压暗，拦截射线）→ 羊皮纸卡片（居中 + CanvasGroup 弹入）
         /// （标题 + 古铜金分隔线 + 成绩行 + 两个牌匾按钮）。失败页没有星级与用时，成绩行上移。
         /// </summary>
         static (GameObject root, RectTransform card) BuildShell<T>(
@@ -219,31 +233,37 @@ namespace Game.Editor
         {
             var parchment = AssetDatabase.LoadAssetAtPath<Sprite>(ParchmentPath);
             if (parchment == null) Debug.LogError($"[BoardResultPanelBuilder] 缺少羊皮纸内页 {ParchmentPath}");
-            var plaque = UiSpritePainter.EnsurePlaqueSprite();
-            var frameSprite = UiSpritePainter.EnsurePanelSprite();
+            var plaque = UiSpritePainter.EnsureGoldPlaqueSprite();
 
             var root = new GameObject(name, typeof(RectTransform));
             var script = root.AddComponent<T>();
-            Stretch((RectTransform)root.transform);   // 根必须全屏拉伸，否则挂到 Popup 层后缩成 100×100 小块
+            Stretch((RectTransform)root.transform);   // 根必须全屏拉伸，否则挂到层 Canvas 后缩成 100×100 小块
 
             var mask = NewRect("Mask", root.transform);
             Stretch(mask);
             mask.gameObject.AddComponent<Image>().color = MaskColor;
 
-            // 背板：比内页大一圈，露出深紫描边当卷轴的封皮
-            var frame = NewRect("Frame", root.transform);
-            frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(0.5f, 0.5f);
-            frame.sizeDelta = new Vector2(FrameWidth, FrameHeight);
-            var frameImage = frame.gameObject.AddComponent<Image>();
-            frameImage.sprite = frameSprite;
-            frameImage.type = Image.Type.Sliced;
-
-            var card = NewRect("Card", frame);
-            Stretch(card, CardInset);
+            // 卡片：羊皮纸直接就是卡片（用户拍板：去掉外面那圈深紫描边背板），
+            // 居中固定尺寸；弹入动画由 LevelResultPanel.PlayPopIn 驱动（CanvasGroup 控整卡淡入）
+            var card = NewRect("Card", root.transform);
+            card.anchorMin = card.anchorMax = card.pivot = new Vector2(0.5f, 0.5f);
+            card.sizeDelta = new Vector2(CardWidth, CardHeight);
             var cardImage = card.gameObject.AddComponent<Image>();
             cardImage.sprite = parchment;
             cardImage.type = Image.Type.Sliced;
             cardImage.color = cardTint;
+            var cardGroup = card.gameObject.AddComponent<CanvasGroup>();
+
+            // 标题金匾：横跨羊皮纸顶部的紫色水印带，亮金底让标题从边框里凸显出来（标题文字居中落在匾上）
+            var titlePlaque = NewRect("TitlePlaque", card);
+            titlePlaque.anchorMin = titlePlaque.anchorMax = new Vector2(0.5f, 1f);
+            titlePlaque.pivot = new Vector2(0.5f, 1f);
+            titlePlaque.sizeDelta = new Vector2(TitlePlaqueWidth, TitlePlaqueHeight);
+            titlePlaque.anchoredPosition = new Vector2(0f, -TitlePlaqueTop);
+            var titlePlaqueImage = titlePlaque.gameObject.AddComponent<Image>();
+            titlePlaqueImage.sprite = plaque;
+            titlePlaqueImage.type = Image.Type.Sliced;
+            titlePlaqueImage.raycastTarget = false;
 
             var titleRow = NewRect("Title", card);
             AnchorTopLeft(titleRow, TitleLeft, TitleTop, CardWidth - TitleLeft * 2f, TitleHeight);
@@ -276,14 +296,17 @@ namespace Game.Editor
             so.FindProperty("retryButtonLabel").objectReferenceValue = retryLabel;
             so.FindProperty("backToSelectButton").objectReferenceValue = backButton;
             so.FindProperty("backToSelectButtonLabel").objectReferenceValue = backLabel;
-            // 结算要压在关卡 HUD 之上：显式挂 Popup 层（面板默认 Normal）
-            so.FindProperty("layer").enumValueIndex = (int)UILayer.Popup;
+            // 弹入动画目标：羊皮纸卡片本体
+            so.FindProperty("cardRoot").objectReferenceValue = card;
+            so.FindProperty("cardGroup").objectReferenceValue = cardGroup;
+            // tip 型面板（用户拍板）：挂 Top 层与右下角成就小窗同层，淡蒙版浮在关卡 HUD 之上
+            so.FindProperty("layer").enumValueIndex = (int)UILayer.Top;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             return (root, card);
         }
 
-        /// <summary>按钮：暗紫描金牌匾（9-slice）+ 浅金文字，左下角锚定按「距左 / 距底 / 宽 / 高」摆放。</summary>
+        /// <summary>按钮：金底深紫字牌匾（9-slice），压在羊皮纸底部水印带上；左下角锚定按「距左 / 距底 / 宽 / 高」摆放。</summary>
         static Button BuildPlaqueButton(RectTransform parent, string name, Sprite plaque, float leftX, out TMP_Text label)
         {
             var rect = NewRect(name, parent);
@@ -392,14 +415,6 @@ namespace Game.Editor
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
-        }
-
-        /// <summary>父级内缩 <paramref name="inset" /> 像素后铺满（羊皮纸内页相对背板）。</summary>
-        static void Stretch(RectTransform rt, float inset)
-        {
-            Stretch(rt);
-            rt.offsetMin = new Vector2(inset, inset);
-            rt.offsetMax = new Vector2(-inset, -inset);
         }
 
         /// <summary>左上锚定 + 固定尺寸：按「距左 / 距顶 / 宽 / 高」摆放，不随父级拉伸。</summary>
