@@ -74,6 +74,12 @@ public static class MainMenuBuilder
         ("icon_exit", 855, 595, 950, 678),
     };
 
+    /// <summary>设置面板的 UI 点击音效（经 AudioModule 的 SFX 通道播放）。</summary>
+    const string UiClickSfxPath = "Assets/Art/Audio/音效/UIClick.wav";
+
+    /// <summary>主菜单背景音乐（经 AudioModule 的 BGM 通道循环播放）。</summary>
+    const string MainMenuBgmPath = "Assets/Art/Audio/背景音乐/MainMenuBgm_Placeholder.wav";
+
     static string PanelPrefabPath => "Assets/Resources/" + UIPaths.MainMenuPanel + ".prefab";
 
     static string HelpPrefabPath => "Assets/Resources/" + UIPaths.MenuHelpPanel + ".prefab";
@@ -568,6 +574,19 @@ public static class MainMenuBuilder
         so.FindProperty("chineseButton").objectReferenceValue = chineseButton;
         so.FindProperty("englishButton").objectReferenceValue = englishButton;
         so.FindProperty("closeButton").objectReferenceValue = closeButton;
+
+        // UI 点击音效：资产缺失时留空（运行时静默跳过，不刷错误日志）
+        var uiClick = AssetDatabase.LoadAssetAtPath<AudioClip>(UiClickSfxPath);
+        if (uiClick != null)
+        {
+            so.FindProperty("uiClickSfx").objectReferenceValue = uiClick;
+            so.FindProperty("uiClickVolume").floatValue = 1f;
+        }
+        else
+        {
+            Debug.LogWarning($"[MainMenuBuilder] 未找到 UI 点击音效 {UiClickSfxPath}，设置面板将不播放点击音");
+        }
+
         so.ApplyModifiedPropertiesWithoutUndo();
 
         SavePrefab(root.gameObject, SettingsPrefabPath);
@@ -601,7 +620,21 @@ public static class MainMenuBuilder
             cam.transform.position = new Vector3(0f, 0f, -10f);
 
             var boot = new GameObject("MainMenuBoot");
-            boot.AddComponent<MainMenuBoot>();
+            var bootScript = boot.AddComponent<MainMenuBoot>();
+            var bootSo = new SerializedObject(bootScript);
+
+            // 主菜单 BGM：经 AudioModule 的 BGM 通道播放，音量随设置面板的音乐滑条
+            var bgm = AssetDatabase.LoadAssetAtPath<AudioClip>(MainMenuBgmPath);
+            if (bgm != null)
+            {
+                bootSo.FindProperty("bgmClip").objectReferenceValue = bgm;
+                bootSo.FindProperty("bgmFadeSeconds").floatValue = 1f;
+                bootSo.ApplyModifiedPropertiesWithoutUndo();
+            }
+            else
+            {
+                Debug.LogWarning($"[MainMenuBuilder] 未找到主菜单 BGM {MainMenuBgmPath}，主菜单将不播放背景音乐");
+            }
 
             EditorSceneManager.SaveScene(scene, ScenePaths.MainMenu);
         }

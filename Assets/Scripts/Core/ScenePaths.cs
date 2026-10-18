@@ -6,10 +6,13 @@ namespace Game.Core
     /// </summary>
     public static class ScenePaths
     {
-        /// <summary>主菜单场景（已建成的主菜单 UI 资产，后续按需经 SceneModule 接入）。</summary>
+        /// <summary>启动场景：只放 GameBootstrap，加载完本地化资源后切主场景。</summary>
+        public const string Bootstrap = "Assets/Scenes/Bootstrap.unity";
+
+        /// <summary>主场景（主菜单）：开始游戏入口，右上角无设置、设置按钮按版式排在按钮列。</summary>
         public const string MainMenu = "Assets/Scenes/MainMenu.scene";
 
-        /// <summary>主场景（Bootstrap 直接切入的游戏主场景）。</summary>
-        public const string MainScene = "Assets/Scenes/MainScene.scene";
+        /// <summary>选择关卡场景：大地图选关，可返回主场景，右上角设置按钮。</summary>
+        public const string LevelSelect = "Assets/Scenes/LevelSelect.scene";
     }
 }

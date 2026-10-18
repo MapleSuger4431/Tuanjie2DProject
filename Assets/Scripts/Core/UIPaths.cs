@@ -14,5 +14,20 @@ namespace Game.Core
 
         /// <summary>设置面板：Resources/UIPrefabs/MenuSettingsPanel。</summary>
         public const string MenuSettingsPanel = "UIPrefabs/MenuSettingsPanel";
+
+        /// <summary>选关面板：Resources/UIPrefabs/LevelSelectPanel。</summary>
+        public const string LevelSelectPanel = "UIPrefabs/LevelSelectPanel";
+
+        /// <summary>关卡详情弹窗（面板形态，Popup 层）：Resources/UIPrefabs/LevelDetailPanel。</summary>
+        public const string LevelDetailPanel = "UIPrefabs/LevelDetailPanel";
+
+        /// <summary>棋盘关卡运行时面板：Resources/UIPrefabs/BoardRuntimePanel（由关卡场景 BoardRuntimeDriver 拉起）。</summary>
+        public const string BoardRuntimePanel = "UIPrefabs/BoardRuntimePanel";
+
+        /// <summary>通关成功结算面板：Resources/UIPrefabs/LevelClearPanel。</summary>
+        public const string LevelClearPanel = "UIPrefabs/LevelClearPanel";
+
+        /// <summary>通关失败结算面板：Resources/UIPrefabs/LevelFailPanel。</summary>
+        public const string LevelFailPanel = "UIPrefabs/LevelFailPanel";
     }
 }

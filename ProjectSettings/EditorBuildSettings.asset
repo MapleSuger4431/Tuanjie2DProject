@@ -15,11 +15,16 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.scene
     guid: d9d4f99bccc291447931391e8ed48635
   - enabled: 1
-    path: Assets/Scenes/MainScene.scene
-    guid: 28028487558dc49a6b3b8310ff150dca
+    path: Assets/Scenes/LevelSelect.scene
+    guid: 1315b51609c3f44ce93b299060e6b49e
+  - enabled: 1
+    path: Assets/Scenes/Level_01.unity
+    guid: 52fdfc813820048af9b2e9755963b2ec
   m_BuildProfiles: []
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 8a77d52bfd3034044badff3f36e485e1, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 0d6bca2793388441c94f8d776e48a24d, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: b392877cfee8b4ef4a654017a3ac947d, type: 2}
   m_SlimFeaturesWeixinMiniGame:
     ACLDecompression: 0
     AllocateOverhead: 1

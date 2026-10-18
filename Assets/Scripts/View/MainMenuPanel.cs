@@ -46,16 +46,18 @@ namespace Game.View
             // 预制体静态 Text 的默认字体对中文字形不可靠，运行时统一挂系统中文动态字体
             GameFonts.Apply(transform);
 
-            // 把持久化的语言应用到 Unity Localization（必须在取文本前选中正确语言）
-            GameSettings.ApplyLoadedLocale();
+            // 语言已由 SettingsService 在启动时从存档应用到 Unity Localization（取文本前已选中正确语言）
 
             // 全游戏语言本地化：订阅切换事件（设置面板切语言时按钮/提示即时刷新），初始化即应用一次
             Localization.OnLanguageChanged += ApplyLocalization;
             ApplyLocalization();
 
+            // 开始游戏：切到选择关卡场景（SceneModule 需完整资产路径，Build Settings 已登记）
             newGameButton.onClick.AddListener(() =>
             {
-                Debug.Log("[MainMenuPanel] 新游戏：开始新对局（占位逻辑，后续接入关卡生成）");
+                Debug.Log($"[MainMenuPanel] 开始游戏：切换选择关卡场景 {ScenePaths.LevelSelect}");
+                SceneTransition.LoadSingle(ScenePaths.LevelSelect,
+                    onFailed: () => Debug.LogError($"[MainMenuPanel] 选择关卡场景切换失败：{ScenePaths.LevelSelect}"));
             });
 
             // 说明内容：经 UIModule 打开操作说明弹窗（面板形态，Popup 层）；标题/正文由本地化接管
@@ -65,8 +67,7 @@ namespace Game.View
                 UIModule.Show<MenuHelpPanel>(UIPaths.MenuHelpPanel);
             });
 
-            // 设置：经 UIModule 打开设置面板（面板形态，Popup 层）；进面板即应用持久化的音效音量
-            GameSettings.ApplySfxVolume();
+            // 设置：经 UIModule 打开设置面板（面板形态，Popup 层）；音量等设置由 SettingsService 统一下发
             settingsButton.onClick.AddListener(() =>
             {
                 Debug.Log("[MainMenuPanel] 设置：打开设置面板");

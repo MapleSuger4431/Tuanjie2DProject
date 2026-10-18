@@ -154,6 +154,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0f5010d668a6a4b9baaaaf007912b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bgmClip: {fileID: 8300000, guid: a29a230c885664b44b1e08309b76e851, type: 3}
+  bgmFadeSeconds: 1
 --- !u!4 &616289320
 Transform:
   m_ObjectHideFlags: 0

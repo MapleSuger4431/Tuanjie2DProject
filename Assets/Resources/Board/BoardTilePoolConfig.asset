@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0939717274e9e412a863576b3ca61724, type: 3}
+  m_Name: BoardTilePoolConfig
+  m_EditorClassIdentifier: 
+  levels:
+  - sceneName: Level_01
+    types:
+    - type: 0
+      weight: 2
+    - type: 1
+      weight: 6
+    - type: 2
+      weight: 3
+    - type: 3
+      weight: 3
+    - type: 4
+      weight: 0
+  - sceneName: Level_02
+    types:
+    - type: 0
+      weight: 2
+    - type: 1
+      weight: 5
+    - type: 2
+      weight: 3
+    - type: 3
+      weight: 3
+    - type: 4
+      weight: 1
+  - sceneName: Level_03
+    types:
+    - type: 0
+      weight: 2
+    - type: 1
+      weight: 4
+    - type: 2
+      weight: 4
+    - type: 3
+      weight: 4
+    - type: 4
+      weight: 2
+  - sceneName: Level_04
+    types:
+    - type: 0
+      weight: 3
+    - type: 1
+      weight: 3
+    - type: 2
+      weight: 4
+    - type: 3
+      weight: 4
+    - type: 4
+      weight: 3
+  - sceneName: Level_05
+    types:
+    - type: 0
+      weight: 3
+    - type: 1
+      weight: 2
+    - type: 2
+      weight: 4
+    - type: 3
+      weight: 4
+    - type: 4
+      weight: 4
+  fallback:
+    sceneName: Fallback
+    types:
+    - type: 0
+      weight: 2
+    - type: 1
+      weight: 6
+    - type: 2
+      weight: 3
+    - type: 3
+      weight: 3
+    - type: 4
+      weight: 0

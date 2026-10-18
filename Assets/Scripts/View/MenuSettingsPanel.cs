@@ -1,4 +1,6 @@
 using Game.Core;
+using Game.Model;
+using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,12 +13,15 @@ namespace Game.View
     /// 面板形态：RectTransform 根、无 Canvas，挂载于 UIRoot 的 Popup 层；
     /// 蒙版点击 / × 按钮双通道关闭。
     /// 经 <c>UIModule.Show&lt;MenuSettingsPanel&gt;(UIPaths.MenuSettingsPanel)</c> 打开。
-    /// 设置值经 <see cref="GameSettings" />（PlayerPrefs）持久化、即时生效；
-    /// 语言切换经本地化广播刷新本面板与全游戏文本（中文 ↔ English）。
+    /// </para>
+    /// <para>
+    /// 面板只读写 <see cref="SettingsModel" />，不碰存储也不碰音频模块：
+    /// 下发到 AudioModule / Localization / Screen 由 <c>SettingsService</c> 负责，
+    /// 落盘由 <c>SaveService</c> 负责（设置变更即存档）。语言切换经本地化广播刷新本面板与全游戏文本。
     /// </para>
     /// </summary>
     [AddComponentMenu("")]
-    public class MenuSettingsPanel : AesirBasePanel
+    public class MenuSettingsPanel : AesirBasePanelViewController<GameContext>
     {
         [Tooltip("标题文本")]
         [SerializeField]
@@ -70,8 +75,23 @@ namespace Game.View
         [SerializeField]
         Button closeButton;
 
+        [Tooltip("UI 点击音效 — 经 AudioModule 的 SFX 通道播放，随设置面板的音效滑条即时变化")]
+        [SerializeField]
+        AudioClip uiClickSfx;
+
+        [Tooltip("UI 点击音效的局部音量（与 SFX 通道音量相乘生效）")]
+        [SerializeField, Range(0f, 1f)]
+        float uiClickVolume = 1f;
+
+        SettingsModel _settings;
+
         Image chineseButtonImage;
         Image englishButtonImage;
+
+        /// <summary>连续拖动滑条时的点击音节流间隔（秒），避免每帧一响糊成一片。</summary>
+        const float ClickThrottleSeconds = 0.08f;
+
+        float lastClickTime = -1f;
 
         static readonly Color NormalButtonColor = Color.white;
         static readonly Color SelectedButtonColor = new Color(0.60f, 0.80f, 1.00f, 1f);
@@ -81,9 +101,10 @@ namespace Game.View
             // 静态 Text 的默认字体对中文字形不可靠，运行时统一挂系统中文动态字体
             GameFonts.Apply(transform);
 
-            // 每次打开都把已保存的音效音量应用到 AudioListener（保证持久化值即时生效）
-            GameSettings.ApplySfxVolume();
+            // 生命周期：克隆 → OnInit → Start —— Model 缓存与按钮绑定必须在 OnInit 完成
+            _settings = this.GetModel<SettingsModel>();
 
+            closeButton.onClick.AddListener(PlayClick);
             closeButton.onClick.AddListener(HideSelf);
 
             // 蒙版点击关闭：面板没有 AesirBaseWindow.OnMaskClicked 回调，由 Mask 子物体的 Button 直接承接
@@ -97,31 +118,50 @@ namespace Game.View
                 }
             }
 
-            // 分辨率档位：< / > 循环切换，即时应用并保存，并刷新数值文本
+            // 分辨率档位：< / > 循环切换（改 Model → SettingsService 应用到屏幕 → SaveService 落盘）
             resolutionPrevButton.onClick.AddListener(() =>
             {
-                GameSettings.SetResolution(GameSettings.ResolutionIndex - 1);
-                RefreshVisuals();
+                PlayClick();
+                ShiftResolution(-1);
             });
 
             resolutionNextButton.onClick.AddListener(() =>
             {
-                GameSettings.SetResolution(GameSettings.ResolutionIndex + 1);
-                RefreshVisuals();
+                PlayClick();
+                ShiftResolution(1);
             });
 
-            // 音量：滑条值直接写入 GameSettings（音效占位应用 AudioListener，音乐先持久化）
-            sfxSlider.onValueChanged.AddListener(GameSettings.SetSfxVolume);
-            musicSlider.onValueChanged.AddListener(GameSettings.SetMusicVolume);
+            // 音量：滑条值只写 Model，下发 AudioModule 与落盘都由 Service 订阅完成。
+            // 拖动时按节流播放点击音——既是操作反馈，也能直接听到当前音量大小
+            sfxSlider.onValueChanged.AddListener(value =>
+            {
+                _settings.SfxVolume.Value = value;
+                PlayClick();
+            });
 
-            // 语言：点选即保存并广播（GameSettings.SetLanguage 触发本地化事件，本面板与全游戏文本即时刷新）
+            musicSlider.onValueChanged.AddListener(value =>
+            {
+                _settings.BgmVolume.Value = value;
+                PlayClick();
+            });
+
+            // 语言：点选即写 Model（SettingsService 切 Locale 并广播，本面板与全游戏文本即时刷新）
             chineseButtonImage = chineseButton.GetComponent<Image>();
             englishButtonImage = englishButton.GetComponent<Image>();
 
             Localization.OnLanguageChanged += RefreshVisuals;
 
-            chineseButton.onClick.AddListener(() => GameSettings.SetLanguage(GameSettings.Language.Chinese));
-            englishButton.onClick.AddListener(() => GameSettings.SetLanguage(GameSettings.Language.English));
+            chineseButton.onClick.AddListener(() =>
+            {
+                PlayClick();
+                _settings.Language.Value = SettingsModel.LanguageChinese;
+            });
+
+            englishButton.onClick.AddListener(() =>
+            {
+                PlayClick();
+                _settings.Language.Value = SettingsModel.LanguageEnglish;
+            });
         }
 
         protected override void OnDestroy()
@@ -136,16 +176,46 @@ namespace Game.View
             RefreshVisuals();
         }
 
-        /// <summary>把 GameSettings 当前值刷新到 UI（滑条静默同步，不触发 onValueChanged 回写）。</summary>
+        /// <summary>把分辨率档位循环前移/后移一位（越界回绕）。</summary>
+        void ShiftResolution(int delta)
+        {
+            var count = SettingsModel.Resolutions.Length;
+            var next = (_settings.ResolutionIndex.Value + delta + count) % count;
+            _settings.ResolutionIndex.Value = next;
+            RefreshVisuals();
+        }
+
+        /// <summary>
+        /// 播放一次 UI 点击音效（经 AudioModule 的 SFX 通道，音量随设置面板的音效滑条）。
+        /// 未配置片段时静默跳过；拖动滑条等连续触发按 <see cref="ClickThrottleSeconds" /> 节流。
+        /// </summary>
+        void PlayClick()
+        {
+            if (uiClickSfx == null)
+            {
+                return;
+            }
+
+            var now = Time.unscaledTime;
+            if (now - lastClickTime < ClickThrottleSeconds)
+            {
+                return;
+            }
+
+            lastClickTime = now;
+            AudioModule.PlaySfx(uiClickSfx, uiClickVolume);
+        }
+
+        /// <summary>把 SettingsModel 当前值刷新到 UI（滑条静默同步，不触发 onValueChanged 回写）。</summary>
         void RefreshVisuals()
         {
-            var r = GameSettings.Resolutions[GameSettings.ResolutionIndex];
+            var r = SettingsModel.Resolutions[_settings.ResolutionIndex.Value];
             resolutionValueText.text = r.x + " × " + r.y;
 
-            sfxSlider.SetValueWithoutNotify(GameSettings.SfxVolume);
-            musicSlider.SetValueWithoutNotify(GameSettings.MusicVolume);
+            sfxSlider.SetValueWithoutNotify(_settings.SfxVolume.Value);
+            musicSlider.SetValueWithoutNotify(_settings.BgmVolume.Value);
 
-            bool zh = GameSettings.CurrentLanguage == GameSettings.Language.Chinese;
+            bool zh = _settings.Language.Value == SettingsModel.LanguageChinese;
             titleText.text = Localization.Get(Localization.Key.SettingsTitle);
             resolutionRowLabel.text = Localization.Get(Localization.Key.SettingsResolution);
             sfxLabel.text = Localization.Get(Localization.Key.SettingsSfx);
