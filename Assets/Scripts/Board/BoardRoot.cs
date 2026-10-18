@@ -107,7 +107,7 @@ namespace Game.Board
                         view = view,
                     };
 
-                    if (view != null) view.ApplyEffectVisual(effect, _cells[index].consumed);
+                    if (view != null) view.ApplyEffectVisual(effect, _cells[index].consumed, _cells[index].type);
                 }
             }
         }
@@ -175,7 +175,7 @@ namespace Game.Board
 
             _board?.ConsumeEffect(cell);
             _cells[Index(cell)].consumed = true;
-            _cells[Index(cell)].view?.ApplyEffectVisual(_cells[Index(cell)].effect, true);
+            _cells[Index(cell)].view?.ApplyEffectVisual(_cells[Index(cell)].effect, true, _cells[Index(cell)].type);
         }
 
         /// <summary>

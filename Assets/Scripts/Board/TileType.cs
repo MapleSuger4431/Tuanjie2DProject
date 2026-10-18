@@ -86,6 +86,25 @@ namespace Game.Board
             }
         }
 
+        /// <summary>
+        /// 能否作为「方向提示」的落格：AI 实际会踏上的格子——可行走块（路 / 火 / 冰），
+        /// 以及 AI 会站上去的起点/终点（预置箭头可用来给定初始朝向）。空地 / 山地一律不放提示。
+        /// </summary>
+        public static bool IsHintAllowed(TileType type)
+        {
+            switch (type)
+            {
+                case TileType.Land:
+                case TileType.Fire:
+                case TileType.Ice:
+                case TileType.Start:
+                case TileType.Goal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         /// <summary>是否起点或终点：两者在覆盖判定与 AI 决策里都要走专属分支。</summary>
         public static bool IsTerminal(TileType type) =>
             type == TileType.Start || type == TileType.Goal;

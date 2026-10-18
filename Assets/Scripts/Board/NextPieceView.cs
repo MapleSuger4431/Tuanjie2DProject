@@ -78,9 +78,10 @@ namespace Game.Board
                 image.sprite = SpriteFor(type);
                 image.color = HasArt(type) ? Color.white : TileTypeInfo.Color(type);
 
-                // 转向箭头跟着预览一起显示：玩家在落块前就能看出哪一格会让 AI 拐弯
+                // 转向箭头跟着预览一起显示：玩家在落块前就能看出哪一格会让 AI 拐弯；
+                // 空地/山地这类 AI 踏不进的格子不放提示（与棋盘格上的显示规则一致）
                 var effect = piece.EffectAt(i);
-                var icon = effect != null ? effect.Icon : null;
+                var icon = effect != null && TileTypeInfo.IsHintAllowed(type) ? effect.BoardIcon : null;
                 if (index < _arrows.Count)
                 {
                     var arrow = _arrows[index];

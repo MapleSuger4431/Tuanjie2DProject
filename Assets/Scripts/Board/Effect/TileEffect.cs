@@ -38,9 +38,15 @@ namespace Game.Board
         [SerializeField, Tooltip("叠在格子上的图标；为空则只生效、不显示")]
         Sprite icon;
 
+        [SerializeField, Tooltip("棋盘格上的方向提示图标（按格子尺寸满格显示，转向箭头用金色数字款）；为空则回落 icon")]
+        Sprite boardIcon;
+
         public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
 
         public Sprite Icon => icon;
+
+        /// <summary>棋盘格上实际显示的提示图标：优先棋盘提示款，未配则回落 icon。</summary>
+        public Sprite BoardIcon => boardIcon != null ? boardIcon : icon;
 
         /// <summary>
         /// 是否为传送门：棋盘根找配对门时按此判定。

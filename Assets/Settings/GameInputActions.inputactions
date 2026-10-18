@@ -536,6 +536,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "b3f7d2c5-9e41-4a08-86d7-2c5f0a71e934",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -591,6 +600,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ResetView",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5c8a1e67-3d24-4b9f-9a13-7e06d84f2b51",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

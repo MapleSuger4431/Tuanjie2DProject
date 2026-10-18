@@ -100,26 +100,37 @@ namespace Game.Board
 
             var effects = _pool != null && _pool.HasEffectPool
                 ? _pool.RollEffects(count)
-                : RollArrows(count);
+                : RollArrows(count, types);
 
             return new TilePiece(shape, types, effects);
         }
 
         /// <summary>
-        /// 转向箭头发牌规则：每块**必定**至少 1 个箭头格；上限 = 块内格数 × <see cref="arrowRatio" />（不超过一半）；
+        /// 转向箭头发牌规则：每块**必定**至少 1 个箭头格（前提是块内有可行走格）；上限 = 块内格数 × <see cref="arrowRatio" />（不超过一半）；
         /// 同一块内不允许出现互为反向的两个箭头（不对冲）——否则一块自己就把 AI 的转向抵消了。
+        /// 箭头只落在**可行走格**（路/火/冰）：空地/山地 AI 踏不进去，钉了提示也永远不生效；
+        /// 块内全是空地时本块就不带箭头（可行性优先于必带规则）。
         /// </summary>
-        TileEffect[] RollArrows(int cellCount)
+        TileEffect[] RollArrows(int cellCount, TileType[] types)
         {
             var result = new TileEffect[cellCount];
             if (cellCount <= 0) return result;
 
+            // 候选格只保留可行走状态（与视图侧 TileTypeInfo.IsHintAllowed 的空地/山地禁令同口径）
+            var slots = new List<int>(cellCount);
+            for (var i = 0; i < cellCount; i++)
+            {
+                if (types != null && i < types.Length && !TileTypeInfo.IsPassable(types[i])) continue;
+
+                slots.Add(i);
+            }
+
+            if (slots.Count == 0) return result;
+
             var maxArrows = Mathf.Max(1, Mathf.FloorToInt(cellCount * arrowRatio));
-            var arrowCount = UnityEngine.Random.Range(1, maxArrows + 1);
+            var arrowCount = UnityEngine.Random.Range(1, Mathf.Min(maxArrows, slots.Count) + 1);
 
             // 洗牌取出箭头落在哪几格：同一格只放一个效果，块内其余格保持无效果
-            var slots = new List<int>(cellCount);
-            for (var i = 0; i < cellCount; i++) slots.Add(i);
             for (var i = slots.Count - 1; i > 0; i--)
             {
                 var j = UnityEngine.Random.Range(0, i + 1);

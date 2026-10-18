@@ -26,9 +26,6 @@ namespace Game.Board
         [Tooltip("边框粗细（相对格子尺寸的比例）")]
         [SerializeField, Range(0.02f, 0.4f)] float outlineWidth = 0.1f;
 
-        [Tooltip("箭头图标占格子的比例")]
-        [SerializeField, Range(0.2f, 1f)] float arrowScale = 0.6f;
-
         BoardGridView _grid;
         readonly List<GhostCell> _pool = new List<GhostCell>();
         readonly List<SpriteRenderer> _edges = new List<SpriteRenderer>();
@@ -100,18 +97,25 @@ namespace Game.Board
                 tint.a = valid ? ghostAlpha : invalidColor.a;
                 entry.cell.color = tint;
 
-                // 该格带的转向箭头：跟着虚影一起预览，落下前就能看出 AI 会在哪拐弯
-                var effect = piece.EffectAt(i);
-                var icon = effect != null ? effect.Icon : null;
-                if (icon == null || entry.arrow == null) continue;
+                // 该格带的转向箭头：跟着虚影一起预览，落下前就能看出 AI 会在哪拐弯；
+                // 空地/山地这类 AI 踏不进的格子不放提示（与棋盘格上的显示规则一致）
+                var icon = piece.EffectAt(i)?.BoardIcon;
+                if (icon == null || !TileTypeInfo.IsHintAllowed(type) || entry.arrow == null) continue;
 
                 entry.arrow.sprite = icon;
                 entry.arrow.color = valid ? new Color(1f, 1f, 1f, ghostAlpha) : invalidColor;
-                // Vector2 + Vector3 会触发 CS0034 歧义：这里显式拆分量写
-                entry.arrow.transform.localPosition = new Vector3(local.x, local.y, -0.01f);
+                // 箭头是 GhostCell 的子物体：父级已经在格心，这里相对父级归零即可；
+                // 写成格心坐标会在缩放过的父级坐标系里叠出 1+scale 倍的漂移
+                entry.arrow.transform.localPosition = new Vector3(0f, 0f, -0.01f);
                 var unit = icon.bounds.size.x > 0f ? icon.bounds.size.x : 1f;
-                var size = _grid.CellSize * arrowScale;
-                entry.arrow.transform.localScale = Vector3.one * (size / unit);
+                // 提示图标世界尺寸 = 格子尺寸（满格，与落盘后的棋盘显示一致）；
+                // 箭头挂在按格子缩放过的 GhostCell 下面，必须补偿父级缩放，否则只有格子的三成大
+                var parentScale = entry.arrow.transform.parent != null
+                    ? entry.arrow.transform.parent.lossyScale.x
+                    : 1f;
+                if (parentScale > 1e-4f)
+                    entry.arrow.transform.localScale =
+                        Vector3.one * (_grid.CellSize / (unit * parentScale));
                 entry.arrow.gameObject.SetActive(true);
             }
         }

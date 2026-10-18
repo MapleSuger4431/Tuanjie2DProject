@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: "\u5F3A\u5236\u8F6C\u5411\xB7\u5DE6"
   icon: {fileID: 21300000, guid: 071aad0a1b2594f379455d837cfcdec0, type: 3}
+  boardIcon: {fileID: 1119778396163257118, guid: cafb89a4399ab4d9f85c2313576439b2, type: 3}
   direction: 1

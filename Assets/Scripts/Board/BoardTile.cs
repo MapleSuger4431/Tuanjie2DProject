@@ -87,11 +87,15 @@ namespace Game.Board
         }
 
         /// <summary>
-        /// 刷新效果图标（由 <see cref="BoardRoot.Refresh" /> 逐格调用）；无效果则隐藏，已消耗则置灰。
+        /// 刷新方向提示图标（由 <see cref="BoardRoot.Refresh" /> 逐格调用）；无效果则隐藏，已消耗则置灰，
+        /// 空地/山地这类 AI 踏不进的格子不放提示（空地被方块铺成可行走状态后随刷新自动出现）。
+        /// 通行状态从数据层快照 <paramref name="type" /> 传入，不读视图层 CurrentType——
+        /// 棋盘视图与本组件的刷新顺序不定，读视图层可能拿到上一拍的旧状态。
         /// </summary>
-        public void ApplyEffectVisual(TileEffect runtimeEffect, bool consumed)
+        public void ApplyEffectVisual(TileEffect runtimeEffect, bool consumed, TileType type)
         {
-            if (runtimeEffect == null || runtimeEffect.Icon == null)
+            var icon = runtimeEffect != null ? runtimeEffect.BoardIcon : null;
+            if (icon == null || !TileTypeInfo.IsHintAllowed(type))
             {
                 if (effectRenderer != null) effectRenderer.enabled = false;
                 return;
@@ -100,9 +104,23 @@ namespace Game.Board
             var renderer = EnsureEffectRenderer();
             if (renderer == null) return;
 
-            renderer.sprite = runtimeEffect.Icon;
+            renderer.sprite = icon;
             renderer.enabled = true;
             renderer.color = consumed ? ConsumedColor : Color.white;
+            // 复用已有子物体时位置可能带旧值（编辑器工具摆过 / 上次运行残留），提示必须钉在格心
+            renderer.transform.localPosition = Vector3.zero;
+            ApplyHintScale(renderer, icon);
+        }
+
+        /// <summary>提示图标世界尺寸 = 格子尺寸：父级已按格子缩放过，这里按世界尺寸反推本地缩放。</summary>
+        void ApplyHintScale(SpriteRenderer renderer, Sprite icon)
+        {
+            var view = View;
+            var parentScale = transform.lossyScale.x;
+            var unit = icon.bounds.size.x;
+            if (view == null || parentScale <= 1e-4f || unit <= 1e-4f) return;
+
+            renderer.transform.localScale = Vector3.one * (view.CellSize / (unit * parentScale));
         }
 
         SpriteRenderer EnsureEffectRenderer()
