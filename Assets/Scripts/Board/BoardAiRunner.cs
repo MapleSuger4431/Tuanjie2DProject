@@ -37,6 +37,9 @@ namespace Game.Board
         [Tooltip("防护罩贴图（白色径向光罩，运行时按元素属性染色：火=暖红、冰=亮蓝）；为空则不显示")]
         [SerializeField] Sprite shieldSprite;
 
+        [Tooltip("冰属性专用冰霜护罩（同包络：冰晶棱环+外缘尖刺+雪花，白色绘制走冰蓝染色）；为空时冰属性回退通用护罩")]
+        [SerializeField] Sprite frostShieldSprite;
+
         [Tooltip("火属性防护罩染色")]
         [SerializeField] Color shieldColorFire = new Color(0.98f, 0.47f, 0.28f, 0.55f);
 
@@ -237,7 +240,6 @@ namespace Game.Board
             if (shieldSprite == null || _actor == null) return;
 
             var height = _renderer != null && _renderer.sprite != null ? _renderer.sprite.bounds.size.y : 1f;
-            var target = height * shieldHeightRatio;
             var spriteSize = shieldSprite.bounds.size.x;
             var parentScale = _actor.localScale.x;
 
@@ -247,12 +249,32 @@ namespace Game.Board
             shieldObject.transform.localPosition = Vector3.up * (height * 0.5f);
 
             _shield = shieldObject.AddComponent<SpriteRenderer>();
-            _shield.sprite = shieldSprite;
             _shield.sortingOrder = sortingOrder + 1;
 
+            ApplyShieldSprite(ShieldSpriteFor(_run != null ? _run.Element.Value : ElementState.Fire));
+            _shield.transform.localScale = _shieldBaseScale;
+        }
+
+        /// <summary>按元素选护罩贴图：冰属性优先用冰霜专用版（未配置则回退通用光罩）。</summary>
+        Sprite ShieldSpriteFor(ElementState element) =>
+            element == ElementState.Ice && frostShieldSprite != null ? frostShieldSprite : shieldSprite;
+
+        /// <summary>
+        /// 换护罩贴图并按新贴图尺寸重算基础缩放——两版贴图（通用光罩 / 冰霜棱环）包围盒不同，
+        /// 不重算会一个偏大一个偏小。贴图相同时不动作，避免每帧白算。
+        /// </summary>
+        void ApplyShieldSprite(Sprite sprite)
+        {
+            if (_shield == null || sprite == null || _shield.sprite == sprite) return;
+
+            _shield.sprite = sprite;
+
+            var height = _renderer != null && _renderer.sprite != null ? _renderer.sprite.bounds.size.y : 1f;
+            var target = height * shieldHeightRatio;
+            var spriteSize = sprite.bounds.size.x;
+            var parentScale = _actor != null ? _actor.localScale.x : 1f;
             _shieldBaseScale = Vector3.one * (
                 target / (spriteSize > 0f ? spriteSize : 1f) / (parentScale > 0f ? parentScale : 1f));
-            _shield.transform.localScale = _shieldBaseScale;
         }
 
         /// <summary>每帧跟随当前元素属性染色；检测到变化时触发一次放大脉冲。</summary>
@@ -265,6 +287,7 @@ namespace Game.Board
             {
                 _shownElement = element;
                 _shieldPulse = 1f;
+                ApplyShieldSprite(ShieldSpriteFor(element));
             }
 
             _shieldPulse = Mathf.Max(0f, _shieldPulse - delta * 2.5f);
