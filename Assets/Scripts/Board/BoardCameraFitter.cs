@@ -25,8 +25,9 @@ namespace Game.Board
                  "10×10 的棋盘整盘就 10 格，算出来上限为 1，即完全不能放大；20×20 则上限为 2")]
         [SerializeField] int minVisibleCells = 10;
 
-        [Tooltip("棋盘包围盒与视口四边保留的屏幕像素间隔：留出来才看得到最外圈格子的外边")]
-        [SerializeField] float boardMarginPixels = 20f;
+        [Tooltip("棋盘包围盒与视口四边保留的屏幕像素间隔：留出来才看得到最外圈格子的外边。" +
+                 "视口已经是外框的透明内区，这里只需很小的余量，避免格子被装饰带压住")]
+        [SerializeField] float boardMarginPixels = 6f;
 
         [SerializeField] float zoomStep = 1.1f;
 

@@ -6,8 +6,11 @@ namespace Game.Board
 {
     /// <summary>
     /// 运行阶段与 AI 状态：铺路 → 运行 → 结算的三态机 + AI 的当前格、来路格与胜负结果。
-    /// AI 单步决策**只看当前格的四邻 1 格**，不做任何全局寻路（无 BFS）：
-    /// 候选 = 四邻中「在界内 且（可行走块 或 终点）且 不是来路格」，按 <see cref="AiPreferenceModel" /> 的顺序取第一个。
+    /// AI 单步决策**没有方向偏好、也不做全局寻路（无 BFS）**：出生朝 <see cref="InitialDirection" />，
+    /// 之后一路直行，只有踩到带转向箭头（<see cref="ForcedTurnEffect" />）的格子才改朝向。
+    /// AI 另有元素属性（火人 / 冰人，06 篇 RB-09，出生值按关卡配置 <see cref="BoardRoot.InitialElement" />）：
+    /// 火格需火属性、冰格需冰属性，属性反转效果（<see cref="ElementSwitchEffect" />）踏入即翻转。
+    /// 前方不可进入即停下判负；另有步数上限兜底，防两个互指的箭头把 AI 锁成死循环。
     /// 起点不可作普通路径格（AI 只在那里出生），终点由本类特判「进入即胜利」。
     /// </summary>
     [Serializable]
@@ -16,11 +19,8 @@ namespace Game.Board
         /// <summary>关卡阶段。</summary>
         public enum Phase
         {
-            /// <summary>铺路阶段：可放方块，可改方向优先级，用时照算。</summary>
+            /// <summary>铺路阶段：可放方块，用时照算；点 Play 直接进入运行。</summary>
             Building,
-
-            /// <summary>铺路完成：锁定放置、秒表暂停，只留方向优先级可调，等玩家点 Play。</summary>
-            Ready,
 
             /// <summary>运行阶段：锁定放置，AI 逐步行走，秒表继续。</summary>
             Running,
@@ -45,15 +45,35 @@ namespace Game.Board
         [SerializeField] ObservableValue<Phase> phase = new ObservableValue<Phase>(Phase.Building);
         [SerializeField] ObservableValue<RunResult> result = new ObservableValue<RunResult>(RunResult.None);
         [SerializeField] ObservableValue<Vector2Int> aiCell = new ObservableValue<Vector2Int>(default);
+        [Tooltip("AI 出生朝向：出发这一步的方向不来自箭头，之后一路直行直到踩到箭头格")]
+        [SerializeField] MoveDirection initialDirection = MoveDirection.Right;
+
+        [Tooltip("单局步数上限：互指的箭头会让 AI 绕圈，到这里直接判负（兜底，正常通关远小于此）")]
+        [SerializeField, Min(1)] int maxSteps = 200;
+
         [SerializeField] ObservableValue<int> stepCount = new ObservableValue<int>(0);
+
+        [SerializeField] ObservableValue<ElementState> element = new ObservableValue<ElementState>(ElementState.Fire);
+
+        /// <summary>
+        /// 本局已捡到的金币枚数（三星制的第二、三颗星判据）。
+        /// 一个关卡可以摆多枚（第 3~5 关各 2 枚），<see cref="CoinTotal" /> 是分母；
+        /// 拾取状态本身记在 <see cref="BoardCoin" /> 上，这里只存「本局捡了几枚」——重开即复位。
+        /// </summary>
+        [SerializeField] ObservableValue<int> coinsCollected = new ObservableValue<int>(0);
 
         /// <summary>上一步所在的格（禁止 180° 掉头的判据）；初始等于起点，表示「还没有来路」。</summary>
         Vector2Int _previousCell;
 
         MoveDirection? _lastDirection;
 
+        /// <summary>效果结算出来的强制朝向，只对下一步生效。</summary>
+        MoveDirection? _forcedDirection;
+
+        /// <summary>效果结算的复用缓冲：每步先清空再交给效果填，避免逐步分配。</summary>
+        readonly TileEffectResult _effectResult = new TileEffectResult();
+
         BoardModel _board;
-        AiPreferenceModel _preference;
         BoardTimeModel _time;
         PieceModel _piece;
 
@@ -68,17 +88,30 @@ namespace Game.Board
         public ObservableValue<Vector2Int> AiCell => aiCell;
         public ObservableValue<int> StepCount => stepCount;
 
+        /// <summary>AI 当前元素属性（火 / 冰）：出生按关卡配置，反转效果踏入即翻转，重开时复位。</summary>
+        public ObservableValue<ElementState> Element => element;
+
+        /// <summary>本局已捡到的金币枚数。</summary>
+        public ObservableValue<int> CoinsCollected => coinsCollected;
+
+        /// <summary>本关一共摆了几枚金币（场景里 <see cref="BoardCoin" /> 的个数）。</summary>
+        public int CoinTotal => BoardCoin.TotalCount;
+
+        /// <summary>本关金币是否已全部捡到（第二颗星的判据）。</summary>
+        public bool AllCoinsCollected => BoardCoin.AllCollected;
+
         public bool IsBuilding => phase.Value == Phase.Building;
-        public bool IsReady => phase.Value == Phase.Ready;
         public bool IsRunning => phase.Value == Phase.Running;
 
         /// <summary>本步选用的方向；尚未移动时为 null（UI 高亮用）。</summary>
         public MoveDirection? LastDirection => _lastDirection;
 
+        /// <summary>AI 出生朝向（场景中可配）：出发这一步与之后没有箭头时的朝向。</summary>
+        public MoveDirection InitialDirection => initialDirection;
+
         protected override void OnInitialize()
         {
             _board = this.GetModel<BoardModel>();
-            _preference = this.GetModel<AiPreferenceModel>();
             _time = this.GetModel<BoardTimeModel>();
             _piece = this.GetModel<PieceModel>();
 
@@ -94,12 +127,15 @@ namespace Game.Board
             phase.Value = Phase.Building;
             result.Value = RunResult.None;
             stepCount.Value = 0;
+            BoardCoin.ResetAll();
+            coinsCollected.Value = 0;
             _lastDirection = null;
+            _forcedDirection = null;
+            element.Value = ResolveInitialElement();
 
             var start = _board != null ? _board.StartCell : Vector2Int.zero;
             _previousCell = start;
             aiCell.Value = start;
-            _preference?.SetLocked(false);
             RestartStopwatch();
 
             AiMoved.Invoke();
@@ -126,93 +162,186 @@ namespace Game.Board
         }
 
         /// <summary>
-        /// 铺路完成：锁定放置并暂停秒表，方向优先级仍可调（挑偏好的这段时间不计入用时），等玩家点 Play。
-        /// 一旦完成不回退——要改摆法走「重新开始本关」。
+        /// 点击 Play：铺路阶段直接进入运行阶段（方向偏好已删，铺完即可出发），锁定放置，
+        /// AI 从起点按出生朝向出发。秒表从铺路起一直在走，这里无需再动表。
         /// </summary>
-        public bool CompleteBuilding()
-        {
-            if (_board == null || phase.Value != Phase.Building) return false;
-
-            phase.Value = Phase.Ready;
-            _time?.Pause();
-
-            return true;
-        }
-
-        /// <summary>解除秒表暂停：铺路阶段的时间已计入，这里接着走而不是重新起表。</summary>
-        void ResumeStopwatch()
-        {
-            if (_time == null) return;
-
-            if (_time.IsRunning) _time.Resume();
-            else RestartStopwatch();
-        }
-
-        /// <summary>点击 Play：进入运行阶段，锁定放置与偏好顺序，AI 从起点出发，秒表解除暂停继续计。</summary>
         public bool Play()
         {
-            if (_board == null || phase.Value != Phase.Ready) return false;
+            if (_board == null || phase.Value != Phase.Building) return false;
 
             var start = _board.StartCell;
             result.Value = RunResult.None;
             stepCount.Value = 0;
             _lastDirection = null;
+            _forcedDirection = null;
+            element.Value = ResolveInitialElement();
             _previousCell = start;
             aiCell.Value = start;
             phase.Value = Phase.Running;
 
-            _preference?.SetLocked(true);
-            ResumeStopwatch();
-
+            TryCollectCoin(start);
             AiMoved.Invoke();
 
             // 起点紧贴终点（极小棋盘）等边界情况：出发即在终点上
-            if (start == _board.GoalCell) Finish(RunResult.Win);
+            if (start == _board.GoalCell)
+            {
+                Finish(RunResult.Win);
+                return true;
+            }
+
+            // 起点上若钉了箭头，出发前先结算一次（关卡设计者可以靠它给定初始朝向）
+            ApplyEnterEffect(start);
 
             return true;
         }
 
         /// <summary>
-        /// 走一步：只看四邻 1 格。无候选（死路 / 只能掉头）则原地停下判负；踏入终点即判胜。
+        /// 走一步：朝向 = 箭头强制方向（若有） &gt; 上一步朝向 &gt; 出生朝向，只朝这个方向走一格。
+        /// 前方不可进入（越界 / 空地 / 山地 / 起点）即原地停下判负；踏入终点即判胜。
         /// 非运行阶段调用无效，便于驱动方无脑每帧调用。
         /// </summary>
         public void Step()
         {
-            if (!IsRunning || _board == null || _preference == null) return;
+            if (!IsRunning || _board == null) return;
 
             var from = aiCell.Value;
+            var direction = ResolveDirection();
+            var target = from + MoveDirectionInfo.Offset(direction);
 
-            var order = _preference.Order;
-            for (var i = 0; i < order.Count; i++)
+            if (!CanEnter(target))
             {
-                var direction = order[i];
-                var target = from + MoveDirectionInfo.Offset(direction);
-
-                // 禁止 180° 掉头：来路格永远不作候选
-                if (target == _previousCell) continue;
-                if (!CanEnter(target)) continue;
-
-                _previousCell = from;
-                _lastDirection = direction;
-                aiCell.Value = target;
-                stepCount.Value += 1;
-                AiMoved.Invoke();
-
-                if (target == _board.GoalCell) Finish(RunResult.Win);
-
+                Finish(RunResult.Lose);
                 return;
             }
 
-            Finish(RunResult.Lose);
+            _previousCell = from;
+            _lastDirection = direction;
+            aiCell.Value = target;
+            stepCount.Value += 1;
+            TryCollectCoin(target);
+            AiMoved.Invoke();
+
+            if (target == _board.GoalCell)
+            {
+                Finish(RunResult.Win);
+                return;
+            }
+
+            // 兜底：两个互指的箭头会把 AI 锁成死循环，到这里判负而不是把编辑器卡死
+            if (stepCount.Value >= maxSteps)
+            {
+                Debug.LogWarning($"[BoardRunModel] 步数达到上限 {maxSteps}，疑似箭头绕圈，本局判负");
+                Finish(RunResult.Lose);
+                return;
+            }
+
+            // 落点格上的效果（转向箭头等）在踏入的这一步结算，结果作用于下一步
+            ApplyEnterEffect(target);
         }
 
-        /// <summary>AI 能否进入该格：界内，且是可行走块（路/火/冰）或终点。起点与山地一律不可进入。</summary>
+        /// <summary>本步朝向：效果强制的方向（只对下一步生效）优先，其次沿用上一步，都没有就用出生朝向。</summary>
+        MoveDirection ResolveDirection()
+        {
+            if (_forcedDirection.HasValue)
+            {
+                var forced = _forcedDirection.Value;
+                _forcedDirection = null;
+                return forced;
+            }
+
+            return _lastDirection ?? initialDirection;
+        }
+
+        /// <summary>
+        /// 本关出生元素属性：按关卡配置（<see cref="BoardRoot.InitialElement" />，每个关卡场景在 Inspector 里各配各的）；
+        /// 棋盘根还没就绪（纯数据层直驱 / 测试环境）时回落火人。
+        /// </summary>
+        ElementState ResolveInitialElement()
+        {
+            var root = BoardRoot.Instance;
+            return root != null ? root.InitialElement : ElementState.Fire;
+        }
+
+        /// <summary>
+        /// 结算 AI 踏入某格的效果：效果只往 <see cref="TileEffectResult" /> 里填结果，由本类统一应用——
+        /// 效果自己不许改棋盘、也不许改 AI 位置。一步最多结算一个效果，落点不再二次结算（天然防互指死循环）。
+        /// </summary>
+        void ApplyEnterEffect(Vector2Int cell)
+        {
+            if (_board == null) return;
+
+            // 棋盘根是跨格联动的唯一入口（传送门找配对门要全盘扫描）；它还没建好时退回数据层
+            var root = BoardRoot.Instance;
+            var effect = root != null ? root.EffectAt(cell) : _board.EffectAt(cell);
+            if (effect == null) return;
+
+            // 已消耗的效果（传送门用过）不再触发：消耗状态存在数据层，不写进效果资产
+            if (root != null && root.IsConsumed(cell)) return;
+
+            _effectResult.Clear();
+            var pawn = new AiPawnState
+            {
+                Cell = cell,
+                PreviousCell = _previousCell,
+                LastDirection = _lastDirection,
+                StepCount = stepCount.Value,
+                Element = element.Value,
+            };
+
+            effect.OnEnter(new TileEffectContext(root, cell, pawn, _effectResult));
+
+            if (_effectResult.Stop)
+            {
+                Finish(RunResult.Lose);
+                return;
+            }
+
+            // 属性反转等元素转换：立即改写 AI 属性，影响后续每一步的通行判定（含本格效果里带出的传送落点判定）
+            if (_effectResult.SetElement.HasValue) element.Value = _effectResult.SetElement.Value;
+
+            if (_effectResult.ForcedNext.HasValue) _forcedDirection = _effectResult.ForcedNext;
+            if (_effectResult.ClearIncoming) _previousCell = cell;
+
+            var destination = _effectResult.TeleportTo;
+            if (!destination.HasValue) return;
+
+            // 传送不计步数；来路按效果要求清空，否则落点会禁掉回头这一步
+            var teleportTo = destination.Value;
+            if (!CanEnter(teleportTo)) return;
+
+            _previousCell = _effectResult.ClearIncoming ? teleportTo : cell;
+            aiCell.Value = teleportTo;
+            TryCollectCoin(teleportTo);
+            AiMoved.Invoke();
+
+            if (teleportTo == _board.GoalCell) Finish(RunResult.Win);
+        }
+
+        /// <summary>
+        /// 踏入某格时的金币结算：金币是本关的固定点（<see cref="BoardCoin" />；没摆金币的关卡恒不触发），
+        /// 走过一次即标记该枚已拾取——多枚关卡要逐枚捡齐才算「全部拿到」（三星第二、三颗星判据）。
+        /// 重开由 <see cref="ResetRun" /> 复位。传送落点同样结算——被传过去也算「走过」。
+        /// </summary>
+        void TryCollectCoin(Vector2Int cell)
+        {
+            var coin = BoardCoin.FindUncollected(cell);
+            if (coin == null) return;
+
+            coin.MarkCollected();
+            coinsCollected.Value = BoardCoin.CollectedCount;
+        }
+
+        /// <summary>
+        /// AI 能否进入该格：界内，且是可行走块（路/火/冰）或终点；火格还需火属性、冰格还需冰属性（06 篇 RB-09），
+        /// 陆地任意属性可走。起点与山地一律不可进入。
+        /// </summary>
         bool CanEnter(Vector2Int cell)
         {
             if (!_board.InBounds(cell)) return false;
             if (cell == _board.GoalCell) return true;
 
-            return TileTypeInfo.IsPassable(_board.TypeAt(cell));
+            var type = _board.TypeAt(cell);
+            return TileTypeInfo.IsPassable(type) && ElementStateInfo.CanWalkOn(element.Value, type);
         }
 
         void Finish(RunResult value)

@@ -8,7 +8,7 @@ namespace Game.Board
     /// 关卡秒表（运行期时间唯一真源）：从进入关卡（铺路）起算，到抵达终点或中途停下为止，越短越好。
     /// 三态：Idle 未开始 / Running 计时中 / Finished 已结束；每帧推进由 <see cref="BoardTimeTicker" /> 喂 deltaTime。
     /// 暂停只停本表、不写 Time.timeScale——暂停菜单（RB-20）走 timeScale=0 时本表随之停走，也可显式调 Pause/Resume。
-    /// 铺路阶段就在走表：点「铺路完成」转 <see cref="Pause" />（挑方向偏好不计时），点 Play 转 <see cref="Resume" /> 接着走。
+    /// 铺路与 AI 行走连续计（方向偏好已删、无「铺路完成」暂停环节），Pause/Resume 留给未来的暂停菜单。
     /// </summary>
     [Serializable]
     public sealed class BoardTimeModel : AbstractModel
@@ -32,7 +32,7 @@ namespace Game.Board
         /// <summary>已用时（秒），仅在 Running 且未暂停时增长。</summary>
         public ObservableValue<float> Elapsed => elapsed;
 
-        /// <summary>暂停中（铺路完成到点 Play 之间）：表在走但时间不计。</summary>
+        /// <summary>暂停中（未来暂停菜单）：表在走但时间不计。</summary>
         public ObservableValue<bool> Paused => paused;
 
         public bool IsRunning => state.Value == StopwatchState.Running;

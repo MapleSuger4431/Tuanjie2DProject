@@ -23,8 +23,8 @@ namespace Game.Save
             return this;
         }
 
-        /// <summary>按顺序收集各模块数据 → 统一落盘。</summary>
-        public void Save(string path)
+        /// <summary>按顺序收集各模块数据 → 统一落盘到当前环境的默认位置。</summary>
+        public void Save()
         {
             var root = new SaveGame();
             root.Stamp(DateTime.UtcNow.ToString("o"));
@@ -34,17 +34,17 @@ namespace Game.Save
                 _steps[i].Collect(root);
             }
 
-            SaveStorage.Write(path, root);
-            Debug.Log($"[Save] 落盘完成：{path}（{_steps.Count} 个模块）");
+            SaveStorage.WriteDefault(root);
+            Debug.Log($"[Save] 落盘完成：{SaveStorage.DefaultPath}（{_steps.Count} 个模块）");
         }
 
         /// <summary>读盘 → 按顺序回填各模块。返回是否读到存档。</summary>
-        public bool Load(string path)
+        public bool Load()
         {
-            var root = SaveStorage.Read(path);
+            var root = SaveStorage.ReadDefault();
             if (root == null)
             {
-                Debug.Log($"[Save] 没有可读存档：{path}（按默认值继续）");
+                Debug.Log($"[Save] 没有可读存档：{SaveStorage.DefaultPath}（按默认值继续）");
                 return false;
             }
 
@@ -59,7 +59,7 @@ namespace Game.Save
                 _steps[i].Apply(root);
             }
 
-            Debug.Log($"[Save] 读档完成：{path}（{_steps.Count} 个模块，存档时间 {root.SavedAtUtc}）");
+            Debug.Log($"[Save] 读档完成：{SaveStorage.DefaultPath}（{_steps.Count} 个模块，存档时间 {root.SavedAtUtc}）");
             return true;
         }
     }
