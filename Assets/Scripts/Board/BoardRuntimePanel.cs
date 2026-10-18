@@ -43,8 +43,14 @@ namespace Game.Board
         [Tooltip("「下一块」区块标题文本")]
         [SerializeField] Text nextTitleText;
 
-        [Tooltip("元素图例的名称标签，顺序固定 陆地 / 火 / 冰（与生成器里三组小图标对齐）")]
-        [SerializeField] Text[] elementLegendLabels;
+        [Tooltip("当前元素图标：随 AI 元素属性在 冰 / 火 两张贴图之间切换")]
+        [SerializeField] Image elementIcon;
+
+        [Tooltip("冰属性图标（Assets/GameUISprite/ice.png 菱形冰霜铭牌）")]
+        [SerializeField] Sprite elementIconIce;
+
+        [Tooltip("火属性图标（Assets/Art/Board/Element_Fire.png）")]
+        [SerializeField] Sprite elementIconFire;
 
         [Header("棋盘外框")]
         [Tooltip("包裹棋盘的装饰外框；未回填时现场创建一个。位置由 BoardScreenLayout 按视口矩形驱动")]
@@ -290,12 +296,7 @@ namespace Game.Board
             if (statusWalkText != null)
                 statusWalkText.text = Localization.Get(Localization.Key.LevelWalkable, WalkableTerrainNames(CurrentElement()));
 
-            if (elementLegendLabels != null && elementLegendLabels.Length >= 3)
-            {
-                elementLegendLabels[0].text = Localization.Get(Localization.Key.TileNameLand);
-                elementLegendLabels[1].text = Localization.Get(Localization.Key.TileNameFire);
-                elementLegendLabels[2].text = Localization.Get(Localization.Key.TileNameIce);
-            }
+            RefreshElementIcon();
         }
 
         /// <summary>
@@ -314,6 +315,15 @@ namespace Game.Board
         {
             var run = _run != null ? _run : this.GetModel<BoardRunModel>();
             return run != null ? run.Element.Value : ElementState.Fire;
+        }
+
+        /// <summary>当前元素图标：火→火焰、冰→冰霜铭牌；对应贴图缺失时保持原样不闪空。</summary>
+        void RefreshElementIcon()
+        {
+            if (elementIcon == null) return;
+
+            var sprite = CurrentElement() == ElementState.Ice ? elementIconIce : elementIconFire;
+            if (sprite != null) elementIcon.sprite = sprite;
         }
 
         /// <summary>拼「可走」列表：陆地恒可走，火格需火属性、冰格需冰属性（06 篇 RB-09 的 HUD 呈现）。</summary>

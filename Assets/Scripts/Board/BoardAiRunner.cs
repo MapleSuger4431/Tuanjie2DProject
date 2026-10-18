@@ -43,8 +43,8 @@ namespace Game.Board
         [Tooltip("冰属性防护罩染色")]
         [SerializeField] Color shieldColorIce = new Color(0.42f, 0.76f, 0.98f, 0.55f);
 
-        [Tooltip("防护罩直径相对角色贴图高度的比例")]
-        [SerializeField, Range(0.5f, 2f)] float shieldHeightRatio = 1.15f;
+        [Tooltip("防护罩直径相对角色贴图高度的比例（0.95：比角色略大一点，不再整个人罩满）")]
+        [SerializeField, Range(0.5f, 2f)] float shieldHeightRatio = 0.95f;
 
         static readonly int MovingHash = Animator.StringToHash("Moving");
         static readonly int DirHash = Animator.StringToHash("Dir");

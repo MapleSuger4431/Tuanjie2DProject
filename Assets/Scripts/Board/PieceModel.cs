@@ -13,8 +13,8 @@ namespace Game.Board
     [Serializable]
     public sealed class PieceModel : AbstractModel
     {
-        [Header("形状范围（格数上下限，4~6）")]
-        [SerializeField] int minPieceCells = 4;
+        [Header("形状范围（格数上下限，3~5）")]
+        [SerializeField] int minPieceCells = 3;
         [SerializeField] int maxPieceCells = TileShapeLibrary.MaxPieceCells;
 
         [Header("转向箭头（每块必带）")]

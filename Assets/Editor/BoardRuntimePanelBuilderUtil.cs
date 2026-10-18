@@ -43,7 +43,7 @@ namespace Game.Editor
             RectTransform topBar, RectTransform bottomBar, RectTransform right, NextPieceView nextPieceView,
             Text placedCount, Text timeText, Text goalText, Text aiState, Text hintText,
             Button playButton, Text playLabel, Text statusTitle, Text statusName, Text statusWalk, Text nextTitle,
-            Text[] legendLabels,
+            Image elementIcon,
             Button back, Text backLabel, Button restart, Text restartLabel)
         {
             var so = new SerializedObject(panel);
@@ -65,10 +65,9 @@ namespace Game.Editor
             so.FindProperty("statusWalkText").objectReferenceValue = statusWalk;
             so.FindProperty("nextTitleText").objectReferenceValue = nextTitle;
 
-            var legend = so.FindProperty("elementLegendLabels");
-            legend.arraySize = legendLabels.Length;
-            for (var i = 0; i < legendLabels.Length; i++)
-                legend.GetArrayElementAtIndex(i).objectReferenceValue = legendLabels[i];
+            so.FindProperty("elementIcon").objectReferenceValue = elementIcon;
+            so.FindProperty("elementIconIce").objectReferenceValue = LoadSprite(IceIconPath);
+            so.FindProperty("elementIconFire").objectReferenceValue = LoadSprite(FireIconPath);
 
             so.FindProperty("backButton").objectReferenceValue = back;
             so.FindProperty("backButtonLabel").objectReferenceValue = backLabel;

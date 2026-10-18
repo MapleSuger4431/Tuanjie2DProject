@@ -57,10 +57,10 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 「✦角色状态」区块：星芒标题 + 圆角状态卡（左头像，右侧角色名 / 三个元素图例 / 可走地形行）。
-        /// 图例图标直接用棋盘 Tiles 素材；文本全部留空由运行时本地化填充。
+        /// 「✦角色状态」区块：星芒标题 + 圆角状态卡（左头像，右侧角色名 / 当前元素图标 / 可走地形行）。
+        /// 元素图标只有一张，运行时按 AI 属性在 冰(ice.png) / 火(Element_Fire) 之间切换；文本留空由本地化填充。
         /// </summary>
-        static (Text title, Text name, Text walk, Text[] legendLabels) BuildStatusSection(RectTransform right)
+        static (Text title, Text name, Text walk, Image elementIcon) BuildStatusSection(RectTransform right)
         {
             var title = BuildHeader(right, "StatusHeader", StatusCardTop - 58f);
 
@@ -82,33 +82,22 @@ namespace Game.Editor
 
             var name = AddText(card, "NameLabel", 38, Color.white, TextAnchor.MiddleLeft);
             AnchorOffsets(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(212f, -64f), new Vector2(-16f, -8f));
+                new Vector2(212f, -58f), new Vector2(-16f, -12f));
 
-            // 三个元素图例：Tile_Land / Tile_Fire / Tile_Ice 小图标 + 名称（顺序 = 枚举值 1/2/3）
-            var legendTypes = new[] { "Tile_Land", "Tile_Fire", "Tile_Ice" };
-            var labels = new Text[legendTypes.Length];
-            for (var i = 0; i < legendTypes.Length; i++)
-            {
-                float left = 212f + i * 164f;
-
-                var icon = NewRect($"LegendIcon{i}", card);
-                AnchorOffsets(icon, new Vector2(0f, 1f), new Vector2(0f, 1f),
-                    new Vector2(left, -115f), new Vector2(left + 40f, -75f));
-                var iconImage = icon.gameObject.AddComponent<Image>();
-                iconImage.sprite = LoadSprite($"{TilesDir}/{legendTypes[i]}.png");
-                iconImage.preserveAspect = true;
-                iconImage.raycastTarget = false;
-
-                labels[i] = AddText(card, $"LegendLabel{i}", 28, LightText, TextAnchor.MiddleLeft);
-                AnchorOffsets(labels[i].rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-                    new Vector2(left + 48f, -115f), new Vector2(left + 158f, -75f));
-            }
+            // 当前元素图标：贴卡片右缘垂直居中，运行时按元素属性换 sprite（见 BoardRuntimePanel.RefreshElementIcon）
+            var elementIcon = NewRect("ElementIcon", card);
+            SetAnchors(elementIcon, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
+                new Vector2(-24f, 0f), new Vector2(104f, 104f));
+            var elementImage = elementIcon.gameObject.AddComponent<Image>();
+            elementImage.sprite = LoadSprite(FireIconPath);
+            elementImage.preserveAspect = true;
+            elementImage.raycastTarget = false;
 
             var walk = AddText(card, "WalkLabel", 30, LightText, TextAnchor.MiddleLeft);
             AnchorOffsets(walk.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(212f, -172f), new Vector2(-16f, -126f));
+                new Vector2(212f, -166f), new Vector2(-16f, -120f));
 
-            return (title, name, walk, labels);
+            return (title, name, walk, elementImage);
         }
 
         /// <summary>「✦下一块」区块：星芒标题 + 深色圆角底衬 + 十六宫格预览（NextPieceView 结构保持原样）。</summary>
@@ -122,7 +111,7 @@ namespace Game.Editor
 
             var gridCard = NewRect("GridCard", next);
             SetAnchors(gridCard, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                Vector2.zero, new Vector2(292f, 292f));
+                Vector2.zero, new Vector2(264f, 264f));
             var gridCardImage = gridCard.gameObject.AddComponent<Image>();
             gridCardImage.sprite = cardSprite;
             gridCardImage.type = Image.Type.Sliced;
@@ -139,7 +128,7 @@ namespace Game.Editor
             sprites.arraySize = 5;
             for (var i = 0; i < 5; i++)
                 sprites.GetArrayElementAtIndex(i).objectReferenceValue = LoadSprite($"{TilesDir}/Tile_{(TileType)i}.png");
-            so.FindProperty("cellSize").floatValue = 56f;
+            so.FindProperty("cellSize").floatValue = 48f;
             so.FindProperty("spacing").floatValue = 8f;
             so.FindProperty("emptyColor").colorValue = new Color(1f, 1f, 1f, 0.07f);
             so.ApplyModifiedPropertiesWithoutUndo();
