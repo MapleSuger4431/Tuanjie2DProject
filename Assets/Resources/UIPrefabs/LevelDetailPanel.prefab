@@ -808,8 +808,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05, y: 0.72}
   m_AnchorMax: {x: 0.95, y: 0.83}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -16.04808}
+  m_SizeDelta: {x: -595, y: -32.09615}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6350119444439272395
 CanvasRenderer:
@@ -1114,7 +1114,6 @@ MonoBehaviour:
   - {fileID: 2236896429927394267}
   - {fileID: 3044656974315532789}
   recordLabel: {fileID: 459420569576056631}
-  lastLabel: {fileID: 0}
   enterButton: {fileID: 6742460213317798391}
   cancelButton: {fileID: 6324091782376474771}
   enterButtonLabel: {fileID: 1217814922325413310}
