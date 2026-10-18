@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: Wn5O43n+VC4eg/Clsgk6hqmNvtny+ATYFmDJ23hnYiFb6sixAO0jxWw=
+guid: WXpJsCj+Bi3dZjslDt1ZwpMcdf7jhSw2DLjfwFk6CBNVeP9SyL0/b7w=
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,11 +72,11 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     maxPlaceholderSize: 32
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -112,9 +112,373 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WeixinMiniGame
+    maxTextureSize: 2048
+    maxPlaceholderSize: 32
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: PlayableAds
+    maxTextureSize: 2048
+    maxPlaceholderSize: 32
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Walk_Up_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8164fcb05059a5730800000000000000
+      internalID: 3988664268895503896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_01
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba6a46b3535ccc220800000000000000
+      internalID: 2507595924958914219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_02
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b050059a4b4658560800000000000000
+      internalID: 7315363896830723339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_03
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0542da8ffb7d1a100800000000000000
+      internalID: 117612284799165520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_04
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1274c8878df3dd10800000000000000
+      internalID: 2149340205742846490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_05
+      rect:
+        serializedVersion: 2
+        x: 1145
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a41842c34b8dc7980800000000000000
+      internalID: -8539712524786564790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_06
+      rect:
+        serializedVersion: 2
+        x: 1374
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a014d79a13b22870800000000000000
+      internalID: 8656678360557293734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_07
+      rect:
+        serializedVersion: 2
+        x: 1603
+        y: 0
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f46ba594b0de1cc10800000000000000
+      internalID: 2072197936298243663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b10f2508e0a26d270800000000000000
+      internalID: 8274847607110692891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_09
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5fcf3dfc347675b0800000000000000
+      internalID: -5370977700297060516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_10
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edc3438e28570dbf0800000000000000
+      internalID: -301611969931887394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_11
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27a445929adae9bc0800000000000000
+      internalID: -3774388495635428750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_12
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd39a939d2c1ae00800000000000000
+      internalID: 1054338026012491252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_13
+      rect:
+        serializedVersion: 2
+        x: 1145
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ce45a2c28c23b940800000000000000
+      internalID: 5310637325722930882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_14
+      rect:
+        serializedVersion: 2
+        x: 1374
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ba764cfc3aa6e1d0800000000000000
+      internalID: -3321780496231925070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_Up_15
+      rect:
+        serializedVersion: 2
+        x: 1603
+        y: 247
+        width: 229
+        height: 247
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da24155d4f1fc97f0800000000000000
+      internalID: -604342216121302355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -125,7 +489,23 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Walk_Up_00: 3988664268895503896
+      Walk_Up_01: 2507595924958914219
+      Walk_Up_02: 7315363896830723339
+      Walk_Up_03: 117612284799165520
+      Walk_Up_04: 2149340205742846490
+      Walk_Up_05: -8539712524786564790
+      Walk_Up_06: 8656678360557293734
+      Walk_Up_07: 2072197936298243663
+      Walk_Up_08: 8274847607110692891
+      Walk_Up_09: -5370977700297060516
+      Walk_Up_10: -301611969931887394
+      Walk_Up_11: -3774388495635428750
+      Walk_Up_12: 1054338026012491252
+      Walk_Up_13: 5310637325722930882
+      Walk_Up_14: -3321780496231925070
+      Walk_Up_15: -604342216121302355
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   doOverrideTextureManagerOperations: 0
