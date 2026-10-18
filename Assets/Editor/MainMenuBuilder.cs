@@ -45,6 +45,20 @@ public static class MainMenuBuilder
     /// <summary>弹窗/设置面板背景：操作说明.png（深紫华丽金框+顶部浅色牌匾，2048×2048 方图带透明边距，Simple 全幅）。</summary>
     const string PanelBgPath = "Assets/Arts/UI组件/操作说明.png";
 
+    /// <summary>设置面板小元素目录（AI 生成紫金控件成品：关闭/箭头按钮、滑条轨道/填充/宝石滑块、语言胶囊、菱形图标）。</summary>
+    const string SettingsArtFolder = "Assets/Art/MainMenu/settings";
+
+    /// <summary>加载设置面板小元素 sprite（缺失时打错误日志并返回 null）。</summary>
+    static Sprite LoadSettingsArt(string name)
+    {
+        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(SettingsArtFolder + "/" + name + ".png");
+        if (sprite == null)
+        {
+            Debug.LogError($"[MainMenuBuilder] 缺少设置面板小元素 {name}.png（{SettingsArtFolder}）");
+        }
+        return sprite;
+    }
+
     /// <summary>UI 切片总览图源路径（原 16bit RGB 无 alpha；2026-10-18 起背景已整图键控为透明、子精灵即取即用，EnsureMenuArt 的棋盘键控切片随之停用）。</summary>
     const string SheetSource = "Assets/Arts/UI组件/imageb52c1134c728.png";
 
@@ -529,7 +543,8 @@ public static class MainMenuBuilder
         SavePrefab(root.gameObject, HelpPrefabPath);
     }
 
-    /// <summary>生成设置面板预制体（MenuSettingsPanel：全屏蒙版 + 1050×1050 操作说明.png 背景：分辨率档位 / 音效音乐滑条 / 中英文语言）。</summary>
+    /// <summary>生成设置面板预制体（MenuSettingsPanel：金框紫底壳 + 紫金小元素控件——
+    /// 标签左对齐带菱形项目符、分辨率箭头组、宝石滑块滑条、语言胶囊按钮（选中态换图 + 菱形图标））。</summary>
     public static void BuildMenuSettingsPanel()
     {
         var root = new GameObject("MenuSettingsPanel", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -555,31 +570,41 @@ public static class MainMenuBuilder
         cardBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
         cardBg.raycastTarget = false;
 
-        var title = MakeText(contentRt, "Title", "设置", new Vector2(0f, 284f), new Vector2(440f, 60f), 42, TextAnchor.MiddleCenter);
-        var closeButton = MakeCenterButton(contentRt, "BtnClose", "×", new Vector2(330f, 145f), new Vector2(52f, 52f), 30, false);
+        // 标题落在背景自带牌匾上（牌匾中心 y≈265，浅色底配深紫字）
+        var title = MakeText(contentRt, "Title", "设置", new Vector2(0f, 265f), new Vector2(440f, 60f), 42, TextAnchor.MiddleCenter, new Color32(62, 32, 100, 255));
 
-        // 分辨率行：◀ 档位值 ▶
+        // 关闭按钮：骑在面板右上边框装饰上（背景图该处不透明顶缘 y≈+280），金边紫底 + 白色 ×
+        var closeButton = MakeIconButton(contentRt, "BtnClose", "CloseBtn", new Vector2(385f, 280f), new Vector2(64f, 64f), "×", 40, false);
+
+        // 控件列统一 -70 → +350（箭头组 / 滑条 / 语言胶囊左右边缘共线）
+        // 分辨率行：菱形项目符 + 左对齐标签 + [◀ 档位值 ▶]
         var resRow = MakeRow(contentRt, "ResolutionRow", 145f);
-        var resRowLabel = MakeText(resRow, "RowLabel", "分辨率", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
-        var resPrev = MakeCenterButton(resRow, "BtnPrev", "<", new Vector2(-70f, 0f), new Vector2(52f, 48f), 30, false);
-        var resValue = MakeText(resRow, "Value", "1920 × 1080", new Vector2(60f, 0f), new Vector2(240f, 48f), 30, TextAnchor.MiddleCenter, new Color32(235, 235, 245, 255));
-        var resNext = MakeCenterButton(resRow, "BtnNext", ">", new Vector2(195f, 0f), new Vector2(52f, 48f), 30, false);
+        MakeBullet(resRow);
+        var resRowLabel = MakeText(resRow, "RowLabel", "分辨率", new Vector2(-200f, 0f), new Vector2(210f, 48f), 32, TextAnchor.MiddleLeft, new Color32(238, 224, 196, 255));
+        var resPrev = MakeIconButton(resRow, "BtnPrev", "ArrowBtn", new Vector2(-44f, 0f), new Vector2(52f, 52f), null, 0, true);
+        var resValue = MakeText(resRow, "Value", "1920 × 1080", new Vector2(140f, 0f), new Vector2(280f, 48f), 30, TextAnchor.MiddleCenter, new Color32(238, 224, 196, 255));
+        var resNext = MakeIconButton(resRow, "BtnNext", "ArrowBtn", new Vector2(324f, 0f), new Vector2(52f, 52f), null, 0, false);
 
-        // 音效行（滑条 x=115，与行标签保持间隙不压字）
+        // 音效行
         var sfxRow = MakeRow(contentRt, "SfxRow", 55f);
-        var sfxLabel = MakeText(sfxRow, "RowLabel", "音效", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
+        MakeBullet(sfxRow);
+        var sfxLabel = MakeText(sfxRow, "RowLabel", "音效", new Vector2(-200f, 0f), new Vector2(210f, 48f), 32, TextAnchor.MiddleLeft, new Color32(238, 224, 196, 255));
         var sfxSlider = MakeVolumeSlider(sfxRow);
+        sfxSlider.value = 0.7f;
 
         // 音乐行
         var musicRow = MakeRow(contentRt, "MusicRow", -35f);
-        var musicLabel = MakeText(musicRow, "RowLabel", "音乐", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
+        MakeBullet(musicRow);
+        var musicLabel = MakeText(musicRow, "RowLabel", "音乐", new Vector2(-200f, 0f), new Vector2(210f, 48f), 32, TextAnchor.MiddleLeft, new Color32(238, 224, 196, 255));
         var musicSlider = MakeVolumeSlider(musicRow);
+        musicSlider.value = 0.4f;
 
-        // 语言行（Transition.None，选中色由 MenuSettingsPanel 运行时写 Image.color）
+        // 语言行（选中态换图 + 菱形图标由 MenuSettingsPanel 运行时切换）
         var langRow = MakeRow(contentRt, "LanguageRow", -125f);
-        var langLabel = MakeText(langRow, "RowLabel", "语言", new Vector2(-230f, 0f), new Vector2(250f, 48f), 32, TextAnchor.MiddleRight, new Color32(235, 235, 245, 255));
-        var chineseButton = MakeCenterButton(langRow, "BtnChinese", "中文", new Vector2(-10f, 0f), new Vector2(160f, 52f), 30, true);
-        var englishButton = MakeCenterButton(langRow, "BtnEnglish", "English", new Vector2(190f, 0f), new Vector2(160f, 52f), 26, true);
+        MakeBullet(langRow);
+        var langLabel = MakeText(langRow, "RowLabel", "语言", new Vector2(-200f, 0f), new Vector2(210f, 48f), 32, TextAnchor.MiddleLeft, new Color32(238, 224, 196, 255));
+        var chineseButton = MakeLangButton(langRow, "BtnChinese", "中文", new Vector2(27.5f, 0f), 30, true, out var chineseIcon);
+        var englishButton = MakeLangButton(langRow, "BtnEnglish", "English", new Vector2(252.5f, 0f), 26, false, out var englishIcon);
 
         var panel = root.gameObject.AddComponent<MenuSettingsPanel>();
         var so = new SerializedObject(panel);
@@ -598,6 +623,10 @@ public static class MainMenuBuilder
         so.FindProperty("chineseButton").objectReferenceValue = chineseButton;
         so.FindProperty("englishButton").objectReferenceValue = englishButton;
         so.FindProperty("closeButton").objectReferenceValue = closeButton;
+        so.FindProperty("chineseButtonIcon").objectReferenceValue = chineseIcon;
+        so.FindProperty("englishButtonIcon").objectReferenceValue = englishIcon;
+        so.FindProperty("langSelectedSprite").objectReferenceValue = LoadSettingsArt("LangSelected");
+        so.FindProperty("langNormalSprite").objectReferenceValue = LoadSettingsArt("LangNormal");
 
         // UI 点击音效：资产缺失时留空（运行时静默跳过，不刷错误日志）
         var uiClick = AssetDatabase.LoadAssetAtPath<AudioClip>(UiClickSfxPath);
@@ -778,7 +807,8 @@ public static class MainMenuBuilder
                      {
                          "titleText", "resolutionRowLabel", "resolutionValueText", "sfxLabel", "musicLabel", "languageLabel",
                          "resolutionPrevButton", "resolutionNextButton", "sfxSlider", "musicSlider",
-                         "chineseButton", "englishButton", "closeButton"
+                         "chineseButton", "englishButton", "closeButton",
+                         "chineseButtonIcon", "englishButtonIcon", "langSelectedSprite", "langNormalSprite"
                      })
             {
                 if (so.FindProperty(field).objectReferenceValue == null)
@@ -964,40 +994,135 @@ public static class MainMenuBuilder
         return button;
     }
 
-    /// <summary>音量滑条：居中锚点 x=115、420×28，LeftToRight 0~1。</summary>
+    /// <summary>设置面板行首菱形项目符（紫色宝石小图标，纯装饰不拦截射线）。</summary>
+    static Image MakeBullet(Transform row)
+    {
+        var rt = CreateRect(row, "Bullet");
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = new Vector2(-350f, 0f);
+        rt.sizeDelta = new Vector2(28f, 32f);
+        var image = rt.gameObject.AddComponent<Image>();
+        image.sprite = LoadSettingsArt("Diamond");
+        image.raycastTarget = false;
+        return image;
+    }
+
+    /// <summary>设置面板图标按钮（AI 小元素 sprite + 可选白色文字子节点；flipX 镜像用于左箭头）。</summary>
+    static Button MakeIconButton(Transform parent, string name, string artName, Vector2 pos, Vector2 size, string label, int labelSize, bool flipX)
+    {
+        var rt = CreateRect(parent, name);
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        if (flipX)
+        {
+            rt.localScale = new Vector3(-1f, 1f, 1f);
+        }
+
+        var image = rt.gameObject.AddComponent<Image>();
+        image.sprite = LoadSettingsArt(artName);
+
+        var button = rt.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
+
+        if (label != null)
+        {
+            var labelRt = CreateRect(rt, "Text");
+            Stretch(labelRt);
+            if (flipX)
+            {
+                labelRt.localScale = new Vector3(-1f, 1f, 1f);
+            }
+
+            var t = labelRt.gameObject.AddComponent<Text>();
+            t.text = label;
+            t.fontSize = labelSize;
+            t.alignment = TextAnchor.MiddleCenter;
+            t.color = Color.white;
+            t.raycastTarget = false;
+            t.font = GetLegacyFont();
+        }
+
+        return button;
+    }
+
+    /// <summary>语言胶囊按钮：选中/未选中两种 AI 底图 + 白字，选中态左端叠菱形图标（图标供运行时随选中切换）。</summary>
+    static Button MakeLangButton(Transform row, string name, string label, Vector2 pos, int fontSize, bool selected, out Image icon)
+    {
+        var rt = CreateRect(row, name);
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = new Vector2(195f, 56f);
+
+        var image = rt.gameObject.AddComponent<Image>();
+        image.sprite = LoadSettingsArt(selected ? "LangSelected" : "LangNormal");
+
+        // 选中态由换图表达，禁用 ColorTint 避免着色叠加
+        var button = rt.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
+        button.transition = Selectable.Transition.None;
+
+        var labelRt = CreateRect(rt, "Text");
+        Stretch(labelRt);
+        var t = labelRt.gameObject.AddComponent<Text>();
+        t.text = label;
+        t.fontSize = fontSize;
+        t.alignment = TextAnchor.MiddleCenter;
+        t.color = Color.white;
+        t.raycastTarget = false;
+        t.font = GetLegacyFont();
+
+        // 选中态图标（居中文字左侧留白处），未选中侧先建后隐藏，运行时只切 enabled
+        var iconRt = CreateRect(rt, "Icon");
+        iconRt.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRt.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRt.anchoredPosition = new Vector2(-73.5f, 0f);
+        iconRt.sizeDelta = new Vector2(24f, 27f);
+        icon = iconRt.gameObject.AddComponent<Image>();
+        icon.sprite = LoadSettingsArt("Diamond");
+        icon.raycastTarget = false;
+        icon.enabled = selected;
+
+        return button;
+    }
+
+    /// <summary>音量滑条：金边紫轨胶囊 + 亮紫渐变填充 + 菱形宝石滑块，控件列 -70→+350（420×34）。</summary>
     static Slider MakeVolumeSlider(Transform row)
     {
         var sliderRt = CreateRect(row, "Slider");
         sliderRt.anchorMin = new Vector2(0.5f, 0.5f);
         sliderRt.anchorMax = new Vector2(0.5f, 0.5f);
-        sliderRt.anchoredPosition = new Vector2(115f, 0f);
-        sliderRt.sizeDelta = new Vector2(420f, 28f);
+        sliderRt.anchoredPosition = new Vector2(140f, 0f);
+        sliderRt.sizeDelta = new Vector2(420f, 34f);
 
         var bgRt = CreateRect(sliderRt, "Background");
         Stretch(bgRt);
         var bg = bgRt.gameObject.AddComponent<Image>();
-        bg.color = new Color(0.78f, 0.78f, 0.80f, 1f);
+        bg.sprite = LoadSettingsArt("SliderTrack");
 
         var fillAreaRt = CreateRect(sliderRt, "Fill Area");
         fillAreaRt.anchorMin = Vector2.zero;
         fillAreaRt.anchorMax = Vector2.one;
-        fillAreaRt.offsetMin = new Vector2(6f, 0f);
-        fillAreaRt.offsetMax = new Vector2(-6f, 0f);
+        fillAreaRt.offsetMin = new Vector2(5f, -5f);
+        fillAreaRt.offsetMax = new Vector2(-5f, 5f);
         var fillRt = CreateRect(fillAreaRt, "Fill");
         Stretch(fillRt);
         var fill = fillRt.gameObject.AddComponent<Image>();
-        fill.color = new Color(0.45f, 0.65f, 0.95f, 1f);
+        fill.sprite = LoadSettingsArt("SliderFill");
         fill.raycastTarget = false;
 
         var handleAreaRt = CreateRect(sliderRt, "Handle Slide Area");
         handleAreaRt.anchorMin = Vector2.zero;
         handleAreaRt.anchorMax = Vector2.one;
-        handleAreaRt.offsetMin = new Vector2(6f, -14f);
-        handleAreaRt.offsetMax = new Vector2(-6f, 14f);
+        handleAreaRt.offsetMin = new Vector2(6f, -15f);
+        handleAreaRt.offsetMax = new Vector2(-6f, 15f);
         var handleRt = CreateRect(handleAreaRt, "Handle");
-        handleRt.sizeDelta = new Vector2(26f, 40f);
+        handleRt.sizeDelta = new Vector2(40f, 58f);
         var handleImage = handleRt.gameObject.AddComponent<Image>();
-        handleImage.color = Color.white;
+        handleImage.sprite = LoadSettingsArt("SliderHandle");
 
         var slider = sliderRt.gameObject.AddComponent<Slider>();
         slider.direction = Slider.Direction.LeftToRight;

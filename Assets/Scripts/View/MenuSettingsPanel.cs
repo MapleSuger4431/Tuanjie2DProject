@@ -71,6 +71,22 @@ namespace Game.View
         [SerializeField]
         Button englishButton;
 
+        [Tooltip("中文按钮选中态图标（随选中切换显隐）")]
+        [SerializeField]
+        Image chineseButtonIcon;
+
+        [Tooltip("English 按钮选中态图标（随选中切换显隐）")]
+        [SerializeField]
+        Image englishButtonIcon;
+
+        [Tooltip("语言按钮选中态底图（亮紫发光胶囊）")]
+        [SerializeField]
+        Sprite langSelectedSprite;
+
+        [Tooltip("语言按钮未选中态底图（深紫哑光胶囊）")]
+        [SerializeField]
+        Sprite langNormalSprite;
+
         [Tooltip("关闭按钮")]
         [SerializeField]
         Button closeButton;
@@ -92,9 +108,6 @@ namespace Game.View
         const float ClickThrottleSeconds = 0.08f;
 
         float lastClickTime = -1f;
-
-        static readonly Color NormalButtonColor = Color.white;
-        static readonly Color SelectedButtonColor = new Color(0.60f, 0.80f, 1.00f, 1f);
 
         protected override void OnInit()
         {
@@ -222,15 +235,25 @@ namespace Game.View
             musicLabel.text = Localization.Get(Localization.Key.SettingsMusic);
             languageLabel.text = Localization.Get(Localization.Key.SettingsLanguage);
 
-            // 语言选中态高亮（按钮 Transition 为 None，由 Image.color 直接呈现选中色）
+            // 语言选中态：换底图 + 切菱形图标（Transition.None，无 ColorTint 着色）
             if (chineseButtonImage != null)
             {
-                chineseButtonImage.color = zh ? SelectedButtonColor : NormalButtonColor;
+                chineseButtonImage.sprite = zh ? langSelectedSprite : langNormalSprite;
             }
 
             if (englishButtonImage != null)
             {
-                englishButtonImage.color = zh ? NormalButtonColor : SelectedButtonColor;
+                englishButtonImage.sprite = zh ? langNormalSprite : langSelectedSprite;
+            }
+
+            if (chineseButtonIcon != null)
+            {
+                chineseButtonIcon.enabled = zh;
+            }
+
+            if (englishButtonIcon != null)
+            {
+                englishButtonIcon.enabled = !zh;
             }
         }
     }
