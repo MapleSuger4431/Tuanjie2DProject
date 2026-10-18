@@ -169,7 +169,9 @@ namespace Game.View
         /// <summary>按当前语言刷新全部文本（标题 / 按钮 / 节点状态）。</summary>
         void ApplyLocalization()
         {
-            if (titleLabel != null) titleLabel.text = Localization.Get(Localization.Key.LevelSelectTitle);
+            // 2026-10-18 用户定稿：Title 暂时为空（背景图横幅自带「关卡总览」，两行文字会重叠）——
+            // 本地化键 LevelSelectTitle 仍保留「选择关卡」，恢复标题时取消下一行注释即可。
+            // if (titleLabel != null) titleLabel.text = Localization.Get(Localization.Key.LevelSelectTitle);
             if (backButtonLabel != null) backButtonLabel.text = Localization.Get(Localization.Key.LevelSelectBack);
             if (settingsButtonLabel != null) settingsButtonLabel.text = Localization.Get(Localization.Key.SettingsTitle);
 
