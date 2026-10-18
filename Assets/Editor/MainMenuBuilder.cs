@@ -428,7 +428,7 @@ public static class MainMenuBuilder
         SavePrefab(root.gameObject, PanelPrefabPath);
     }
 
-    /// <summary>生成操作说明弹窗预制体（MenuHelpPanel：全屏蒙版 + 950×950 操作说明.png 背景 + 顶部牌匾标题 + 浅色正文 + × 关闭）。</summary>
+    /// <summary>生成操作说明弹窗预制体（MenuHelpPanel：全屏蒙版 + 950×950 操作说明.png 背景 + 顶部牌匾标题 + 浅色正文 + Button_Close 切片关闭）。</summary>
     public static void BuildMenuHelpPanel()
     {
         var root = new GameObject("MenuHelpPanel", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -467,26 +467,8 @@ public static class MainMenuBuilder
         title.color = new Color32(62, 32, 100, 255);
         title.font = GetLegacyFont();
 
-        // BtnClose：右上角 ×
-        var closeRt = CreateRect(contentRt, "BtnClose");
-        closeRt.anchorMin = new Vector2(0.5f, 0.5f);
-        closeRt.anchorMax = new Vector2(0.5f, 0.5f);
-        closeRt.anchoredPosition = new Vector2(290f, 135f);
-        closeRt.sizeDelta = new Vector2(52f, 52f);
-        var closeImage = closeRt.gameObject.AddComponent<Image>();
-        closeImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-        closeImage.type = Image.Type.Sliced;
-        var closeButton = closeRt.gameObject.AddComponent<Button>();
-        closeButton.targetGraphic = closeImage;
-
-        var closeTextRt = CreateRect(closeRt, "Text");
-        Stretch(closeTextRt);
-        var closeText = closeTextRt.gameObject.AddComponent<Text>();
-        closeText.text = "×";
-        closeText.fontSize = 30;
-        closeText.alignment = TextAnchor.MiddleCenter;
-        closeText.color = new Color32(50, 50, 50, 255);
-        closeText.font = GetLegacyFont();
+        // BtnClose：右上角八角金边 X（操作面板组件图集切片，徽章式压在装饰框角外的透明角区）
+        var closeButton = MakeSheetButton(contentRt, "BtnClose", "Button_Close", new Vector2(425f, 375f), new Vector2(94f, 79f));
 
         // Body：操作说明正文
         var bodyRt = CreateRect(contentRt, "Body");
