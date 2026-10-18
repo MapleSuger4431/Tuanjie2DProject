@@ -9,8 +9,9 @@ using Runestone.AesirModules;
 namespace Game.Board
 {
     /// <summary>
-    /// 鼠标交互：悬停格对齐方块包围盒左上角显示虚影，左键点击把当前方块覆盖到棋盘格，随后换新方块。
-    /// R 键把当前这块整块顺时针旋转 90°（每格状态跟着各自那一格走），绕包围盒中心原地转，落点始终夹在棋盘内。
+    /// 鼠标交互：悬停时把方块的一个**实格（握点）**压在鼠标格心上显示虚影——鼠标永远落在块内某一格的中心，
+    /// 而不是包围盒角上（异形块的角格常常是空的，看起来就像虚影飘走了）。左键点击把当前方块覆盖到棋盘格，随后换新方块。
+    /// R 键把当前这块整块顺时针旋转 90°（每格状态跟着各自那一格走），握点格跟着同一格转，整块绕鼠标转。
     /// 输入一律走 Input System（本工程 activeInputHandler=2，旧 Input.* 运行时会抛异常）。
     /// 放置成功瞬间经 <see cref="AudioModule" /> 播放一次放置音效。
     /// </summary>
@@ -34,9 +35,9 @@ namespace Game.Board
         GameInputActions.BoardActions _input;
         bool _inputReady;
 
-        // 旋转补偿：整块绕包围盒中心转（俄罗斯方块手感），而不是绕左上角甩出去。换块即清零
-        Vector2Int _anchorOffset;
-        TilePiece _offsetPiece;
+        // 握点：方块里始终压在鼠标格心上的那个实格（取靠近包围盒中心的）。换块即重算
+        TilePiece _gripPiece;
+        Vector2Int _gripOffset;
 
         // UI 遮挡检测复用同一份数据，避免每帧分配
         readonly List<RaycastResult> _uiRaycasts = new List<RaycastResult>();
@@ -85,11 +86,11 @@ namespace Game.Board
             // R 键旋转由 Start 里订阅的 Rotate.performed 驱动（不在这里轮询）
             var piece = _piece.Current.Value;
 
-            // 换块就丢掉上一块的旋转补偿，否则偏移会带到新块上
-            if (!ReferenceEquals(_offsetPiece, piece))
+            // 换块就重算握点：新块得有一个实格来接住鼠标
+            if (!ReferenceEquals(_gripPiece, piece))
             {
-                _offsetPiece = piece;
-                _anchorOffset = Vector2Int.zero;
+                _gripPiece = piece;
+                _gripOffset = ComputeGrip(piece);
             }
 
             if (!_inputReady || piece == null || piece.Shape == null)
@@ -141,33 +142,69 @@ namespace Game.Board
         }
 
         /// <summary>
-        /// 整块顺时针转 90°（每格状态跟着走）。转完把落点补偿半格差，让块绕包围盒中心原地转，
-        /// 而不是以左上角为轴甩出去——横条转竖条时尤其明显。
+        /// 整块顺时针转 90°（每格状态跟着走）。握点格按 <see cref="TilePiece.RotateCW" /> 的同一映射跟着转，
+        /// 转完它仍然压在鼠标下——效果是整块绕鼠标转，而不是绕包围盒中心跳半格。
         /// </summary>
         void RotatePiece()
         {
             var before = _piece.Current.Value;
-            if (before == null) return;
+            if (before == null || before.Cells == null || before.Cells.Length == 0) return;
 
-            var beforeBounds = before.Bounds;
+            // 握点可能还停在上一块上（旋转回调先于 Update 的换块检查触发）：先归属到当前块再转
+            if (!ReferenceEquals(_gripPiece, before))
+            {
+                _gripPiece = before;
+                _gripOffset = ComputeGrip(before);
+            }
 
             _piece.RotateCurrent();
 
             var after = _piece.Current.Value;
             if (after == null) return;
 
-            // 中心不动：包围盒从 (w,h) 变成 (h,w)，左上角要挪 (w-h)/2 与 (h-w)/2 格（取整到最近格）
-            var afterBounds = after.Bounds;
-            _anchorOffset += new Vector2Int(
-                Mathf.RoundToInt((beforeBounds.x - afterBounds.x) * 0.5f),
-                Mathf.RoundToInt((beforeBounds.y - afterBounds.y) * 0.5f));
-
-            _offsetPiece = after;
+            _gripOffset = RotatedGrip(_gripOffset, before.Cells);
+            _gripPiece = after;
         }
 
         /// <summary>
-        /// 落点 = 鼠标所在格（对齐方块包围盒左上角）加上本块的旋转补偿，再整体夹回棋盘内：
-        /// 贴边旋转（横条转竖条）或贴边放置时，块不会被甩到界外。虚影与实际落点都取这里的结果，所见即所落。
+        /// 握点格：块内**已占用**、离包围盒中心最近的格（并列取行优先靠前者）。取实格而非包围盒角，
+        /// 才能保证虚影出现时鼠标正压在某一块格的中心。
+        /// </summary>
+        static Vector2Int ComputeGrip(TilePiece piece)
+        {
+            var cells = piece != null ? piece.Cells : null;
+            if (cells == null || cells.Length == 0) return Vector2Int.zero;
+
+            var bounds = piece.Bounds;
+            var center = new Vector2((bounds.x - 1) * 0.5f, (bounds.y - 1) * 0.5f);
+
+            var grip = cells[0];
+            var bestDistance = float.MaxValue;
+            for (var i = 0; i < cells.Length; i++)
+            {
+                var distance = (new Vector2(cells[i].x, cells[i].y) - center).sqrMagnitude;
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    grip = cells[i];
+                }
+            }
+
+            return grip;
+        }
+
+        /// <summary>握点随顺时针旋转的映射：(x, y) → (y, maxX - x)，与 TilePiece.RotateCW 完全同式（块内偏移已归一，无需再平移）。</summary>
+        static Vector2Int RotatedGrip(Vector2Int grip, Vector2Int[] cellsBefore)
+        {
+            var maxX = 0;
+            for (var i = 0; i < cellsBefore.Length; i++) maxX = Mathf.Max(maxX, cellsBefore[i].x);
+
+            return new Vector2Int(grip.y, maxX - grip.x);
+        }
+
+        /// <summary>
+        /// 落点 = 鼠标所在格减去握点偏移，再整体夹回棋盘内：握点格对准鼠标格心，
+        /// 贴边放不下时整块往回夹、不出界。虚影与实际落点都取这里的结果，所见即所落。
         /// </summary>
         Vector2Int ResolveAnchor(Vector2Int cell, TilePiece piece)
         {
@@ -175,7 +212,7 @@ namespace Game.Board
             var maxX = Mathf.Max(0, _board.Width - bounds.x);
             var maxY = Mathf.Max(0, _board.Height - bounds.y);
 
-            var target = cell + _anchorOffset;
+            var target = cell - _gripOffset;
             return new Vector2Int(Mathf.Clamp(target.x, 0, maxX), Mathf.Clamp(target.y, 0, maxY));
         }
 
