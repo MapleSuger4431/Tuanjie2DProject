@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Game.Model;
 using Game.Save;
 using Runestone.AesirArchitecture;
@@ -31,11 +30,11 @@ namespace Game.Service
         Action<int> _onResolutionChanged;
         Action _onProgressChanged;
 
-        /// <summary>当前存档文件路径。</summary>
-        public string Path => SaveStorage.DefaultPath;
+        /// <summary>当前存档位置（诊断/日志用；编辑器为项目根 TestSaves/，打包版为 PlayerPrefs）。</summary>
+        public string SaveLocation => SaveStorage.DefaultPath;
 
-        /// <summary>存档文件是否已存在（用于「继续游戏」可用性判断）。</summary>
-        public bool HasSave => File.Exists(Path);
+        /// <summary>是否已有存档（用于「继续游戏」可用性判断）。</summary>
+        public bool HasSave => SaveStorage.DefaultExists();
 
         protected override void OnInitialize()
         {
@@ -77,7 +76,7 @@ namespace Game.Service
         public void Save()
         {
             if (_loading) return;
-            _director.Save(Path);
+            _director.Save();
         }
 
         /// <summary>读档并回填各模块；无存档时返回 false（各模块保持默认值）。</summary>
@@ -86,7 +85,7 @@ namespace Game.Service
             _loading = true;
             try
             {
-                return _director.Load(Path);
+                return _director.Load();
             }
             finally
             {
@@ -94,8 +93,8 @@ namespace Game.Service
             }
         }
 
-        /// <summary>删除存档文件。</summary>
-        public void Delete() => SaveStorage.Delete(Path);
+        /// <summary>删除存档。</summary>
+        public void Delete() => SaveStorage.DeleteDefault();
 
         void SaveOnSettingsChanged()
         {
