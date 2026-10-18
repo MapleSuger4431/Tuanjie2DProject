@@ -158,28 +158,26 @@ namespace Game.Editor
             var nodesRoot = NewRect("NodesRoot", root.transform);
             Stretch(nodesRoot, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.85f));
 
-            // 位置锚点（2026-10-18 用户工作流）：NodesRoot 下挂空对象 Position_N，用户在 Prefab 编辑模式
-            // 自由增删锚点/拖动位置，运行时按锚点数量与序号创建关卡节点（锚点=关卡布局真源，关卡数不固定）。
-            // 重建策略：已存在的锚点原样保留（含用户拖好的位置）；Levels 表里有而预制体缺失的按 nodePos 补建。
-            var anchorDefs = new System.Collections.Generic.SortedDictionary<int, Vector2>();
+            // 位置锚点（2026-10-18 用户工作流）：NodesRoot 下每个空对象 = 一个关卡位——
+            // 用户在编辑器里自由增删空对象（名字随意，如 posi）/拖动位置，Hierarchy 顺序 = 关卡顺序，
+            // 运行时节点以每个空对象为父创建（拖空对象即拖节点）。
+            // 生成器只负责预建初始锚点（posi×关卡数）并保留重建前已有的位置（按顺序对应，用户拖好的不丢）。
+            var oldAnchorPositions = new System.Collections.Generic.List<Vector2>();
             var existingPanelGo = AssetDatabase.LoadAssetAtPath<GameObject>(PanelPath);
             if (existingPanelGo != null)
             {
                 var oldNodesRoot = existingPanelGo.transform.Find("NodesRoot");
                 if (oldNodesRoot != null)
                     foreach (Transform c in oldNodesRoot)
-                        if (c.name.StartsWith("Position_") && int.TryParse(c.name.Substring("Position_".Length), out var oldId))
-                            anchorDefs[oldId] = ((RectTransform)c).anchorMin;
+                        oldAnchorPositions.Add(((RectTransform)c).anchorMin);
             }
-            foreach (var def in new Game.Model.LevelSelectModel().Levels)
-                if (!anchorDefs.ContainsKey(def.levelId))
-                    anchorDefs[def.levelId] = def.nodePos;
 
-            foreach (var pair in anchorDefs)
+            var levelCount = Mathf.Max(oldAnchorPositions.Count, new Game.Model.LevelSelectModel().Levels.Length);
+            for (var i = 0; i < levelCount; i++)
             {
-                var anchorRt = NewRect("Position_" + pair.Key, nodesRoot);
+                var anchorRt = NewRect("posi", nodesRoot);
                 anchorRt.pivot = new Vector2(0.5f, 0.5f);
-                anchorRt.anchorMin = anchorRt.anchorMax = pair.Value;
+                anchorRt.anchorMin = anchorRt.anchorMax = i < oldAnchorPositions.Count ? oldAnchorPositions[i] : new Game.Model.LevelSelectModel().Levels[i].nodePos;
                 anchorRt.anchoredPosition = Vector2.zero;
                 anchorRt.sizeDelta = new Vector2(180f, 180f);
             }
