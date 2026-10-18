@@ -29,6 +29,7 @@ namespace Game.Service
         Action<float> _onSfxChanged;
         Action<string> _onLanguageChanged;
         Action<int> _onResolutionChanged;
+        Action<bool> _onFullscreenChanged;
         Action _onProgressChanged;
         Action _onAchievementChanged;
 
@@ -60,11 +61,13 @@ namespace Game.Service
             _onSfxChanged = _ => SaveOnSettingsChanged();
             _onLanguageChanged = _ => SaveOnSettingsChanged();
             _onResolutionChanged = _ => SaveOnSettingsChanged();
+            _onFullscreenChanged = _ => SaveOnSettingsChanged();
 
             _settings.BgmVolume.AddListener(_onBgmChanged);
             _settings.SfxVolume.AddListener(_onSfxChanged);
             _settings.Language.AddListener(_onLanguageChanged);
             _settings.ResolutionIndex.AddListener(_onResolutionChanged);
+            _settings.Fullscreen.AddListener(_onFullscreenChanged);
         }
 
         protected override void OnDispose()
@@ -79,6 +82,7 @@ namespace Game.Service
             _settings.SfxVolume.RemoveListener(_onSfxChanged);
             _settings.Language.RemoveListener(_onLanguageChanged);
             _settings.ResolutionIndex.RemoveListener(_onResolutionChanged);
+            _settings.Fullscreen.RemoveListener(_onFullscreenChanged);
         }
 
         /// <summary>按模块顺序收集数据并落盘（读档过程中调用会被忽略）。</summary>

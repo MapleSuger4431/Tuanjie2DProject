@@ -10,5 +10,8 @@ namespace Game.Save
         public float sfxVolume = 1f;
         public string language = "zh-CN";
         public int resolutionIndex;
+
+        /// <summary>是否全屏；旧存档缺字段反序列化为 false（窗口），与历史行为一致。</summary>
+        public bool fullscreen;
     }
 }

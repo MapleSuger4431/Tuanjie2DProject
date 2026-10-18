@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace Game.View
 {
     /// <summary>
-    /// 设置面板（主菜单入口）：分辨率档位切换、音效/音乐音量、语言（中文 / English）。
+    /// 设置面板（主菜单入口）：分辨率档位切换、全屏、音效/音乐音量、语言（中文 / English）。
     /// <para>
     /// 面板形态：RectTransform 根、无 Canvas，挂载于 UIRoot 的 Popup 层；
     /// 蒙版点击 / × 按钮双通道关闭。
@@ -75,6 +75,22 @@ namespace Game.View
         [SerializeField]
         Button resolutionNextButton;
 
+        [Tooltip("全屏切换按钮")]
+        [SerializeField]
+        Button fullscreenButton;
+
+        [Tooltip("全屏状态文本（全屏：开 / 关）")]
+        [SerializeField]
+        Text fullscreenText;
+
+        [Tooltip("全屏按钮选中态胶囊底图（复用语言行同款切片）")]
+        [SerializeField]
+        Sprite fullscreenSelectedSprite;
+
+        [Tooltip("全屏按钮未选中态胶囊底图")]
+        [SerializeField]
+        Sprite fullscreenUnselectedSprite;
+
         [Tooltip("音效音量滑条")]
         [SerializeField]
         Slider sfxSlider;
@@ -115,6 +131,7 @@ namespace Game.View
 
         Image chineseButtonImage;
         Image englishButtonImage;
+        Image fullscreenButtonImage;
 
         /// <summary>连续拖动滑条时的点击音节流间隔（秒），避免每帧一响糊成一片。</summary>
         const float ClickThrottleSeconds = 0.08f;
@@ -154,6 +171,16 @@ namespace Game.View
             {
                 PlayClick();
                 ShiftResolution(1);
+            });
+
+            // 全屏：点击即写 Model（SettingsService 下发 Screen.fullScreen 并落盘）；
+            // 全屏没有语言那样的切换广播链，刷新必须在这里自己做
+            fullscreenButtonImage = fullscreenButton.GetComponent<Image>();
+            fullscreenButton.onClick.AddListener(() =>
+            {
+                PlayClick();
+                _settings.Fullscreen.Value = !_settings.Fullscreen.Value;
+                RefreshVisuals();
             });
 
             // 音量：滑条值只写 Model，下发 AudioModule 与落盘都由 Service 订阅完成。
@@ -236,6 +263,18 @@ namespace Game.View
         {
             var r = SettingsModel.Resolutions[_settings.ResolutionIndex.Value];
             resolutionValueText.text = r.x + " × " + r.y;
+
+            bool fs = _settings.Fullscreen.Value;
+            if (fullscreenText != null)
+            {
+                fullscreenText.text = Localization.Get(Localization.Key.SettingsFullscreen,
+                    Localization.Get(fs ? Localization.Key.SettingsStateOn : Localization.Key.SettingsStateOff));
+            }
+
+            if (fullscreenButtonImage != null)
+            {
+                fullscreenButtonImage.sprite = fs ? fullscreenSelectedSprite : fullscreenUnselectedSprite;
+            }
 
             sfxSlider.SetValueWithoutNotify(_settings.SfxVolume.Value);
             musicSlider.SetValueWithoutNotify(_settings.BgmVolume.Value);

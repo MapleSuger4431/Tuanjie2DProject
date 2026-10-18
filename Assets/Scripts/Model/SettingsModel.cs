@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Game.Model
 {
     /// <summary>
-    /// 全局设置 Model：音效/音乐音量、语言、分辨率档位。
+    /// 全局设置 Model：音效/音乐音量、语言、分辨率档位、全屏。
     /// <para>
     /// 设置值不再走 PlayerPrefs，统一由存档系统持久化（<see cref="SettingsData" />）：
     /// 本 Model 只承载运行时状态，改动经 ObservableValue 广播——
@@ -29,6 +29,7 @@ namespace Game.Model
             new Vector2Int(1600, 900),
             new Vector2Int(1920, 1080),
             new Vector2Int(2560, 1440),
+            new Vector2Int(3840, 2160),
         };
 
         /// <summary>首次使用（无存档）时默认选中与当前屏幕宽度最接近的档位。</summary>
@@ -38,11 +39,13 @@ namespace Game.Model
         [SerializeField] ObservableValue<float> sfxVolume = new ObservableValue<float>(1f);
         [SerializeField] ObservableValue<string> language = new ObservableValue<string>(LanguageChinese);
         [SerializeField] ObservableValue<int> resolutionIndex = new ObservableValue<int>(DefaultResolutionIndex);
+        [SerializeField] ObservableValue<bool> fullscreen = new ObservableValue<bool>(false);
 
         public ObservableValue<float> BgmVolume => bgmVolume;
         public ObservableValue<float> SfxVolume => sfxVolume;
         public ObservableValue<string> Language => language;
         public ObservableValue<int> ResolutionIndex => resolutionIndex;
+        public ObservableValue<bool> Fullscreen => fullscreen;
 
         public void WriteTo(SettingsData data)
         {
@@ -50,6 +53,7 @@ namespace Game.Model
             data.sfxVolume = sfxVolume.Value;
             data.language = language.Value;
             data.resolutionIndex = resolutionIndex.Value;
+            data.fullscreen = fullscreen.Value;
         }
 
         public void ReadFrom(SettingsData data)
@@ -58,6 +62,7 @@ namespace Game.Model
             sfxVolume.Value = data.sfxVolume;
             language.Value = string.IsNullOrEmpty(data.language) ? LanguageChinese : data.language;
             resolutionIndex.Value = Mathf.Clamp(data.resolutionIndex, 0, Resolutions.Length - 1);
+            fullscreen.Value = data.fullscreen;
         }
 
         static int IndexOfClosestToCurrent()

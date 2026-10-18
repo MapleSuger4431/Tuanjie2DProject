@@ -271,6 +271,22 @@ MonoBehaviour:
     m_Key: AchClear3Desc
     m_Metadata:
       m_Items: []
+  - m_Id: 199424205643776
+    m_Key: LevelSpawnDir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339142504448
+    m_Key: SettingsFullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339155087360
+    m_Key: SettingsStateOn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339155087361
+    m_Key: SettingsStateOff
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -540,7 +540,7 @@ public static class MainMenuBuilder
     /// <summary>
     /// 生成设置面板预制体（MenuSettingsPanel：全屏蒙版 + 1000×790 图集拼装内容卡，按参考图比例 1.27:1）。
     /// 结构：Panel_Base 底板 + Panel_Frame 雕花框叠加；羽翼装饰 + 牌匾横幅 + 金字「设置」标题（英文模式回落运行时文本）；
-    /// 分辨率 ◀/▶ 行、音效/音乐滑条行（轨道 + 发光填充 + 大宝石滑块）、语言胶囊行（选中/未选中切片运行时互换 + 金字内嵌标签）。
+    /// 分辨率 ◀/▶ 行 + 全屏胶囊按钮（开/关两态运行时互换）、音效/音乐滑条行（轨道 + 发光填充 + 大宝石滑块）、语言胶囊行（选中/未选中切片运行时互换 + 金字内嵌标签）。
     /// </summary>
     public static void BuildMenuSettingsPanel()
     {
@@ -594,6 +594,10 @@ public static class MainMenuBuilder
         var resValue = MakeText(resRow, "Value", "1920 × 1080", new Vector2(28f, 0f), new Vector2(300f, 60f), 34, TextAnchor.MiddleCenter, new Color32(255, 246, 220, 255));
         var resNext = MakeSheetButton(resRow, "BtnNext", "Arrow_Right", new Vector2(196f, 0f), new Vector2(56f, 70f));
 
+        // 全屏切换：分辨率行右侧胶囊按钮，开/关两态底图由 MenuSettingsPanel 运行时互换
+        var fullscreenButton = MakeSheetButton(resRow, "BtnFullscreen", "Capsule_Unselected", new Vector2(352f, 0f), new Vector2(240f, 79f));
+        var fullscreenText = MakeText(fullscreenButton.transform, "Label", "全屏：关", Vector2.zero, new Vector2(230f, 60f), 30, TextAnchor.MiddleCenter, new Color32(240, 214, 130, 255));
+
         // 音效行 / 音乐行：滑条（轨道 + 发光填充 + 大宝石滑块）
         var sfxRow = MakeRow(contentRt, "SfxRow", 8f);
         MakeSheetImage(sfxRow, "LabelIcon", "Gem_Small", new Vector2(-444f, 0f), new Vector2(36f, 46f));
@@ -634,6 +638,10 @@ public static class MainMenuBuilder
         so.FindProperty("languageLabelImage").objectReferenceValue = languageLabelImage;
         so.FindProperty("resolutionPrevButton").objectReferenceValue = resPrev;
         so.FindProperty("resolutionNextButton").objectReferenceValue = resNext;
+        so.FindProperty("fullscreenButton").objectReferenceValue = fullscreenButton;
+        so.FindProperty("fullscreenText").objectReferenceValue = fullscreenText;
+        so.FindProperty("fullscreenSelectedSprite").objectReferenceValue = SheetSprite("Capsule_Selected");
+        so.FindProperty("fullscreenUnselectedSprite").objectReferenceValue = SheetSprite("Capsule_Unselected");
         so.FindProperty("sfxSlider").objectReferenceValue = sfxSlider;
         so.FindProperty("musicSlider").objectReferenceValue = musicSlider;
         so.FindProperty("chineseButton").objectReferenceValue = chineseButton;
@@ -822,7 +830,8 @@ public static class MainMenuBuilder
                          "titleText", "titleImage", "resolutionRowLabel", "resolutionRowLabelImage", "resolutionValueText",
                          "sfxLabel", "sfxLabelImage", "musicLabel", "musicLabelImage", "languageLabel", "languageLabelImage",
                          "resolutionPrevButton", "resolutionNextButton", "sfxSlider", "musicSlider",
-                         "chineseButton", "englishButton", "closeButton", "languageSelectedSprite", "languageUnselectedSprite"
+                         "chineseButton", "englishButton", "closeButton", "languageSelectedSprite", "languageUnselectedSprite",
+                         "fullscreenButton", "fullscreenText", "fullscreenSelectedSprite", "fullscreenUnselectedSprite"
                      })
             {
                 if (so.FindProperty(field).objectReferenceValue == null)

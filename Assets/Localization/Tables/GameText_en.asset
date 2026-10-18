@@ -54,11 +54,11 @@ MonoBehaviour:
 
       R: rotate piece
 
-      Space: start,
-      AI begins pathing
+      Space: start, AI begins pathing
 
 
-      Place fast, route smart, score higher.'
+      Place
+      fast, route smart, score higher.'
     m_Metadata:
       m_Items: []
   - m_Id: 2385641478
@@ -324,6 +324,22 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 138945840013325
     m_Localized: Clear levels 3 times in total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199424205643776
+    m_Localized: 'Spawn facing: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339142504448
+    m_Localized: 'Fullscreen: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339155087360
+    m_Localized: On
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207339155087361
+    m_Localized: Off
     m_Metadata:
       m_Items: []
   references:

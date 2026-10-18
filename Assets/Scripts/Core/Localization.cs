@@ -27,6 +27,16 @@ namespace Game.Core
             HelpBody,
             SettingsTitle,
             SettingsResolution,
+
+            /// <summary>全屏按钮文本（{0} = 开 / 关）。</summary>
+            SettingsFullscreen,
+
+            /// <summary>全屏开状态文案。</summary>
+            SettingsStateOn,
+
+            /// <summary>全屏关状态文案。</summary>
+            SettingsStateOff,
+
             SettingsSfx,
             SettingsMusic,
             SettingsLanguage,
@@ -72,6 +82,9 @@ namespace Game.Core
 
             /// <summary>角色状态卡的可走地形行（{0} = 陆地 / 火 / 冰）。</summary>
             LevelWalkable,
+
+            /// <summary>角色状态卡的出发朝向行（{0} = 右 → / 上 ↑ 等，取自 MoveDirectionInfo.DisplayName）。</summary>
+            LevelSpawnDir,
 
             /// <summary>元素图例：陆地。</summary>
             TileNameLand,
