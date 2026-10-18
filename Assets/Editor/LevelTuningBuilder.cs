@@ -16,6 +16,8 @@ namespace Game.EditorTools
     /// <item>血色深渊（<see cref="TileType.Mountain" />）：场地预置 0/3/3/3/5 个，方块可刷出 0/0/1/3/3 个（每块最多 1 格）；</item>
     /// <item>金币：1/1/2/2/2 枚，第二颗星要求全部捡到；</item>
     /// <item>属性反转牌：第 4 关才引入（第 1~3 关概率 0，第 4/5 关 0.35 / 0.3）。</item>
+    /// <item>出生元素：五关按 火 / 冰 / 火 / 冰 / 火 交替（用户 2026-10-18 拍板「每一关最开始的元素不一样」），写在 BoardRoot.initialElement。</item>
+    /// <item>预置反转格：第 5 关引入 1 个元素转换格（传送门出口走廊上，钉死不被方块覆盖）。</item>
     /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间）。占比口径（用户 2026-10-18 拍板）：
     /// 关卡开始前、玩家落块之前，非深渊且非血色深渊的格子（路/火/冰）= 棋盘总格数的 30%，相对零散分布、允许少量聚集；
     /// 路网超预算时按固定种子随机裁掉多余普通路格（火/冰与金币/传送门所在格保留，见 <see cref="TrimRoadToBudget" />）。
@@ -32,6 +34,7 @@ namespace Game.EditorTools
         const string StarConfigPath = "Assets/Resources/Board/LevelStarConfig.asset";
         const string CoinSpritePath = "Assets/Art/Board/Items/Item_Coin.png";
         const string PortalAssetPath = "Assets/Resources/Board/Effects/Portal.asset";
+        const string InvertAssetPath = "Assets/Resources/Board/Effects/Element_Invert.asset";
 
         /// <summary>关卡自带驱动器的根名：清理残留时必须保住它。</summary>
         const string BoardRuntimeRootName = "[BoardRuntime]";
@@ -49,6 +52,10 @@ namespace Game.EditorTools
             public int maxAbyssPerPiece = 1;
             public int maxAbyssPerRun;
             public float invertChance;
+
+            [Tooltip("本关 AI 出生元素属性：五关按 火 / 冰 / 火 / 冰 / 火 交替（用户 2026-10-18 拍板），写入 BoardRoot.initialElement，重开复位到本值")]
+            public ElementState initialElement = ElementState.Fire;
+
             public Vector2Int[] abyss = { };
             public Vector2Int[] coins = { };
 
@@ -61,6 +68,10 @@ namespace Game.EditorTools
             [Tooltip("预置传送门，两两成对：每两个坐标构成一对互传端点（踩到任一端传到另一端，两端同时消耗）。" +
                      "第 4 关起引入（用户 2026-10-18 拍板：第 4/5 关各设计两个传送门格子）")]
             public Vector2Int[] portals = { };
+
+            [Tooltip("预置元素反转格（Element_Invert，钉死不被方块覆盖）：AI 踏入即 火↔冰 反转。" +
+                     "第 5 关引入（用户 2026-10-18 拍板），只允许落在普通路格上（火 / 冰格 AI 可能踏不进去）")]
+            public Vector2Int[] inverts = { };
 
             [Tooltip("固定初始路网，每关一套（用户 2026-10-18 拍板：进关不能满屏深渊，可通行格须 ≥30%，" +
                      "且路网固定不变，方便刷分刷时间）。第一行 = 最上面一行（y 最大），" +
@@ -79,7 +90,7 @@ namespace Game.EditorTools
         {
             new LevelSpec
             {
-                sceneName = "Level_01", size = 10, timeStarSeconds = 50,
+                sceneName = "Level_01", size = 10, timeStarSeconds = 50, initialElement = ElementState.Fire,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new Vector2Int[] { },
                 coins = new[] { new Vector2Int(3, 6) },
@@ -92,7 +103,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_02", size = 15, timeStarSeconds = 60,
+                sceneName = "Level_02", size = 15, timeStarSeconds = 60, initialElement = ElementState.Ice,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new[] { new Vector2Int(4, 3), new Vector2Int(10, 7), new Vector2Int(7, 12) },
                 coins = new[] { new Vector2Int(7, 7) },
@@ -105,7 +116,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_03", size = 15, timeStarSeconds = 70,
+                sceneName = "Level_03", size = 15, timeStarSeconds = 70, initialElement = ElementState.Fire,
                 maxAbyssPerRun = 1, invertChance = 0f,
                 abyss = new[] { new Vector2Int(3, 5), new Vector2Int(9, 9), new Vector2Int(12, 3) },
                 coins = new[] { new Vector2Int(5, 4), new Vector2Int(11, 10) },
@@ -118,7 +129,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_04", size = 20, timeStarSeconds = 80,
+                sceneName = "Level_04", size = 20, timeStarSeconds = 80, initialElement = ElementState.Ice,
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
@@ -136,7 +147,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_05", size = 20, timeStarSeconds = 90,
+                sceneName = "Level_05", size = 20, timeStarSeconds = 90, initialElement = ElementState.Fire,
                 maxAbyssPerRun = 3, invertChance = 0.3f,
                 abyss = new[]
                 {
@@ -145,6 +156,9 @@ namespace Game.EditorTools
                 },
                 coins = new[] { new Vector2Int(5, 9), new Vector2Int(12, 4) },
                 portals = new[] { new Vector2Int(3, 2), new Vector2Int(13, 16) },
+                // 预置反转格：传送门出口走廊第一格 (13,17)（固定路网 Land 格）——AI 出传送门往上走必经，
+                // 踩上即 火→冰，与该走廊下游的冰格 / 元素支路联动；火/冰格按拍板不放反转
+                inverts = new[] { new Vector2Int(13, 17) },
                 road = new[]
                 {
                     "...LLLL.LLLL.LLLL.L.", ".............L......", ".........L...L......", "..LLL.LLLL.LLLI.FLLL",
@@ -273,6 +287,12 @@ namespace Game.EditorTools
             // 传送门放在地形之后写入：即使地形重建顺带重建了格子，效果也落在最终格子上
             ApplyPortals(board, spec);
 
+            // 预置反转格同上：写在地形之后才不会被重建冲掉
+            ApplyInverts(board, spec);
+
+            // 出生元素：写入 BoardRoot 序列化字段（五关 火 / 冰 / 火 / 冰 / 火 交替，重开复位到本值）
+            ApplyInitialElement(board, spec);
+
             ApplyCoins(board, spec);
 
             // 起终点：只在该关显式配置时写入（null = 保留画笔现状，默认左下/右上）
@@ -288,7 +308,8 @@ namespace Game.EditorTools
 
             Debug.Log($"[LevelTuning] {spec.sceneName}（{(existed ? "已存在·更新" : "新建")}）{spec.size}×{spec.size}，" +
                       $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，" +
-                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s");
+                      $"预置传送门 {spec.portals.Length} 格，预置反转格 {spec.inverts.Length} 格，" +
+                      $"出生元素 {spec.initialElement}，三星时限 {spec.timeStarSeconds}s");
         }
 
         /// <summary>
@@ -371,6 +392,7 @@ namespace Game.EditorTools
             var protectedCells = new HashSet<Vector2Int>();
             foreach (var coin in spec.coins) protectedCells.Add(coin);
             foreach (var portal in spec.portals) protectedCells.Add(portal);
+            foreach (var invert in spec.inverts) protectedCells.Add(invert);
 
             var random = new System.Random(SeedOf(spec.sceneName));
 
@@ -559,6 +581,92 @@ namespace Game.EditorTools
             }
 
             if (written > 0) Debug.Log($"[LevelTuning] {spec.sceneName} 写入预置传送门 {written} 格（{written / 2} 对）");
+        }
+
+        /// <summary>
+        /// 预置元素反转格：写入 <see cref="BoardTile.effect" /> 并钉死（pinEffect，同传送门——
+        /// 发牌侧的方块可能自带箭头 / 反转效果，不钉死会被数据层效果遮蔽）。先清掉本生成器此前写入的
+        /// 旧反转格再重建，重跑幂等；按用户拍板反转格只允许落在普通路（Land）格上（火 / 冰格 AI 未必
+        /// 踏得进去，反转无从触发），且不与金币 / 血色深渊 / 传送门重合（违规只告警不阻断）。
+        /// </summary>
+        static void ApplyInverts(GameObject board, LevelSpec spec)
+        {
+            var grid = board.GetComponent<BoardGridView>();
+            if (grid == null) return;
+
+            var byCell = new Dictionary<Vector2Int, BoardTile>();
+            foreach (var tile in grid.GetComponentsInChildren<BoardTile>(true))
+                if (!byCell.ContainsKey(tile.Cell)) byCell.Add(tile.Cell, tile);
+
+            TileEffect invert = null;
+            if (spec.inverts != null && spec.inverts.Length > 0)
+            {
+                invert = AssetDatabase.LoadAssetAtPath<TileEffect>(InvertAssetPath);
+                if (invert == null) Debug.LogError($"[LevelTuning] 找不到反转资产 {InvertAssetPath}");
+            }
+
+            // 清场：场景里预置反转格只有本生成器一个来源（方块发牌的反转写在数据层，不落在 BoardTile 上），
+            // 按类型清不会误伤别人配的效果
+            foreach (var tile in byCell.Values)
+            {
+                if (!(tile.PresetEffect is ElementSwitchEffect)) continue;
+
+                tile.SetEffect(null);
+                tile.SetPinned(false);
+                tile.ApplyEffectVisual(null, false, tile.PresetType);
+                EditorUtility.SetDirty(tile);
+            }
+
+            if (invert == null) return;
+
+            var written = 0;
+            foreach (var cell in spec.inverts)
+            {
+                if (!byCell.TryGetValue(cell, out var tile))
+                {
+                    Debug.LogError($"[LevelTuning] {spec.sceneName} 反转格 ({cell.x},{cell.y}) 超出棋盘，跳过");
+                    continue;
+                }
+
+                if (tile.PresetType != TileType.Land)
+                    Debug.LogWarning($"[LevelTuning] {spec.sceneName} 反转格 ({cell.x},{cell.y}) 落在 {tile.PresetType} 上，" +
+                                     "按拍板反转格只应落在普通路格（AI 未必踏得进去）");
+
+                foreach (var coin in spec.coins)
+                    if (coin == cell)
+                        Debug.LogWarning($"[LevelTuning] {spec.sceneName} 反转格 ({cell.x},{cell.y}) 与金币重合");
+
+                foreach (var abyss in spec.abyss)
+                    if (abyss == cell)
+                        Debug.LogWarning($"[LevelTuning] {spec.sceneName} 反转格 ({cell.x},{cell.y}) 与血色深渊重合");
+
+                foreach (var portal in spec.portals)
+                    if (portal == cell)
+                        Debug.LogWarning($"[LevelTuning] {spec.sceneName} 反转格 ({cell.x},{cell.y}) 与传送门重合");
+
+                tile.SetEffect(invert);
+                tile.SetPinned(true);
+                tile.ApplyEffectVisual(invert, false, tile.PresetType);
+                EditorUtility.SetDirty(tile);
+                written++;
+            }
+
+            if (written > 0) Debug.Log($"[LevelTuning] {spec.sceneName} 写入预置反转格 {written} 格");
+        }
+
+        /// <summary>出生元素：写入 BoardRoot 的序列化字段（每关一个值，五关 火 / 冰 / 火 / 冰 / 火 交替）。</summary>
+        static void ApplyInitialElement(GameObject board, LevelSpec spec)
+        {
+            var root = board.GetComponent<BoardRoot>();
+            if (root == null)
+            {
+                Debug.LogError($"[LevelTuning] {spec.sceneName} 的 Board 物体上找不到 BoardRoot，无法写出生元素");
+                return;
+            }
+
+            var so = new SerializedObject(root);
+            so.FindProperty("initialElement").intValue = (int)spec.initialElement;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>金币：按配置的枚数重建（多枚关卡每枚一个子物体）。</summary>
