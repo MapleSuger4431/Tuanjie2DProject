@@ -12,12 +12,14 @@ namespace Game.EditorTools
     /// 设计口径（用户 2026-10-18 拍板）：
     /// <list type="bullet">
     /// <item>地图：10×10 → 15×15 → 15×15 → 20×20 → 20×20；</item>
-    /// <item>三星时限：30/40/50/60/70 秒，每关 +10 秒，超时**不判负**只是拿不到第三颗星；</item>
+    /// <item>三星时限：50/60/70/80/90 秒，每关 +10 秒，超时**不判负**只是拿不到第三颗星；</item>
     /// <item>血色深渊（<see cref="TileType.Mountain" />）：场地预置 0/3/3/3/5 个，方块可刷出 0/0/1/3/3 个（每块最多 1 格）；</item>
     /// <item>金币：1/1/2/2/2 枚，第二颗星要求全部捡到；</item>
     /// <item>属性反转牌：第 4 关才引入（第 1~3 关概率 0，第 4/5 关 0.35 / 0.3）。</item>
-    /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间），可通行格（路/火/冰）≥30%，
-    /// 用户 2026-10-18 拍板「不能一进关全是深渊」；路网含少量火/冰格。</item>
+    /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间）。占比口径（用户 2026-10-18 拍板）：
+    /// 关卡开始前、玩家落块之前，非深渊且非血色深渊的格子（路/火/冰）= 棋盘总格数的 30%，相对零散分布、允许少量聚集；
+    /// 路网超预算时按固定种子随机裁掉多余普通路格（火/冰与金币/传送门所在格保留，见 <see cref="TrimRoadToBudget" />）。
+    /// 下限仍守 2026-10-18 拍板「不能一进关全是深渊」（可通行 &lt;30% 报错）。</item>
     /// </list>
     /// 本脚本只写配置资产与关卡场景的地形 / 金币，不改玩法代码。
     /// </summary>
@@ -33,6 +35,10 @@ namespace Game.EditorTools
 
         /// <summary>关卡自带驱动器的根名：清理残留时必须保住它。</summary>
         const string BoardRuntimeRootName = "[BoardRuntime]";
+
+        /// <summary>初始路网预算：非深渊且非血色深渊的格子（路/火/冰）占棋盘总格数的百分比（用户 2026-10-18 拍板 30%）。
+        /// 用整数参与预算运算——0.30f 有浮点误差（100×0.3f=30.0000012，向上取整会多算 1 格）。</summary>
+        const int WalkablePercent = 30;
 
         /// <summary>单关配置。</summary>
         sealed class LevelSpec
@@ -73,7 +79,7 @@ namespace Game.EditorTools
         {
             new LevelSpec
             {
-                sceneName = "Level_01", size = 10, timeStarSeconds = 30,
+                sceneName = "Level_01", size = 10, timeStarSeconds = 50,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new Vector2Int[] { },
                 coins = new[] { new Vector2Int(3, 6) },
@@ -86,7 +92,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_02", size = 15, timeStarSeconds = 40,
+                sceneName = "Level_02", size = 15, timeStarSeconds = 60,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new[] { new Vector2Int(4, 3), new Vector2Int(10, 7), new Vector2Int(7, 12) },
                 coins = new[] { new Vector2Int(7, 7) },
@@ -99,7 +105,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_03", size = 15, timeStarSeconds = 50,
+                sceneName = "Level_03", size = 15, timeStarSeconds = 70,
                 maxAbyssPerRun = 1, invertChance = 0f,
                 abyss = new[] { new Vector2Int(3, 5), new Vector2Int(9, 9), new Vector2Int(12, 3) },
                 coins = new[] { new Vector2Int(5, 4), new Vector2Int(11, 10) },
@@ -112,7 +118,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_04", size = 20, timeStarSeconds = 60,
+                sceneName = "Level_04", size = 20, timeStarSeconds = 80,
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
@@ -130,7 +136,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_05", size = 20, timeStarSeconds = 70,
+                sceneName = "Level_05", size = 20, timeStarSeconds = 90,
                 maxAbyssPerRun = 3, invertChance = 0.3f,
                 abyss = new[]
                 {
@@ -197,7 +203,7 @@ namespace Game.EditorTools
             EditorUtility.SetDirty(config);
         }
 
-        /// <summary>三星时限：30 / 40 / 50 / 60 / 70 秒。</summary>
+        /// <summary>三星时限：50 / 60 / 70 / 80 / 90 秒。</summary>
         static void TuneStarConfig()
         {
             var config = AssetDatabase.LoadAssetAtPath<LevelStarConfig>(StarConfigPath);
@@ -298,12 +304,15 @@ namespace Game.EditorTools
             painter.Resize(spec.size);
             painter.ClearStates();
 
-            if (spec.road != null && spec.road.Length == spec.size)
+            // 先按预算裁剪路网（超 30% 预算时随机裁普通路格），再写进画笔
+            var roadRows = TrimRoadToBudget(spec);
+
+            if (roadRows != null && roadRows.Length == spec.size)
             {
                 for (var i = 0; i < spec.size; i++)
                 {
                     var y = spec.size - 1 - i;
-                    var row = spec.road[i];
+                    var row = roadRows[i];
 
                     for (var x = 0; x < spec.size && x < row.Length; x++)
                         painter.SetState(x, y, StateOfTerrain(row[x]));
@@ -323,6 +332,96 @@ namespace Game.EditorTools
             grid?.ApplyTileSprites();
 
             CheckTerrain(grid, spec);
+        }
+
+        /// <summary>
+        /// 路网预算裁剪（用户 2026-10-18 拍板）：关卡开始前、玩家落块之前，非深渊且非血色深渊的格子（路/火/冰）
+        /// 应占棋盘总格数的 <see cref="WalkablePercent" />%（30%），相对零散分布、允许少量聚集。手绘路网超预算时，
+        /// 按固定种子随机把多余的**普通路格**改回深渊——火/冰是刻意布置的元素格，金币与传送门必须有落脚格，一律保护；
+        /// 剩余分布仍是原路网的形状，只是密度降到预算内。种子取自场景名，重跑菜单裁出同一条路网（「固定路网便于刷分」）。
+        /// 预算用整数向上取整（15×15 的 67.5 → 68 格 = 30.2%），保证不破「可通行 ≥30%」的既有下限拍板；
+        /// 路网本身低于预算时不补路，原样返回（<see cref="CheckTerrain" /> 会报低于 30%）。
+        /// </summary>
+        static string[] TrimRoadToBudget(LevelSpec spec)
+        {
+            var size = spec.size;
+            if (spec.road == null || spec.road.Length != size) return spec.road;
+
+            // 整数向上取整：(N×30+99)/100，如 100→30、225→68（30.2%，守住「≥30%」下限）、400→120；
+            // 避免 0.30f 浮点误差把 100 格判成 31 格
+            var target = (size * size * WalkablePercent + 99) / 100;
+
+            var cells = new char[size, size];
+            var walkable = 0;
+            for (var y = 0; y < size; y++)
+            {
+                var row = spec.road[size - 1 - y]; // road[0] 是最上面一行（y 最大）
+                for (var x = 0; x < size; x++)
+                {
+                    var c = x < row.Length ? row[x] : '.';
+                    cells[x, y] = c;
+
+                    var state = StateOfTerrain(c);
+                    if (state != (int)TileType.Void && state != (int)TileType.Mountain) walkable++;
+                }
+            }
+
+            if (walkable <= target) return spec.road;
+
+            var protectedCells = new HashSet<Vector2Int>();
+            foreach (var coin in spec.coins) protectedCells.Add(coin);
+            foreach (var portal in spec.portals) protectedCells.Add(portal);
+
+            var random = new System.Random(SeedOf(spec.sceneName));
+
+            // 按层次裁：先裁普通路（L），不够再动火（F）、冰（I）——后两者是刻意布置的元素格，尽量保留
+            foreach (var tier in new[] { 'L', 'F', 'I' })
+            {
+                if (walkable <= target) break;
+
+                var candidates = new List<Vector2Int>();
+                for (var y = 0; y < size; y++)
+                    for (var x = 0; x < size; x++)
+                        if (cells[x, y] == tier && !protectedCells.Contains(new Vector2Int(x, y)))
+                            candidates.Add(new Vector2Int(x, y));
+
+                // Fisher–Yates 洗牌后按序裁剪：随机分布、但结果可复现
+                for (var i = candidates.Count - 1; i > 0; i--)
+                {
+                    var j = random.Next(i + 1);
+                    (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
+                }
+
+                foreach (var cell in candidates)
+                {
+                    if (walkable <= target) break;
+
+                    cells[cell.x, cell.y] = '.';
+                    walkable--;
+                }
+            }
+
+            var result = new string[size];
+            for (var i = 0; i < size; i++)
+            {
+                var y = size - 1 - i;
+                var sb = new System.Text.StringBuilder(size);
+                for (var x = 0; x < size; x++) sb.Append(cells[x, y]);
+                result[i] = sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>由场景名派生的稳定随机种子：同一关卡每次重建都裁出同一条路网。</summary>
+        static int SeedOf(string sceneName)
+        {
+            unchecked
+            {
+                var hash = 17;
+                foreach (var c in sceneName) hash = hash * 31 + c;
+                return hash;
+            }
         }
 
         /// <summary>路网字符 → 格子状态：. 深渊 / L 路 / F 火 / I 冰 / M 血色深渊。</summary>
@@ -364,8 +463,9 @@ namespace Game.EditorTools
             if (total == 0) return;
 
             var pct = walkable * 100f / total;
-            var line = $"[LevelTuning] {spec.sceneName} 可通行 {walkable}/{total} = {pct:F1}%";
+            var line = $"[LevelTuning] {spec.sceneName} 可通行 {walkable}/{total} = {pct:F1}%（目标 {WalkablePercent}%）";
             if (pct < 30f) Debug.LogError(line + "，低于 30% 下限，请补路网");
+            else if (pct > 31f) Debug.LogWarning(line + "，高于 30% 预算，请检查路网裁剪");
             else Debug.Log(line);
 
             foreach (var coin in spec.coins)

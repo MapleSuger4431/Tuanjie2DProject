@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c82a8963184c04e2a955df31ef111cee, type: 3}
   m_Name: LevelStarConfig
   m_EditorClassIdentifier: 
-  defaultTimeStarSeconds: 30
+  defaultTimeStarSeconds: 50
   levels:
   - sceneName: Level_01
-    timeStarSeconds: 30
-  - sceneName: Level_02
-    timeStarSeconds: 40
-  - sceneName: Level_03
     timeStarSeconds: 50
-  - sceneName: Level_04
+  - sceneName: Level_02
     timeStarSeconds: 60
-  - sceneName: Level_05
+  - sceneName: Level_03
     timeStarSeconds: 70
+  - sceneName: Level_04
+    timeStarSeconds: 80
+  - sceneName: Level_05
+    timeStarSeconds: 90
