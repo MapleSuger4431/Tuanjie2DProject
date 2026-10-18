@@ -153,7 +153,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -171,9 +171,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 9}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 4074126}
+  effectRenderer: {fileID: 0}
 --- !u!212 &4074126
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -219,8 +221,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -265,11 +267,15 @@ MonoBehaviour:
   topBar: {fileID: 0}
   bottomBar: {fileID: 0}
   rightPanel: {fileID: 0}
+  boardFrame: {fileID: 0}
   designResolution: {x: 1920, y: 1080}
-  paddingLeft: 100
-  reserveTop: 100
-  reserveBottom: 100
-  reserveRight: 572
+  paddingLeft: 40
+  reserveTop: 56
+  reserveBottom: 48
+  rightPanelRatio: 0.4
+  boardInset: 0
+  frameInnerRatio: 0.8867
+  boardToPanelGap: 0
 --- !u!224 &37447556
 RectTransform:
   m_ObjectHideFlags: 0
@@ -417,7 +423,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -436,8 +442,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 56803488}
+  effectRenderer: {fileID: 0}
 --- !u!212 &56803488
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -483,8 +491,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -523,7 +531,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -541,9 +549,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 4}
-  type: 0
-  effect: 0
+  type: 2
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 80427954}
+  effectRenderer: {fileID: 0}
 --- !u!212 &80427954
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -589,8 +599,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.95, g: 0.42, b: 0.28, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -629,7 +639,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -647,9 +657,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 0}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 83499995}
+  effectRenderer: {fileID: 0}
 --- !u!212 &83499995
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -695,8 +707,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -735,7 +747,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -754,8 +766,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 98761683}
+  effectRenderer: {fileID: 0}
 --- !u!212 &98761683
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -801,8 +815,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -841,7 +855,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -860,8 +874,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 131960682}
+  effectRenderer: {fileID: 0}
 --- !u!212 &131960682
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -907,8 +923,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -947,7 +963,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -966,8 +982,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 172957867}
+  effectRenderer: {fileID: 0}
 --- !u!212 &172957867
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1013,8 +1031,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1072,8 +1090,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 9}
   type: 6
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 186691438}
+  effectRenderer: {fileID: 0}
 --- !u!212 &186691438
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1119,15 +1139,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2c4f7dc1713274509858c2d0bffc9cf8, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: fd2126524feee458db7e421b034dbed5, type: 3}
+  m_Color: {r: 0.98, g: 0.82, b: 0.25, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &209613370
@@ -1159,7 +1179,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1178,8 +1198,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 209613373}
+  effectRenderer: {fileID: 0}
 --- !u!212 &209613373
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1225,8 +1247,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1360,7 +1382,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1378,9 +1400,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 6}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 234761281}
+  effectRenderer: {fileID: 0}
 --- !u!212 &234761281
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1426,8 +1450,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1466,7 +1490,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1484,9 +1508,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 9}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 238830147}
+  effectRenderer: {fileID: 0}
 --- !u!212 &238830147
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1532,8 +1558,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1572,7 +1598,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1591,8 +1617,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 240093287}
+  effectRenderer: {fileID: 0}
 --- !u!212 &240093287
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1638,8 +1666,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1678,7 +1706,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1696,9 +1724,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 1}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 248994980}
+  effectRenderer: {fileID: 0}
 --- !u!212 &248994980
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1744,8 +1774,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1784,7 +1814,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1802,9 +1832,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 9}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 250320403}
+  effectRenderer: {fileID: 0}
 --- !u!212 &250320403
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1850,12 +1882,101 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!1 &270182573
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 270182574}
+  - component: {fileID: 270182575}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: CoinIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &270182574
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270182573}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3, y: 6, z: 0}
+  m_LocalScale: {x: 0.71555555, y: 0.71555555, z: 0.71555555}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1164372158}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &270182575
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270182573}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_virtualGeometry: 0
+  m_ShadingRate: 0
+  m_ForceDisableGRD: 0
+  m_ForceDisableSmallMeshCull: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 2
+  m_Sprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.9, y: 0.94}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1890,7 +2011,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -1909,8 +2030,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 318205537}
+  effectRenderer: {fileID: 0}
 --- !u!212 &318205537
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1956,8 +2079,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2128,7 +2251,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2146,9 +2269,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 4}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 373608023}
+  effectRenderer: {fileID: 0}
 --- !u!212 &373608023
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2194,8 +2319,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2234,7 +2359,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2253,8 +2378,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 380878248}
+  effectRenderer: {fileID: 0}
 --- !u!212 &380878248
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2300,8 +2427,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2340,7 +2467,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2358,9 +2485,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 8}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 420386006}
+  effectRenderer: {fileID: 0}
 --- !u!212 &420386006
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2406,8 +2535,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2446,7 +2575,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2464,9 +2593,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 4}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 460320272}
+  effectRenderer: {fileID: 0}
 --- !u!212 &460320272
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2512,8 +2643,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2552,7 +2683,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2570,9 +2701,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 3}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 460475703}
+  effectRenderer: {fileID: 0}
 --- !u!212 &460475703
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2618,8 +2751,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2658,7 +2791,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2677,8 +2810,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 463773198}
+  effectRenderer: {fileID: 0}
 --- !u!212 &463773198
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2724,8 +2859,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2764,7 +2899,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2783,8 +2918,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 474354900}
+  effectRenderer: {fileID: 0}
 --- !u!212 &474354900
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2830,8 +2967,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2870,7 +3007,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2889,8 +3026,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 485342306}
+  effectRenderer: {fileID: 0}
 --- !u!212 &485342306
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2936,8 +3075,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2976,7 +3115,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -2995,8 +3134,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 524839840}
+  effectRenderer: {fileID: 0}
 --- !u!212 &524839840
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3042,8 +3183,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3082,7 +3223,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3101,8 +3242,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 595747810}
+  effectRenderer: {fileID: 0}
 --- !u!212 &595747810
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3148,8 +3291,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3188,7 +3331,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3206,9 +3349,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 3}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 615693016}
+  effectRenderer: {fileID: 0}
 --- !u!212 &615693016
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3254,8 +3399,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3294,7 +3439,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3313,8 +3458,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 624891842}
+  effectRenderer: {fileID: 0}
 --- !u!212 &624891842
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3360,8 +3507,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3400,7 +3547,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3419,8 +3566,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 644942952}
+  effectRenderer: {fileID: 0}
 --- !u!212 &644942952
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3466,8 +3615,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3506,7 +3655,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3525,8 +3674,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 654645116}
+  effectRenderer: {fileID: 0}
 --- !u!212 &654645116
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3572,8 +3723,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3612,7 +3763,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3631,8 +3782,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 655073096}
+  effectRenderer: {fileID: 0}
 --- !u!212 &655073096
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3678,8 +3831,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3718,7 +3871,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3736,9 +3889,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 8}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 691165915}
+  effectRenderer: {fileID: 0}
 --- !u!212 &691165915
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3784,8 +3939,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3824,7 +3979,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3843,8 +3998,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 728343901}
+  effectRenderer: {fileID: 0}
 --- !u!212 &728343901
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3890,8 +4047,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3930,7 +4087,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -3949,8 +4106,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 742504585}
+  effectRenderer: {fileID: 0}
 --- !u!212 &742504585
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3996,8 +4155,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4036,7 +4195,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4054,9 +4213,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 6}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 773311784}
+  effectRenderer: {fileID: 0}
 --- !u!212 &773311784
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4102,8 +4263,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4142,7 +4303,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4161,8 +4322,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 805610276}
+  effectRenderer: {fileID: 0}
 --- !u!212 &805610276
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4208,8 +4371,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4248,7 +4411,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4266,9 +4429,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 8}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 824469884}
+  effectRenderer: {fileID: 0}
 --- !u!212 &824469884
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4314,8 +4479,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4354,7 +4519,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4373,8 +4538,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 842506271}
+  effectRenderer: {fileID: 0}
 --- !u!212 &842506271
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4420,8 +4587,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4460,7 +4627,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4479,8 +4646,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 894596946}
+  effectRenderer: {fileID: 0}
 --- !u!212 &894596946
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4526,8 +4695,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4566,7 +4735,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4585,8 +4754,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 900752196}
+  effectRenderer: {fileID: 0}
 --- !u!212 &900752196
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4632,8 +4803,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4672,7 +4843,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4691,8 +4862,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 926824353}
+  effectRenderer: {fileID: 0}
 --- !u!212 &926824353
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4738,8 +4911,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4778,7 +4951,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4797,8 +4970,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 937736408}
+  effectRenderer: {fileID: 0}
 --- !u!212 &937736408
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4844,8 +5019,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4884,7 +5059,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -4903,8 +5078,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 984523173}
+  effectRenderer: {fileID: 0}
 --- !u!212 &984523173
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4950,8 +5127,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4990,7 +5167,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5008,9 +5185,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 6}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 996338299}
+  effectRenderer: {fileID: 0}
 --- !u!212 &996338299
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5056,8 +5235,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5096,7 +5275,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5115,8 +5294,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1049078488}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1049078488
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5162,8 +5343,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5202,7 +5383,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5220,9 +5401,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 9}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1065875986}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1065875986
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5268,8 +5451,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5308,7 +5491,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5326,9 +5509,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 2}
-  type: 0
-  effect: 0
+  type: 3
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1124865298}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1124865298
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5374,8 +5559,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.36, g: 0.78, b: 0.95, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5414,7 +5599,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5433,8 +5618,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1127419062}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1127419062
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5480,8 +5667,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5520,7 +5707,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5539,8 +5726,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1160156587}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1160156587
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5586,8 +5775,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5597,6 +5786,57 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1164372157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 1164372158}
+  - component: {fileID: 1164372159}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: Coin_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1164372158
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164372157}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 270182574}
+  m_Father: {fileID: 1376239727}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1164372159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164372157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e53a1647416414179b96602b73021240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cell: {x: 3, y: 6}
+  coinSprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  sizeInCells: 0.7
+  collectDuration: 0.4
+  riseInCells: 0.8
 --- !u!1 &1188422279
 GameObject:
   m_ObjectHideFlags: 0
@@ -5626,7 +5866,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5645,8 +5885,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1188422282}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1188422282
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5692,8 +5934,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5732,7 +5974,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5750,9 +5992,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 2}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1196068304}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1196068304
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5798,8 +6042,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5838,7 +6082,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5857,8 +6101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1216078981}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1216078981
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5904,8 +6150,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5944,7 +6190,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -5963,8 +6209,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1216391826}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1216391826
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6010,8 +6258,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6050,7 +6298,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6068,9 +6316,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 7}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 11400000, guid: 6ac5bb2f951554289931eddbeff076f6, type: 2}
+  pinEffect: 1
   tileRenderer: {fileID: 1245853582}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1245853582
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6116,8 +6366,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6156,7 +6406,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6175,8 +6425,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1255464080}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1255464080
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6222,8 +6474,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6262,7 +6514,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6281,8 +6533,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1267696332}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1267696332
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6328,8 +6582,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6387,8 +6641,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 0}
   type: 5
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1273352282}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1273352282
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6434,15 +6690,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 81666317240f04df691da0897209a167, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: fd2126524feee458db7e421b034dbed5, type: 3}
+  m_Color: {r: 0.35, g: 0.85, b: 0.45, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1278503893
@@ -6474,7 +6730,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6492,9 +6748,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 2}
-  type: 0
-  effect: 0
+  type: 3
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1278503896}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1278503896
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6540,8 +6798,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.36, g: 0.78, b: 0.95, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6580,7 +6838,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6598,9 +6856,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 5}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1287851261}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1287851261
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6646,8 +6906,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6686,7 +6946,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6705,8 +6965,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1320428232}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1320428232
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6752,8 +7014,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6792,7 +7054,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6810,9 +7072,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 4}
-  type: 0
-  effect: 0
+  type: 2
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1346065171}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1346065171
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6858,8 +7122,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.95, g: 0.42, b: 0.28, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6898,7 +7162,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -6917,8 +7181,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1369264430}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1369264430
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6964,8 +7230,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6991,6 +7257,7 @@ GameObject:
   - component: {fileID: 1376239729}
   - component: {fileID: 1376239730}
   - component: {fileID: 1376239731}
+  - component: {fileID: 1376239732}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Board
@@ -7028,6 +7295,8 @@ MonoBehaviour:
   sortingOrder: 10
   ghostAlpha: 0.6
   invalidColor: {r: 1, g: 0.25, b: 0.25, a: 0.6}
+  outlineColor: {r: 1, g: 0.8, b: 0.45, a: 0.95}
+  outlineWidth: 0.1
 --- !u!114 &1376239726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7068,6 +7337,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 347517573}
+  - {fileID: 1164372158}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1376239728
@@ -7086,7 +7356,7 @@ MonoBehaviour:
   layout: {fileID: 37447552}
   maxZoom: 3
   minVisibleCells: 10
-  boardMarginPixels: 20
+  boardMarginPixels: 6
   zoomStep: 1.1
 --- !u!114 &1376239729
 MonoBehaviour:
@@ -7105,8 +7375,13 @@ MonoBehaviour:
   aiSprite: {fileID: 0}
   aiColor: {r: 1, g: 0.31, b: 0.85, a: 1}
   aiScale: 0.72
-  actorHeightInCells: 1.6
+  actorHeightInCells: 1.12
+  actorOffsetInCells: 0.2
   sortingOrder: 5
+  shieldSprite: {fileID: 21300000, guid: d1f06830fe8d74eb3ab411f592f39874, type: 3}
+  shieldColorFire: {r: 0.98, g: 0.47, b: 0.28, a: 0.55}
+  shieldColorIce: {r: 0.42, g: 0.76, b: 0.98, a: 0.55}
+  shieldHeightRatio: 1.15
 --- !u!114 &1376239730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7133,7 +7408,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridView: {fileID: 1376239726}
   size: 10
-  states: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  states: 00000000010000000100000001000000010000000100000000000000000000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000300000003000000000000000000000000000000010000000000000001000000010000000000000000000000000000000000000000000000000000000100000000000000000000000100000000000000000000000200000002000000000000000000000001000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000001000000010000000100000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000001000000000000000000000000000000010000000100000001000000000000000000000000000000010000000000000000000000000000000000000000000000010000000100000001000000010000000100000000000000
+--- !u!114 &1376239732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1376239723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c984928b723774d8ab96a4bf2db6e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridView: {fileID: 0}
+  initialElement: 0
 --- !u!1 &1383366053
 GameObject:
   m_ObjectHideFlags: 0
@@ -7163,7 +7452,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7181,9 +7470,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 9}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1383366056}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1383366056
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7229,8 +7520,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7269,7 +7560,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7288,8 +7579,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1407118819}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1407118819
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7335,8 +7628,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7375,7 +7668,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7393,9 +7686,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 1}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1431995440}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1431995440
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7441,8 +7736,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7481,7 +7776,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7500,8 +7795,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1440889110}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1440889110
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7547,8 +7844,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7587,7 +7884,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7606,8 +7903,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1448816767}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1448816767
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7653,8 +7952,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7693,7 +7992,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7712,8 +8011,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1459573726}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1459573726
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7759,8 +8060,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7799,7 +8100,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7817,9 +8118,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 7}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1487473426}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1487473426
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7865,8 +8168,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7905,7 +8208,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -7924,8 +8227,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1499869289}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1499869289
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7971,8 +8276,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8011,7 +8316,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8029,9 +8334,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 0}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1504013759}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1504013759
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8077,8 +8384,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8117,7 +8424,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8136,8 +8443,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1511521071}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1511521071
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8183,8 +8492,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8223,7 +8532,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8242,8 +8551,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1522117557}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1522117557
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8289,8 +8600,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8329,7 +8640,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8347,9 +8658,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 5}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1538312200}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1538312200
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8395,8 +8708,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8435,7 +8748,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8454,8 +8767,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1548141742}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1548141742
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8501,8 +8816,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8541,7 +8856,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8559,9 +8874,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 0}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 11400000, guid: 6ac5bb2f951554289931eddbeff076f6, type: 2}
+  pinEffect: 1
   tileRenderer: {fileID: 1588942317}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1588942317
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8607,8 +8924,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8647,7 +8964,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8665,9 +8982,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 8}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1631307629}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1631307629
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8713,8 +9032,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8753,7 +9072,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8772,8 +9091,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1696222382}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1696222382
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8819,8 +9140,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8859,7 +9180,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8878,8 +9199,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1712312370}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1712312370
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8925,8 +9248,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -8965,7 +9288,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -8984,8 +9307,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1738118600}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1738118600
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9031,8 +9356,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9071,7 +9396,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9090,8 +9415,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1792081044}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1792081044
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9137,8 +9464,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9177,7 +9504,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9196,8 +9523,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1795648256}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1795648256
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9243,8 +9572,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9283,7 +9612,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9302,8 +9631,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1802513780}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1802513780
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9349,8 +9680,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9389,7 +9720,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9407,9 +9738,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 1}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1853195460}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1853195460
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9455,8 +9788,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9495,7 +9828,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9514,8 +9847,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1855324026}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1855324026
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9561,8 +9896,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9601,7 +9936,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9619,9 +9954,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 0}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1879664768}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1879664768
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9667,8 +10004,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9707,7 +10044,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9725,9 +10062,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 0}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1880360107}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1880360107
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9773,8 +10112,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9813,7 +10152,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9832,8 +10171,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1896594673}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1896594673
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9879,8 +10220,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -9919,7 +10260,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -9938,8 +10279,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1929869512}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1929869512
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9985,8 +10328,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10025,7 +10368,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10043,9 +10386,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 6}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1973082641}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1973082641
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10091,8 +10436,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10131,7 +10476,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10150,8 +10495,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1974053878}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1974053878
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10197,8 +10544,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10237,7 +10584,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10256,8 +10603,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2012744009}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2012744009
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10303,8 +10652,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10343,7 +10692,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10361,9 +10710,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 3}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2029662935}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2029662935
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10409,8 +10760,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10449,7 +10800,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10468,8 +10819,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2045599326}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2045599326
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10515,8 +10868,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10555,7 +10908,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10574,8 +10927,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2059303438}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2059303438
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10621,8 +10976,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10661,7 +11016,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10680,8 +11035,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2060311572}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2060311572
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10727,8 +11084,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10767,7 +11124,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10786,8 +11143,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2075389283}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2075389283
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10833,8 +11192,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10873,7 +11232,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10891,9 +11250,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 5}
-  type: 0
-  effect: 0
+  type: 1
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2088191912}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2088191912
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10939,8 +11300,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.86, g: 0.87, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -10979,7 +11340,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -10998,8 +11359,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2110236095}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2110236095
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11045,8 +11408,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -11085,7 +11448,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -11104,8 +11467,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2136252282}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2136252282
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11151,8 +11516,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -11191,7 +11556,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.29206347, y: 0.29206347, z: 0.29206347}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347517573}
@@ -11210,8 +11575,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2141559807}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2141559807
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11257,8 +11624,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d397a65c6eb6543429338d822c09fc9c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c0447e46828cd40dc9949b24257cedc9, type: 3}
+  m_Color: {r: 0.16, g: 0.15, b: 0.22, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

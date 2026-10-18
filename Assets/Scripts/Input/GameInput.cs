@@ -31,7 +31,7 @@ namespace Game.Input
         public GameInputActions.PlayerActions Player => m_Actions.Player;
         public GameInputActions.UIActions UI => m_Actions.UI;
 
-        /// <summary>棋盘鼠标控制表：Point 位置 / Place 左键放置 / Pan 右键平移 / Zoom 滚轮缩放 / ResetView 中键归位。</summary>
+        /// <summary>棋盘控制表：Point 位置 / Place 左键放置 / Pan 右键平移 / Zoom 滚轮缩放 / ResetView 中键归位 / Rotate R 键旋转当前块。</summary>
         public GameInputActions.BoardActions Board => m_Actions.Board;
 
         public Vector2 Move => m_Actions.Player.Move.ReadValue<Vector2>();

@@ -624,6 +624,15 @@ namespace Game.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""b3f7d2c5-9e41-4a08-86d7-2c5f0a71e934"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -681,6 +690,17 @@ namespace Game.Input
                     ""action"": ""ResetView"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5c8a1e67-3d24-4b9f-9a13-7e06d84f2b51"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -705,6 +725,7 @@ namespace Game.Input
             m_Board_Pan = m_Board.FindAction("Pan", throwIfNotFound: true);
             m_Board_Zoom = m_Board.FindAction("Zoom", throwIfNotFound: true);
             m_Board_ResetView = m_Board.FindAction("ResetView", throwIfNotFound: true);
+            m_Board_Rotate = m_Board.FindAction("Rotate", throwIfNotFound: true);
         }
 
         ~@GameInputActions()
@@ -1039,6 +1060,7 @@ namespace Game.Input
         private readonly InputAction m_Board_Pan;
         private readonly InputAction m_Board_Zoom;
         private readonly InputAction m_Board_ResetView;
+        private readonly InputAction m_Board_Rotate;
         /// <summary>
         /// Provides access to input actions defined in input action map "Board".
         /// </summary>
@@ -1070,6 +1092,10 @@ namespace Game.Input
             /// Provides access to the underlying input action "Board/ResetView".
             /// </summary>
             public InputAction @ResetView => m_Wrapper.m_Board_ResetView;
+            /// <summary>
+            /// Provides access to the underlying input action "Board/Rotate".
+            /// </summary>
+            public InputAction @Rotate => m_Wrapper.m_Board_Rotate;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1111,6 +1137,9 @@ namespace Game.Input
                 @ResetView.started += instance.OnResetView;
                 @ResetView.performed += instance.OnResetView;
                 @ResetView.canceled += instance.OnResetView;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
             }
 
             /// <summary>
@@ -1137,6 +1166,9 @@ namespace Game.Input
                 @ResetView.started -= instance.OnResetView;
                 @ResetView.performed -= instance.OnResetView;
                 @ResetView.canceled -= instance.OnResetView;
+                @Rotate.started -= instance.OnRotate;
+                @Rotate.performed -= instance.OnRotate;
+                @Rotate.canceled -= instance.OnRotate;
             }
 
             /// <summary>
@@ -1277,6 +1309,13 @@ namespace Game.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnResetView(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Rotate" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRotate(InputAction.CallbackContext context);
         }
     }
 }

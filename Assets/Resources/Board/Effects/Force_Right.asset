@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05905a8d9beb04518b1eec5b8c6a3915, type: 3}
+  m_Name: Force_Right
+  m_EditorClassIdentifier: 
+  displayName: "\u5F3A\u5236\u8F6C\u5411\xB7\u53F3"
+  icon: {fileID: 21300000, guid: ae93c59f713734dcb99594e7fc2e1956, type: 3}
+  boardIcon: {fileID: 3934102248948166676, guid: cafb89a4399ab4d9f85c2313576439b2, type: 3}
+  direction: 0

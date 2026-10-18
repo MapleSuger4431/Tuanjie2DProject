@@ -12,8 +12,6 @@ namespace Game.Board
             RegisterModel(new BoardModel());
             RegisterModel(new PieceModel());
             RegisterModel(new BoardTimeModel());
-            // 偏好顺序先于运行模型注册：BoardRunModel 初始化时要取它
-            RegisterModel(new AiPreferenceModel());
             RegisterModel(new BoardRunModel());
         }
     }

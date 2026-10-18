@@ -49,7 +49,7 @@ namespace Game.Model
         /// <summary>已通关。</summary>
         public bool HasRecord(int levelId) => _progress.HasRecord(levelId);
 
-        /// <summary>星级（0~1）：策划案三星制目前只落地「到达」，通关即 1 星。</summary>
+        /// <summary>星级（0~3）：三星制口径见 LevelProgressModel.GetBestStars——通关 1 星、捡金币 +1 星、金币且时限内通关 +1 星。</summary>
         public int GetBestStars(int levelId) => _progress.GetBestStars(levelId);
 
         /// <summary>最短用时（秒）；-1 表示从未通关。</summary>

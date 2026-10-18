@@ -1,3 +1,4 @@
+using System.Collections;
 using Game.Core;
 using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
@@ -47,6 +48,25 @@ namespace Game.Board
         [SerializeField]
         TMP_Text backToSelectButtonLabel;
 
+        [Header("弹出动画")]
+        [Tooltip("羊皮纸卡片：弹入动画的缩放目标")]
+        [SerializeField]
+        RectTransform cardRoot;
+
+        [Tooltip("卡片的 CanvasGroup：弹入时整卡淡入")]
+        [SerializeField]
+        CanvasGroup cardGroup;
+
+        [Tooltip("弹入时长（秒）")]
+        [SerializeField, Min(0.01f)]
+        float popInDuration = 0.2f;
+
+        [Tooltip("弹入起始缩放（相对 1）")]
+        [SerializeField, Range(0.5f, 1f)]
+        float popInFromScale = 0.85f;
+
+        Coroutine _popIn;
+
         /// <summary>本面板的标题本地化键（子类给出）。</summary>
         protected abstract Localization.Key TitleKey { get; }
 
@@ -84,6 +104,8 @@ namespace Game.Board
 
             // 成绩区在每次打开时取最新值（同一实例复用时秒表可能已重置）
             ApplyResultText();
+
+            PlayPopIn();
         }
 
         /// <summary>按当前语言刷新标题、按钮与成绩区；子类覆写<see cref="ApplyResultText" />补自己的成绩行。</summary>
@@ -126,6 +148,45 @@ namespace Game.Board
         {
             SceneTransition.LoadSingle(ScenePaths.LevelSelect,
                 onFailed: () => Debug.LogError($"[LevelResult] 返回选关失败：{ScenePaths.LevelSelect}"));
+        }
+
+        /// <summary>
+        /// 轻量弹入（用户拍板）：卡片从 <see cref="popInFromScale" /> 缩放 + 全透明弹到原位，
+        /// back ease-out 结尾轻微过冲再回落；走未缩放时间，暂停 / 慢放时节奏与真实秒数一致。
+        /// 星星逐颗点亮演出与此并行（星星在卡片内部，跟着卡片一起缩放）。
+        /// </summary>
+        void PlayPopIn()
+        {
+            if (cardRoot == null) return;
+
+            if (_popIn != null) StopCoroutine(_popIn);
+            _popIn = StartCoroutine(PopIn());
+        }
+
+        IEnumerator PopIn()
+        {
+            var start = Vector3.one * popInFromScale;
+            cardRoot.localScale = start;
+            if (cardGroup != null) cardGroup.alpha = 0f;
+
+            // back ease-out 标准系数：t=0 起于 0、t=1 归 1、中途过冲约 10%
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1f;
+
+            var time = 0f;
+            while (time < popInDuration)
+            {
+                time += Time.unscaledDeltaTime;
+                var t = Mathf.Clamp01(time / popInDuration);
+                var eased = 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+                cardRoot.localScale = Vector3.LerpUnclamped(start, Vector3.one, eased);
+                if (cardGroup != null) cardGroup.alpha = t;
+                yield return null;
+            }
+
+            cardRoot.localScale = Vector3.one;
+            if (cardGroup != null) cardGroup.alpha = 1f;
+            _popIn = null;
         }
     }
 }

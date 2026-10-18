@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Core;
 using Game.Service;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
@@ -10,9 +11,9 @@ namespace Game.Board
 {
     /// <summary>
     /// 棋盘运行时常驻面板（挂 UIRoot 的层画布下，自身不带 Canvas）：
-    /// 上下白板占位 + 右侧操作面板，面板上方预告下一块。全部数据来自 Model 的 ObservableValue。
-    /// 右侧中下部是运行控制区：用时 / 状态 / Play 按钮 / 方向优先级排序列表。
-    /// 优先级列表在铺路阶段可自由调序（↑↓ 或点选置顶），点 Play 后锁定为只读展示。
+    /// 上下深紫占位条 + 右侧操作面板（角色状态卡 / 下一块预告 / 已用与用时 / Play 出发按钮），结构由
+    /// <c>Assets/Editor/BoardRuntimePanelBuilder.cs</c> 重建。全部数据来自 Model 的 ObservableValue。
+    /// AI 没有方向偏好可调——它出生朝固定方向一路直行，转向全靠铺在格子上的箭头。
     /// </summary>
     public sealed class BoardRuntimePanel : AesirBasePanelViewController<BoardContext>
     {
@@ -22,25 +23,45 @@ namespace Game.Board
         [SerializeField] NextPieceView nextPieceView;
         [SerializeField] Text placedCountText;
         [SerializeField] Text timeText;
+
+        [Tooltip("右侧面板「第三星目标时间」行：本关时限（全局默认 30 秒 / 逐关可覆盖），运行时按本地化表刷新")]
+        [SerializeField] Text goalText;
+
         [SerializeField] Text hintText;
 
+        [Header("角色状态卡（元素属性 + 可走地形说明）")]
+        [Tooltip("「角色状态」区块标题文本；运行时按本地化表刷新")]
+        [SerializeField] Text statusTitleText;
+
+        [Tooltip("角色名文本；运行时按本地化表刷新")]
+        [SerializeField] Text statusNameText;
+
+        [Tooltip("可走地形行：可走：陆地 / 火 / 冰（由 TileTypeInfo.IsPassable 动态拼出）")]
+        [SerializeField] Text statusWalkText;
+
+        [Tooltip("「下一块」区块标题文本")]
+        [SerializeField] Text nextTitleText;
+
+        [Tooltip("元素图例的名称标签，顺序固定 陆地 / 火 / 冰（与生成器里三组小图标对齐）")]
+        [SerializeField] Text[] elementLegendLabels;
+
+        [Header("棋盘外框")]
+        [Tooltip("包裹棋盘的装饰外框；未回填时现场创建一个。位置由 BoardScreenLayout 按视口矩形驱动")]
+        [SerializeField] Image boardFrame;
+
+        [Tooltip("外框贴图（1024×1024 的镂空边框，中间透明）")]
+        [SerializeField] Sprite boardFrameSprite;
+
+        /// <summary>现场创建外框时用的节点名。</summary>
+        const string BoardFrameName = "BoardFrame";
+
         [Header("运行控制")]
-        [Tooltip("铺路完成按钮；未回填时自动在 Play 按钮左侧创建（两者并排等分原 Play 按钮的宽度）")]
-        [SerializeField] Button finishBuildingButton;
-        [SerializeField] Text finishBuildingButtonLabel;
         [SerializeField] Button playButton;
         [SerializeField] Text playButtonLabel;
         [SerializeField] Text aiStateText;
-        [SerializeField] RectTransform priorityRoot;
-
-        [Header("优先级行配色")]
-        [SerializeField] Color rowColor = new Color(0.88f, 0.88f, 0.93f, 1f);
-        [SerializeField] Color rowLockedColor = new Color(0.80f, 0.80f, 0.86f, 1f);
-        [SerializeField] Color rowTextColor = new Color(0.13f, 0.12f, 0.18f, 1f);
+        [Header("现场创建按钮的配色")]
         [SerializeField] Color buttonColor = new Color(0.98f, 0.98f, 1f, 1f);
-
-        [Tooltip("铺路完成按钮底色（现场创建时才用；与绿色 Play 区分，避免看不出是按钮）")]
-        [SerializeField] Color finishButtonColor = new Color(0.98f, 0.83f, 0.42f, 1f);
+        [SerializeField] Color buttonTextColor = new Color(0.13f, 0.12f, 0.18f, 1f);
 
         [Header("关卡出口")]
         [Tooltip("返回选关按钮；未回填时自动在右上角创建")]
@@ -57,27 +78,20 @@ namespace Game.Board
         const float BackButtonWidth = 220f;
         const float RestartButtonWidth = 200f;
 
-        /// <summary>运行控制区两个按钮并排：等分原 Play 按钮的 400 宽，整体仍居中于右侧面板。</summary>
-        const float RunButtonWidth = 194f;
-        const float RunButtonHeight = 80f;
-        const float RunButtonGap = 12f;
-
         PieceModel _piece;
         BoardModel _board;
         BoardTimeModel _time;
         BoardRunModel _run;
-        AiPreferenceModel _preference;
 
         /// <summary>结算事件是否已经挂过：同一面板实例被反复 Show 时避免重复订阅导致弹出多个结算面板。</summary>
         bool _resultHooked;
-
-        /// <summary>优先级列表的四行，创建一次后反复复用（避免重建堆积）。</summary>
-        readonly List<PriorityRow> _rows = new List<PriorityRow>();
 
         protected override void OnInit()
         {
             GameFonts.Apply(transform);
             StretchToScreen();
+
+            EnsureBoardFrame();
 
             EnsureBackButton();
             if (backButton != null)
@@ -93,12 +107,7 @@ namespace Game.Board
                 restartButton.onClick.AddListener(OnRestartClicked);
             }
 
-            EnsureFinishBuildingButton();
-            if (finishBuildingButton != null)
-            {
-                finishBuildingButton.onClick.RemoveAllListeners();
-                finishBuildingButton.onClick.AddListener(OnFinishBuildingClicked);
-            }
+            EnsureHintText();
 
             Localization.OnLanguageChanged += ApplyLocalization;
             ApplyLocalization();
@@ -196,55 +205,67 @@ namespace Game.Board
             GameFonts.Apply(restartButton.transform);
         }
 
-        /// <summary>铺路完成：停表并锁定放置，把方向优先级的调整权交给玩家（这段时间不计用时）。</summary>
-        void OnFinishBuildingClicked() => _run?.CompleteBuilding();
+        /// <summary>
+        /// 棋盘外框：一张中间镂空的边框图，由 BoardScreenLayout 铺满棋盘视口矩形，把整块棋盘围起来。
+        /// 两个必须：raycastTarget 关掉（它盖在棋盘上方，参与射线就会把放置与平移全挡掉），
+        /// 层级压到最底（右侧操作区与上下白板都在它之上，外框不会盖住它们）。
+        /// </summary>
+        void EnsureBoardFrame()
+        {
+            if (boardFrame == null)
+            {
+                var existing = transform.Find(BoardFrameName);
+                if (existing != null) boardFrame = existing.GetComponent<Image>();
+            }
+
+            if (boardFrame == null)
+            {
+                var frameObject = new GameObject(BoardFrameName, typeof(RectTransform));
+                var rect = frameObject.transform as RectTransform;
+                rect.SetParent(transform, false);
+                rect.localScale = Vector3.one;
+                boardFrame = frameObject.AddComponent<Image>();
+                rect.SetAsFirstSibling();
+            }
+
+            boardFrame.raycastTarget = false;
+            boardFrame.preserveAspect = true;
+            boardFrame.color = Color.white;
+            if (boardFrame.sprite == null && boardFrameSprite != null) boardFrame.sprite = boardFrameSprite;
+        }
 
         /// <summary>
-        /// 铺路完成按钮缺失时现场创建：紧挨 Play 按钮左侧并排，两者等分原 Play 按钮占的那段宽度、整体仍居中。
-        /// 必须在 playButton 已解析之后调用——要读它的父级与纵向位置，并把它让到右半边。
+        /// 操作提示行挂在**底部白板**里（下半部分那条空白），显示放置 / 旋转 / 缩放 / 平移。
+        /// 预制体没回填时在 BottomBar 下现场创建一条；已有节点则只补字体，不覆写它自己的位置。
         /// </summary>
-        void EnsureFinishBuildingButton()
+        void EnsureHintText()
         {
-            if (playButton == null) return;
-
-            var parent = playButton.transform.parent;
+            var parent = bottomBar != null ? bottomBar : rightPanel;
             if (parent == null) return;
 
-            const string name = "FinishBuilding";
+            const string name = "HintText";
             var existing = parent.Find(name);
-            var positionedByCaller = existing != null;
-            if (finishBuildingButton == null)
+            if (hintText == null)
             {
-                finishBuildingButton = existing != null
-                    ? existing.GetComponent<Button>()
-                    : CreateButton(name, (RectTransform)parent, string.Empty, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
-                positionedByCaller = false;
+                hintText = existing != null
+                    ? existing.GetComponent<Text>()
+                    : CreateText(name, parent, 34, buttonTextColor, TextAnchor.MiddleCenter);
             }
 
-            if (finishBuildingButton == null) return;
+            if (hintText == null) return;
 
-            if (!positionedByCaller)
+            if (existing == null)
             {
-                var playRect = (RectTransform)playButton.transform;
-                var y = playRect.anchoredPosition.y;
-                var offset = (RunButtonWidth + RunButtonGap) * 0.5f;
-
-                var rect = (RectTransform)finishBuildingButton.transform;
-                rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 1f);
-                rect.sizeDelta = new Vector2(RunButtonWidth, RunButtonHeight);
-                rect.anchoredPosition = new Vector2(-offset, y);
-
-                // Play 让到右半边，与铺路完成同宽同高
-                playRect.sizeDelta = new Vector2(RunButtonWidth, RunButtonHeight);
-                playRect.anchoredPosition = new Vector2(offset, y);
-
-                var image = finishBuildingButton.GetComponent<Image>();
-                if (image != null) image.color = finishButtonColor;
+                // 现场创建的才铺满底部白板：预制体里配好的位置不在这里动
+                var rect = hintText.rectTransform;
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = new Vector2(-48f, 0f);
             }
 
-            if (finishBuildingButtonLabel == null)
-                finishBuildingButtonLabel = finishBuildingButton.GetComponentInChildren<Text>();
-            GameFonts.Apply(finishBuildingButton.transform);
+            GameFonts.Apply(hintText.transform);
         }
 
         void ApplyLocalization()
@@ -253,9 +274,92 @@ namespace Game.Board
                 backButtonLabel.text = Localization.Get(Localization.Key.LevelBackToSelect);
             if (restartButtonLabel != null)
                 restartButtonLabel.text = Localization.Get(Localization.Key.LevelRestart);
-            if (finishBuildingButtonLabel != null)
-                finishBuildingButtonLabel.text = Localization.Get(Localization.Key.LevelFinishBuilding);
+            if (hintText != null)
+                hintText.text = Localization.Get(Localization.Key.LevelBoardHint);
+            if (playButtonLabel != null)
+                playButtonLabel.text = Localization.Get(Localization.Key.LevelPlay);
+            if (goalText != null)
+                goalText.text = Localization.Get(Localization.Key.LevelStarGoal, FormatStarGoalTime());
+            if (nextTitleText != null)
+                nextTitleText.text = Localization.Get(Localization.Key.LevelNextPiece);
+            if (statusTitleText != null)
+                statusTitleText.text = Localization.Get(Localization.Key.LevelStatusCharacter);
+            if (statusNameText != null)
+                statusNameText.text = Localization.Get(Localization.Key.LevelCharacterName);
+
+            if (statusWalkText != null)
+                statusWalkText.text = Localization.Get(Localization.Key.LevelWalkable, WalkableTerrainNames(CurrentElement()));
+
+            if (elementLegendLabels != null && elementLegendLabels.Length >= 3)
+            {
+                elementLegendLabels[0].text = Localization.Get(Localization.Key.TileNameLand);
+                elementLegendLabels[1].text = Localization.Get(Localization.Key.TileNameFire);
+                elementLegendLabels[2].text = Localization.Get(Localization.Key.TileNameIce);
+            }
         }
+
+        /// <summary>
+        /// 角色状态卡的元素三元组：类型与本地化键配对，能否可走以 <see cref="ElementStateInfo.CanWalkOn" /> 为真源，
+        /// 属性反转 / 重开时「可走：…」行自动跟随。
+        /// </summary>
+        static readonly (TileType type, Localization.Key key)[] WalkableElements =
+        {
+            (TileType.Land, Localization.Key.TileNameLand),
+            (TileType.Fire, Localization.Key.TileNameFire),
+            (TileType.Ice, Localization.Key.TileNameIce),
+        };
+
+        /// <summary>AI 当前元素属性；面板初始化早于 Model 挂接时回落火人。</summary>
+        ElementState CurrentElement()
+        {
+            var run = _run != null ? _run : this.GetModel<BoardRunModel>();
+            return run != null ? run.Element.Value : ElementState.Fire;
+        }
+
+        /// <summary>拼「可走」列表：陆地恒可走，火格需火属性、冰格需冰属性（06 篇 RB-09 的 HUD 呈现）。</summary>
+        string WalkableTerrainNames(ElementState element)
+        {
+            var names = new List<string>(WalkableElements.Length);
+            foreach (var entry in WalkableElements)
+            {
+                if (!ElementStateInfo.CanWalkOn(element, entry.type)) continue;
+
+                names.Add(Localization.Get(entry.key));
+            }
+
+            return string.Join(" / ", names);
+        }
+
+        /// <summary>
+        /// 第三星的目标时间（mm:ss.d，与秒表同一口径）：从 <see cref="LevelStarConfig" /> 读本关时限——
+        /// 全局默认 30 秒，逐关可在配置资产里覆盖。没配（&lt;=0）时显示占位横杠。
+        /// </summary>
+        string FormatStarGoalTime()
+        {
+            var config = LevelStarConfig.Asset;
+            var limit = config != null ? config.TimeLimitFor(SceneManager.GetActiveScene().name) : 0f;
+            if (limit <= 0f) return "--";
+
+            var minutes = Mathf.FloorToInt(limit / 60f);
+            var seconds = limit - minutes * 60f;
+            return $"{minutes:00}:{seconds:00.0}";
+        }
+
+        /// <summary>元素属性变化（出生 / 反转 / 重开）：刷新「可走」行与 AI 状态行里的属性标识。</summary>
+        void OnElementChanged()
+        {
+            ApplyLocalization();
+            OnRunStateChanged();
+
+            // 元素反转只在实际行进中播报：初始化与重开复位同样会触发本回调，那两种不是「反转」
+            if (_run == null || !_run.IsRunning || _run.StepCount.Value <= 0) return;
+
+            BoardTip.Send(Localization.Key.TipElementSwitched, Localization.Key.TipElementSwitchedBody,
+                ElementStateInfo.DisplayName(_run.Element.Value));
+        }
+
+        /// <summary>秒表当前文本（小窗与结算面板共用同一口径）。</summary>
+        string ElapsedText() => _time != null ? _time.FormatElapsed() : "--:--.-";
 
         protected override void OnShow(object payload)
         {
@@ -267,13 +371,13 @@ namespace Game.Board
             {
                 layout.RegisterCanvas(GetComponentInParent<Canvas>());
                 layout.RegisterBars(topBar, bottomBar, rightPanel);
+                layout.RegisterFrame(boardFrame != null ? (RectTransform)boardFrame.transform : null);
             }
 
             _piece = this.GetModel<PieceModel>();
             _board = this.GetModel<BoardModel>();
             _time = this.GetModel<BoardTimeModel>();
             _run = this.GetModel<BoardRunModel>();
-            _preference = this.GetModel<AiPreferenceModel>();
 
             if (playButton != null)
             {
@@ -298,6 +402,8 @@ namespace Game.Board
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             _run.StepCount.AddListenerAndInvoke(_ => OnRunStateChanged())
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
+            _run.Element.AddListenerAndInvoke(_ => OnElementChanged())
+                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             // 只挂一次：本面板实例在同一关卡内可能被反复 Show，重复订阅会让一次结算弹出多个面板
             if (!_resultHooked)
             {
@@ -306,13 +412,6 @@ namespace Game.Board
                     .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             }
 
-            _preference.OrderChanged.AddListener(RebuildPriorityRows)
-                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
-            _preference.Locked.AddListenerAndInvoke(_ => RebuildPriorityRows())
-                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
-
-            if (hintText != null)
-                hintText.text = "左键放置当前方块　滚轮缩放棋盘　右键平移";
         }
 
         void OnPlayClicked()
@@ -343,6 +442,11 @@ namespace Game.Board
             {
                 // 通关即写记录（最短用时在此刷新并落存档），破纪录与否传给结算面板展示
                 var isNewRecord = RecordClearForCurrentLevel();
+
+                // 破纪录同时走右下角小窗：结算面板盖住屏幕中央，小窗在 Top 层仍能看见
+                if (isNewRecord)
+                    BoardTip.Send(Localization.Key.TipAchievement, Localization.Key.TipNewRecord, ElapsedText());
+
                 UIModule.Show<LevelClearPanel>((object)isNewRecord, UIPaths.LevelClearPanel);
                 return;
             }
@@ -359,7 +463,8 @@ namespace Game.Board
             if (_time == null) return false;
 
             var service = GameContext.Instance.GetService<LevelProgressService>();
-            return service.RecordClearForCurrentScene(_time.Elapsed.Value, _run.StepCount.Value);
+            return service.RecordClearForCurrentScene(_time.Elapsed.Value, _run.StepCount.Value,
+                _run.CoinsCollected.Value, _run.CoinTotal);
         }
 
         void OnNextChanged(TilePiece piece)
@@ -399,35 +504,27 @@ namespace Game.Board
             // 重来 / 重新开始会回到铺路阶段：此时必须收起结算面板，否则它压在棋盘上挡住放置
             if (!settled) HideResultPanels();
 
-            // 流程是「铺路完成 → 选偏好 → Play」：铺路阶段只有前者可点，Play 要等铺路完成才解锁。
-            // 结算后两个按钮一起收起（不再变「重来」），重开一律走右上角「重新开始」与结算面板。
-            if (finishBuildingButton != null)
-            {
-                finishBuildingButton.gameObject.SetActive(!settled);
-                finishBuildingButton.interactable = phase == BoardRunModel.Phase.Building;
-            }
-
+            // 流程是「铺路 → 点 Play 出发」：铺路阶段 Play 即可点（方向偏好已删，无需铺路完成暂停）。
+            // 结算后按钮收起（不再变「重来」），重开一律走右上角「重新开始」与结算面板。
             if (playButton != null)
             {
                 playButton.gameObject.SetActive(!settled);
-                playButton.interactable = phase == BoardRunModel.Phase.Ready;
+                playButton.interactable = phase == BoardRunModel.Phase.Building;
             }
 
-            if (playButtonLabel != null) playButtonLabel.text = "Play";
+            // Play 标签不随阶段变（出发文案归 ApplyLocalization 管），这里只管可用性
 
             if (aiStateText == null) return;
 
             var steps = _run.StepCount.Value;
+            var elementText = $"{ElementStateInfo.DisplayName(_run.Element.Value)}属性";
             switch (phase)
             {
                 case BoardRunModel.Phase.Building:
-                    aiStateText.text = "AI 待命 · 起点";
-                    break;
-                case BoardRunModel.Phase.Ready:
-                    aiStateText.text = "已铺路完成 · 计时暂停，调好方向后点 Play";
+                    aiStateText.text = $"AI 待命 · {elementText} · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
                     break;
                 case BoardRunModel.Phase.Running:
-                    aiStateText.text = $"AI 行进中 · 第 {steps} 步";
+                    aiStateText.text = $"AI 行进中 · 第 {steps} 步 · {elementText}";
                     break;
                 default:
                     var win = _run.Result.Value == BoardRunModel.RunResult.Win;
@@ -436,84 +533,6 @@ namespace Game.Board
                         : $"无路可走 · 第 {steps} 步停下";
                     break;
             }
-        }
-
-        /// <summary>
-        /// 按偏好顺序刷新四行排序列表；锁定时隐藏调序按钮。
-        /// 行是**复用**的：MonoBehaviour.Destroy 延迟到帧末生效，若每次重建都先 Destroy 再新建，
-        /// 同一帧内多次触发（顺序变更 + 锁定变更）会让旧行尚未消失、新行已加入，行数成倍堆积。
-        /// </summary>
-        void RebuildPriorityRows()
-        {
-            if (priorityRoot == null || _preference == null) return;
-
-            EnsureRows();
-
-            var count = _preference.Count;
-            var locked = _preference.Locked.Value;
-
-            for (var i = 0; i < _rows.Count; i++)
-            {
-                var row = _rows[i];
-                var visible = i < count;
-                row.root.gameObject.SetActive(visible);
-                if (!visible) continue;
-
-                var index = i;
-                row.label.text = $"{i + 1}. {MoveDirectionInfo.DisplayName(_preference.At(i))}";
-                row.background.color = locked ? rowLockedColor : rowColor;
-                row.upButton.gameObject.SetActive(!locked && i > 0);
-                row.downButton.gameObject.SetActive(!locked && i < count - 1);
-
-                row.upButton.onClick.RemoveAllListeners();
-                row.upButton.onClick.AddListener(() => _preference.MoveUp(index));
-                row.downButton.onClick.RemoveAllListeners();
-                row.downButton.onClick.AddListener(() => _preference.MoveDown(index));
-            }
-
-            GameFonts.Apply(priorityRoot);
-        }
-
-        void EnsureRows()
-        {
-            var total = MoveDirectionInfo.Count;
-
-            while (_rows.Count < total)
-                _rows.Add(CreateRow(_rows.Count, total));
-
-            for (var i = _rows.Count - 1; i >= total; i--)
-            {
-                Destroy(_rows[i].root.gameObject);
-                _rows.RemoveAt(i);
-            }
-        }
-
-        PriorityRow CreateRow(int index, int total)
-        {
-            var rowObject = new GameObject($"Row_{index}", typeof(RectTransform));
-            var rowRect = rowObject.transform as RectTransform;
-            rowRect.SetParent(priorityRoot, false);
-            rowRect.localScale = Vector3.one;
-
-            // 行按序号在容器里均分高度：第 index 行占 [1-(index+1)/total, 1-index/total]
-            float top = 1f - index / (float)total;
-            float bottom = 1f - (index + 1f) / total;
-            rowRect.anchorMin = new Vector2(0f, bottom);
-            rowRect.anchorMax = new Vector2(1f, top);
-            rowRect.offsetMin = new Vector2(0f, 4f);
-            rowRect.offsetMax = new Vector2(0f, -4f);
-
-            var background = rowObject.AddComponent<Image>();
-            background.color = rowColor;
-
-            var label = CreateText("Label", rowRect, 30, rowTextColor, TextAnchor.MiddleLeft);
-            SetAnchors(label.rectTransform, new Vector2(0f, 0f), new Vector2(0.52f, 1f),
-                new Vector2(20f, 0f), new Vector2(0f, 0f));
-
-            var upButton = CreateButton("Up", rowRect, "↑", new Vector2(0.56f, 0.12f), new Vector2(0.77f, 0.88f));
-            var downButton = CreateButton("Down", rowRect, "↓", new Vector2(0.80f, 0.12f), new Vector2(0.99f, 0.88f));
-
-            return new PriorityRow(rowRect, background, label, upButton, downButton);
         }
 
         Button CreateButton(string name, RectTransform parent, string label, Vector2 anchorMin, Vector2 anchorMax)
@@ -527,7 +546,7 @@ namespace Game.Board
             var image = buttonObject.GetComponent<Image>();
             image.color = buttonColor;
 
-            var text = CreateText("Text", rect, 28, rowTextColor, TextAnchor.MiddleCenter);
+            var text = CreateText("Text", rect, 28, buttonTextColor, TextAnchor.MiddleCenter);
             SetAnchors(text.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             text.text = label;
 
@@ -573,22 +592,5 @@ namespace Game.Board
             rect.localScale = Vector3.one;
         }
 
-        readonly struct PriorityRow
-        {
-            public readonly RectTransform root;
-            public readonly Image background;
-            public readonly Text label;
-            public readonly Button upButton;
-            public readonly Button downButton;
-
-            public PriorityRow(RectTransform root, Image background, Text label, Button upButton, Button downButton)
-            {
-                this.root = root;
-                this.background = background;
-                this.label = label;
-                this.upButton = upButton;
-                this.downButton = downButton;
-            }
-        }
     }
 }

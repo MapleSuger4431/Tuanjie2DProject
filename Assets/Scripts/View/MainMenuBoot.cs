@@ -29,6 +29,9 @@ namespace Game.View
             UIModule.Show<MainMenuPanel>(UIPaths.MainMenuPanel);
             Debug.Log("[MainMenuBoot] 主菜单面板已显示（Resources path 加载）");
 
+            // 右下角消息小窗随主菜单常驻：成就在主菜单解锁（或未来其它来源）时也弹得出来
+            UIModule.Show<Game.Board.LevelTipPanel>(UIPaths.LevelTipPanel);
+
             // BGM 走音频模块的 BGM 通道：音量由 GameSettings（启动已下发）决定，同曲在播幂等返回
             // 未配置片段时静默跳过：PlayBgm 对空 clip 会 LogError
             if (bgmClip != null)

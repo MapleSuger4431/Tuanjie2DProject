@@ -28,6 +28,9 @@ namespace Game.Board
 
         readonly List<Image> _cells = new List<Image>();
 
+        /// <summary>每格叠一个箭头图标（转向效果）；与 <see cref="_cells" /> 同下标，该格无箭头时停用。</summary>
+        readonly List<Image> _arrows = new List<Image>();
+
         /// <summary>按方块实例重画十六宫格；方块为空时留一整框空格。</summary>
         public void Render(TilePiece piece)
         {
@@ -39,6 +42,7 @@ namespace Game.Board
             {
                 _cells[i].sprite = cellSprite;
                 _cells[i].color = emptyColor;
+                if (i < _arrows.Count) _arrows[i].gameObject.SetActive(false);
             }
 
             var cells = piece != null ? piece.Cells : null;
@@ -73,6 +77,21 @@ namespace Game.Board
                 var image = _cells[index];
                 image.sprite = SpriteFor(type);
                 image.color = HasArt(type) ? Color.white : TileTypeInfo.Color(type);
+
+                // 转向箭头跟着预览一起显示：玩家在落块前就能看出哪一格会让 AI 拐弯；
+                // 空地/山地这类 AI 踏不进的格子不放提示（与棋盘格上的显示规则一致）
+                var effect = piece.EffectAt(i);
+                var icon = effect != null && TileTypeInfo.IsHintAllowed(type) ? effect.BoardIcon : null;
+                if (index < _arrows.Count)
+                {
+                    var arrow = _arrows[index];
+                    arrow.gameObject.SetActive(icon != null);
+                    if (icon != null)
+                    {
+                        arrow.sprite = icon;
+                        arrow.color = Color.white;
+                    }
+                }
             }
         }
 
@@ -116,6 +135,24 @@ namespace Game.Board
                 image.raycastTarget = false;
 
                 _cells.Add(image);
+
+                // 必须显式带 RectTransform：new GameObject() 只有 Transform，
+                // 而这里要在挂 Image 之前先摆好拉伸锚点（等 AddComponent<Image> 才转换就晚了一步）
+                var arrowObject = new GameObject("Arrow", typeof(RectTransform));
+                arrowObject.transform.SetParent(image.transform, false);
+
+                var arrowRect = (RectTransform)arrowObject.transform;
+                arrowRect.anchorMin = Vector2.zero;
+                arrowRect.anchorMax = Vector2.one;
+                arrowRect.offsetMin = Vector2.zero;
+                arrowRect.offsetMax = Vector2.zero;
+
+                var arrowImage = arrowObject.AddComponent<Image>();
+                arrowImage.raycastTarget = false;
+                arrowImage.preserveAspect = true;
+                arrowObject.SetActive(false);
+
+                _arrows.Add(arrowImage);
             }
         }
 
@@ -125,6 +162,7 @@ namespace Game.Board
                 Destroy(gridRoot.GetChild(i).gameObject);
 
             _cells.Clear();
+            _arrows.Clear();
         }
     }
 }

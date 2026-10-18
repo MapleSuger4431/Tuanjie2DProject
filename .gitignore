@@ -69,8 +69,23 @@ crashlytics-build.properties
 /.com-unity-codely.json
 # Codely 录屏验证产物（工程根的 screenshots/，不入库）
 /screenshots/
+# 编辑器测试存档（SaveStorage 编辑器分支写到工程根 TestSaves/，不入库）
+/TestSaves/
 # Rider / ReSharper 本地文件（跨平台 IDE 差异，Unity 官方社区建议忽略）
 _ReSharper.*
 *.DotSettings.user
 # 兜底：Assets 下的 .meta 必须提交，防止上方规则误伤
 !/[Aa]ssets/**/*.meta
+# 本体已被上方规则忽略的文件（pdb/mdb/unitypackage），其 meta 一并忽略——
+# 悬空 meta 入库后队友拉下来 Unity 找不到本体，会重新生成不匹配的 GUID
+/[Aa]ssets/**/*.pdb.meta
+/[Aa]ssets/**/*.mdb.meta
+/[Aa]ssets/**/*.unitypackage.meta
+# Odin 插件可选 Demos（unitypackage 素材包，本体已被 *.unitypackage 忽略）
+/[Aa]ssets/[Pp]lugins/[Ss]irenix/Demos/
+/[Aa]ssets/[Pp]lugins/[Ss]irenix/Demos.meta
+# Addressables 平台构建状态目录（本机构建产物，本体已被 *.bin* 忽略）
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/OSX/
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/OSX.meta
+# Aesir SceneModule 编辑器本地状态（_previousScenePath 随场景切换变化，不入库）
+/ScriptableSingleton/

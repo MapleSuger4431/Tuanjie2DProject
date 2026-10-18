@@ -16,11 +16,18 @@ namespace Game.Board
         void Start()
         {
             // 每次进入关卡都重置运行态：BoardContext 跨场景常驻，重进同一关时 BoardRunModel 仍停在上一局的
-            // Settled（阶段 / 结果 / 步数 / AI 位置），不重置则「铺路完成」「Play」都点不动——进得去却玩不了。
+            // Settled（阶段 / 结果 / 步数 / AI 位置），不重置则「Play」都点不动——进得去却玩不了。
             // 地形由场景自身的 ApplyPreset 重建，这里只管运行态与秒表。
             BoardContext.Instance.GetModel<BoardRunModel>().ResetRun();
 
             UIModule.Show<BoardRuntimePanel>(path: panelPath);
+
+            // 右下角成就 / 消息小窗随关卡常驻：它只订阅 BoardTipModel，没消息时整块停用
+            UIModule.Show<LevelTipPanel>(path: UIPaths.LevelTipPanel);
+
+            // 成就上报器现场挂上（不改场景）：把棋盘事件翻译成成就事件，解锁时弹小窗
+            if (gameObject.GetComponent<BoardAchievementReporter>() == null)
+                gameObject.AddComponent<BoardAchievementReporter>();
         }
     }
 }

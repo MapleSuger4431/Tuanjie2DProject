@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Save;
 using Runestone.AesirArchitecture;
+using UnityEngine;
 
 namespace Game.Model
 {
@@ -46,14 +47,23 @@ namespace Game.Model
 
         public int GetClearCount(int levelId) => Get(levelId).clearCount;
 
-        /// <summary>星级：策划案三星制目前只落地「到达」这一星，通关即 1 星（解锁下一关的判据）。</summary>
-        public int GetBestStars(int levelId) => HasRecord(levelId) ? 1 : 0;
+        /// <summary>
+        /// 历史最好星级（0~3）：三星制 = 通关 1 星 + 捡到金币 1 星 + 金币且时限内通关 1 星。
+        /// 取历史最大值（通关过但星级缺失的旧存档按 1 星兜底）。
+        /// </summary>
+        public int GetBestStars(int levelId)
+        {
+            var record = Get(levelId);
+            return record.HasRecord ? Mathf.Max(1, record.bestStars) : 0;
+        }
 
         /// <summary>
-        /// 记录一次通关：通关次数 +1、刷新上次用时、更短则刷新最短用时与最少步数。
+        /// 记录一次通关：通关次数 +1、刷新上次用时，更短则刷新最短用时与最少步数，
+        /// 星级取历史最大值（本局拿得少不会把之前的成绩冲掉）。
         /// </summary>
+        /// <param name="stars">本局星级，由 <see cref="Game.Board.LevelStarRules" /> 评定。</param>
         /// <returns>本次是否刷新了最短用时纪录。</returns>
-        public bool RecordClear(int levelId, float seconds, int steps)
+        public bool RecordClear(int levelId, float seconds, int steps, int stars)
         {
             var record = GetOrCreate(levelId);
             var isNewRecord = !record.HasRecord || seconds < record.bestTime;
@@ -62,6 +72,7 @@ namespace Game.Model
             record.lastTime = seconds;
             if (isNewRecord) record.bestTime = seconds;
             if (record.bestSteps < 0 || steps < record.bestSteps) record.bestSteps = steps;
+            if (stars > record.bestStars) record.bestStars = stars;
 
             Changed.Invoke();
 

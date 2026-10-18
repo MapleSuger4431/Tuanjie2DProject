@@ -22,6 +22,10 @@ namespace Game.View
         [SerializeField]
         Image backgroundImage;
 
+        [Tooltip("成就图鉴按钮（打开成就图鉴面板）")]
+        [SerializeField]
+        Button achievementButton;
+
         [Tooltip("新游戏按钮")]
         [SerializeField]
         Button newGameButton;
@@ -38,6 +42,28 @@ namespace Game.View
         [SerializeField]
         Button quitButton;
 
+        [Header("标题图（按语言切换）")]
+
+        [Tooltip("品牌区标题节点（由 MainMenuBuilder 接线）")]
+        [SerializeField]
+        Image titleImage;
+
+        [Tooltip("中文标题图（pieces/title.png：边际棋盘）")]
+        [SerializeField]
+        Sprite titleSpriteZh;
+
+        [Tooltip("英文标题图（pieces/title_en.png：Marginal Chessboard）")]
+        [SerializeField]
+        Sprite titleSpriteEn;
+
+        [Tooltip("中文标题的最大显示框（等比缩放，不改锚点）")]
+        [SerializeField]
+        Vector2 titleBoxZh = new Vector2(589f, 137f);
+
+        [Tooltip("英文标题的最大显示框（两行字，比中文略高以保持观感）")]
+        [SerializeField]
+        Vector2 titleBoxEn = new Vector2(589f, 190f);
+
         /// <summary>主菜单背景图（AI 抠图成品封面背景，生成预制体时接线）。</summary>
         public Image BackgroundImage => backgroundImage;
 
@@ -51,6 +77,13 @@ namespace Game.View
             // 全游戏语言本地化：订阅切换事件（设置面板切语言时按钮/提示即时刷新），初始化即应用一次
             Localization.OnLanguageChanged += ApplyLocalization;
             ApplyLocalization();
+
+            // 成就图鉴：打开成就图鉴面板（Popup 层），列出全部成就与解锁状态
+            achievementButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[MainMenuPanel] 成就图鉴：打开成就图鉴面板");
+                UIModule.Show<Game.View.AchievementPanel>(UIPaths.AchievementPanel);
+            });
 
             // 开始游戏：切到选择关卡场景（SceneModule 需完整资产路径，Build Settings 已登记）
             newGameButton.onClick.AddListener(() =>
@@ -91,18 +124,61 @@ namespace Game.View
             base.OnDestroy();
         }
 
-        /// <summary>按当前语言刷新主菜单全部文本（语言切换事件触发）。</summary>
+        /// <summary>按当前语言刷新主菜单全部文本与标题图（语言切换事件触发）。</summary>
         void ApplyLocalization()
         {
             SetLabel(newGameButton, Localization.Key.MenuNewGame);
+            SetLabelText(achievementButton, Localization.Get("MenuAchievements"));
             SetLabel(helpButton, Localization.Key.MenuHelp);
             SetLabel(settingsButton, Localization.Key.MenuSettings);
             SetLabel(quitButton, Localization.Key.MenuQuit);
+
+            ApplyTitleSprite();
 
             var hint = transform.Find("VisualPlaceholder/PlaceholderHint");
             if (hint != null)
             {
                 hint.GetComponent<Text>().text = Localization.Get(Localization.Key.MenuPlaceholderHint);
+            }
+        }
+
+        /// <summary>
+        /// 标题图按语言切换：中文走「边际棋盘」切片，其余语言走「Marginal Chessboard」切片；
+        /// 两张图长宽比不同，切换后按各自的最大显示框等比重算尺寸（居中锚点不变，不改版式位置）。
+        /// </summary>
+        void ApplyTitleSprite()
+        {
+            if (titleImage == null)
+            {
+                return;
+            }
+
+            var english = !Localization.IsChinese;
+            var sprite = english ? titleSpriteEn : titleSpriteZh;
+            if (sprite == null)
+            {
+                // 缺图时回落到另一语言，避免标题空白
+                sprite = english ? titleSpriteZh : titleSpriteEn;
+            }
+
+            if (sprite == null || sprite == titleImage.sprite)
+            {
+                return;
+            }
+
+            titleImage.sprite = sprite;
+            var box = english ? titleBoxEn : titleBoxZh;
+            var scale = Mathf.Min(box.x / sprite.rect.width, box.y / sprite.rect.height);
+            titleImage.rectTransform.sizeDelta = new Vector2(sprite.rect.width * scale, sprite.rect.height * scale);
+        }
+
+        /// <summary>按**键名字符串**设置按钮文本：数据驱动的文案（如成就）不占 Key 枚举。</summary>
+        static void SetLabelText(Button button, string text)
+        {
+            var label = button != null ? button.GetComponentInChildren<Text>() : null;
+            if (label != null)
+            {
+                label.text = text;
             }
         }
 
