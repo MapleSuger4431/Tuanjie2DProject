@@ -26,6 +26,12 @@ namespace Game.Board
         [Tooltip("棋盘边长（规整正方形）；生成工具写入，运行时同步给 BoardModel")]
         [SerializeField] int boardSize = BoardModel.MinSize;
 
+        [Tooltip("起点格（关卡画笔写入）；越界或未配置回落左下角，运行时同步给 BoardModel")]
+        [SerializeField] Vector2Int startCell = new Vector2Int(0, 0);
+
+        [Tooltip("终点格（关卡画笔写入）；(-1,-1) 未配置 = 右上角，运行时同步给 BoardModel")]
+        [SerializeField] Vector2Int goalCell = new Vector2Int(-1, -1);
+
         BoardModel _board;
         BoardTile[] _tiles;
 
@@ -128,11 +134,42 @@ namespace Game.Board
             return _tiles[cell.y * Width + cell.x];
         }
 
-        /// <summary>起点：左下角。</summary>
-        public Vector2Int StartCell => Vector2Int.zero;
+        /// <summary>起点（关卡可配，画笔写入）；未配置或越界回落左下角。</summary>
+        public Vector2Int StartCell
+        {
+            get
+            {
+                var inBounds = startCell.x >= 0 && startCell.x < Width && startCell.y >= 0 && startCell.y < Height;
+                return inBounds ? startCell : Vector2Int.zero;
+            }
+        }
 
-        /// <summary>终点：右上角。</summary>
-        public Vector2Int GoalCell => new Vector2Int(Width - 1, Height - 1);
+        /// <summary>终点（关卡可配，画笔写入）；未配置、越界或与起点重合回落右上角。</summary>
+        public Vector2Int GoalCell
+        {
+            get
+            {
+                var inBounds = goalCell.x >= 0 && goalCell.x < Width && goalCell.y >= 0 && goalCell.y < Height;
+                return inBounds && goalCell != StartCell ? goalCell : new Vector2Int(Width - 1, Height - 1);
+            }
+        }
+
+        /// <summary>写入起终点配置（关卡画笔 / 生成工具入口）；随场景序列化，运行时在 <see cref="Start" /> 下发数据层。</summary>
+        public void SetTerminals(Vector2Int start, Vector2Int goal)
+        {
+            startCell = start;
+            goalCell = goal;
+        }
+
+        void OnValidate()
+        {
+            // 旧场景反序列化出的默认值归一成「未配置」语义，运行时按角位兜底
+            if (startCell.x < 0 || startCell.x >= Width || startCell.y < 0 || startCell.y >= Height)
+                startCell = Vector2Int.zero;
+
+            if (goalCell.x < 0 || goalCell.x >= Width || goalCell.y < 0 || goalCell.y >= Height || goalCell == startCell)
+                goalCell = new Vector2Int(-1, -1);
+        }
 
         void Start()
         {
@@ -144,6 +181,10 @@ namespace Game.Board
             {
                 if (_board.Width != boardSize || _board.Height != boardSize)
                     _board.SetSize(boardSize, boardSize);
+
+                // 起终点按关卡配置下发数据层（旧场景未配置时回落角位，等价旧行为）；
+                // 配置变化会触发 TerminalsChanged → 运行模型把 AI 放回新起点
+                _board.SetStartGoal(StartCell, GoalCell);
 
                 _board.ApplyPreset(CollectPreset(), CollectEffectPreset());
                 Refresh();
@@ -212,22 +253,29 @@ namespace Game.Board
             }
         }
 
-        /// <summary>按给定边长整块重建（清空后重铺，起点/终点自动落在左下与右上）。编辑器生成工具入口。</summary>
-        public void BuildTiles(int size)
+        /// <summary>按给定边长整块重建（清空后重铺，起点/终点按配置或回落左下/右上）。编辑器生成工具入口。</summary>
+        public void BuildTiles(int size) =>
+            BuildTiles(size, Vector2Int.zero, new Vector2Int(size - 1, size - 1));
+
+        /// <summary>带起终点配置的重建（关卡画笔用）：配置先落序列化字段，格子预设按其写入。</summary>
+        public void BuildTiles(int size, Vector2Int start, Vector2Int goal)
         {
             boardSize = Mathf.Clamp(size, BoardModel.MinSize, BoardModel.MaxSize);
+            SetTerminals(start, goal);
+
+            // 调用方传了重合/越界配置时兜底回角位，保证重建出的棋盘始终有且只有一对起终点
+            var from = StartCell;
+            var to = goal == from ? new Vector2Int(boardSize - 1, boardSize - 1) : GoalCell;
+
             EnsureRoot();
             ClearTiles();
 
-            var goal = new Vector2Int(boardSize - 1, boardSize - 1);
             for (int y = 0; y < boardSize; y++)
             {
                 for (int x = 0; x < boardSize; x++)
                 {
                     var coord = new Vector2Int(x, y);
-                    var preset = coord == Vector2Int.zero
-                        ? TileType.Start
-                        : (coord == goal ? TileType.Goal : TileType.Void);
+                    var preset = coord == from ? TileType.Start : (coord == to ? TileType.Goal : TileType.Void);
                     CreateTile(coord, preset);
                 }
             }

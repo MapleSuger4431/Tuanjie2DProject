@@ -118,6 +118,9 @@ namespace Game.Board
             // 棋盘尺寸变化（切关卡）时整局重置，避免 AI 停在旧坐标上
             _board.BoardResized.AddListener(ResetRun);
 
+            // 起点配置变化（关卡画笔改起终点 → 视图下发）同样把 AI 放回新起点
+            _board.TerminalsChanged.AddListener(ResetRun);
+
             ResetRun();
         }
 

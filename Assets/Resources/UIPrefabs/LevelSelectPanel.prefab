@@ -516,14 +516,6 @@ MonoBehaviour:
   settingsButton: {fileID: 8598568650046466959}
   levelNodePrefab: {fileID: 7742660482792571309, guid: 6e5d26a34e101f54dbe23838fc3a1af1, type: 3}
   titleLabel: {fileID: 579203849347439891}
-  crystalSprites:
-  - {fileID: 21300000, guid: ba4ec1e73b41003429425a6ac4664058, type: 3}
-  - {fileID: 21300000, guid: f15ba2938be423d4499afe7fd49c7838, type: 3}
-  - {fileID: 21300000, guid: 433f15aae8446c748bd9339e75d8a3d7, type: 3}
-  badgeSprites:
-  - {fileID: 21300000, guid: fd583027efd933a4ebb0ebadf8d603c0, type: 3}
-  - {fileID: 21300000, guid: 73fa80c95c339d84288fa3d875ea1ed3, type: 3}
-  - {fileID: 21300000, guid: 0b8a6b82913f7784c8d1e29a128aca71, type: 3}
   backButtonLabel: {fileID: 0}
   settingsButtonLabel: {fileID: 0}
 --- !u!1 &5576601141348552564
@@ -714,8 +706,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3470657416105709467}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.25, y: 0.72}
+  m_AnchorMax: {x: 0.25, y: 0.72}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -750,8 +742,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3470657416105709467}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.45, y: 0.42}
+  m_AnchorMax: {x: 0.45, y: 0.42}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}

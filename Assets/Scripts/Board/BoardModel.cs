@@ -30,6 +30,10 @@ namespace Game.Board
 
         [SerializeField] ObservableValue<int> coveredCount = new ObservableValue<int>(0);
 
+        // 起终点按关卡配置（关卡画笔 → 棋盘视图 → 本层下发）；非法值在访问器里回落角位，旧场景零迁移
+        [SerializeField] Vector2Int startCell = Vector2Int.zero;
+        [SerializeField] Vector2Int goalCell = new Vector2Int(-1, -1);
+
         TileType[] _tiles;
 
         /// <summary>关卡预设快照（<see cref="ApplyPreset" /> 时留存），供「重新开始本关」还原初始地形。</summary>
@@ -54,11 +58,28 @@ namespace Game.Board
         public int PieceLimit =>
             MinPieces + (Mathf.Max(width, height) - MinSize) * (MaxPieces - MinPieces) / (MaxSize - MinSize);
 
-        /// <summary>起点：左下角。</summary>
-        public Vector2Int StartCell => Vector2Int.zero;
+        /// <summary>起点：关卡可配（<see cref="SetStartGoal" />）；未配置或越界回落左下角。</summary>
+        public Vector2Int StartCell => InBounds(startCell) ? startCell : Vector2Int.zero;
 
-        /// <summary>终点：右上角。</summary>
-        public Vector2Int GoalCell => new Vector2Int(width - 1, height - 1);
+        /// <summary>终点：关卡可配（<see cref="SetStartGoal" />）；未配置、越界或与起点重合回落右上角。</summary>
+        public Vector2Int GoalCell =>
+            InBounds(goalCell) && goalCell != StartCell ? goalCell : new Vector2Int(width - 1, height - 1);
+
+        /// <summary>配置起点/终点（关卡画笔与生成工具入口）；越界或重合的配置整组忽略。</summary>
+        public void SetStartGoal(Vector2Int start, Vector2Int goal)
+        {
+            if (!InBounds(start) || !InBounds(goal) || start == goal)
+            {
+                Debug.LogWarning($"[BoardModel] 忽略非法的起点/终点配置：{start} / {goal}（须在棋盘内且不重合）");
+                return;
+            }
+
+            if (start == StartCell && goal == GoalCell) return;
+
+            startCell = start;
+            goalCell = goal;
+            TerminalsChanged.Invoke();
+        }
 
         /// <summary>已发生的覆盖次数（每个方块算 1 次，非格数）。</summary>
         public ObservableValue<int> CoveredCount => coveredCount;
@@ -68,6 +89,9 @@ namespace Game.Board
 
         /// <summary>尺寸变化后触发（先于数据清空）→ 驱动 View 按新尺寸重建格子。</summary>
         public MiniEvent BoardResized { get; } = new MiniEvent();
+
+        /// <summary>起点 / 终点配置变化后触发 → 运行模型把 AI 放回新起点（画笔改起终点时由配置侧调用）。</summary>
+        public MiniEvent TerminalsChanged { get; } = new MiniEvent();
 
         protected override void OnInitialize()
         {

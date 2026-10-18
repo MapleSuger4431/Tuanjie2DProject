@@ -23,8 +23,18 @@ namespace Game.EditorTools
         GUIStyle _header;
         GUIStyle _cellLabel;
 
+        /// <summary>网格点击模式：普通=循环状态，或点选起点/终点。</summary>
+        enum PickMode
+        {
+            None,
+            Start,
+            Goal,
+        }
+
         /// <summary>效果批量操作的资产槽（只存在 Inspector 会话里，不落盘到画笔组件）。</summary>
         TileEffect _effect;
+
+        PickMode _pick;
 
         BoardLevelPainter Painter => (BoardLevelPainter)target;
 
@@ -38,6 +48,7 @@ namespace Game.EditorTools
             serializedObject.ApplyModifiedProperties();
 
             DrawSizeSlider();
+            DrawTerminalSection();
             _showNumber = EditorGUILayout.Toggle("显示数值", _showNumber);
 
             EditorGUILayout.Space(2f);
@@ -48,7 +59,7 @@ namespace Game.EditorTools
             DrawEffectSection();
 
             EditorGUILayout.HelpBox(
-                "数组按行主序（索引 = y × 边长 + x）与棋盘子物体一一对应；左下角固定起点、右上角固定终点，不参与循环。\n" +
+                "数组按行主序（索引 = y × 边长 + x）与棋盘子物体一一对应；起点/终点在上方面板配置，或用「点选起点/终点」在网格里点一格设置，不参与循环。\n" +
                 "效果层与状态数组互不影响：逐格在各自 Inspector 上拖 TileEffect 资产，或用下面的「应用到全盘 / 清空效果层」批量处理。",
                 MessageType.None);
         }
@@ -64,6 +75,37 @@ namespace Game.EditorTools
             Undo.RecordObject(painter, "Board Level Painter Resize");
             painter.Resize(next);
             EditorUtility.SetDirty(painter);
+        }
+
+        // ---------- 起点 / 终点 ----------
+
+        void DrawTerminalSection()
+        {
+            var painter = Painter;
+
+            EditorGUILayout.Space(2f);
+            EditorGUILayout.LabelField("起点 / 终点（可配置，不再固定角落）", EditorStyles.boldLabel);
+
+            var start = EditorGUILayout.Vector2IntField("起点格", painter.StartCell);
+            if (start != painter.StartCell)
+            {
+                Undo.RecordObject(painter, "Board Level Painter Start");
+                if (!painter.SetStartCell(start.x, start.y))
+                    Debug.LogWarning($"[BoardLevelPainter] 起点须在棋盘内且不与终点重合：{start}", painter);
+                EditorUtility.SetDirty(painter);
+            }
+
+            var goal = EditorGUILayout.Vector2IntField("终点格", painter.GoalCell);
+            if (goal != painter.GoalCell)
+            {
+                Undo.RecordObject(painter, "Board Level Painter Goal");
+                if (!painter.SetGoalCell(goal.x, goal.y))
+                    Debug.LogWarning($"[BoardLevelPainter] 终点须在棋盘内且不与起点重合：{goal}", painter);
+                EditorUtility.SetDirty(painter);
+            }
+
+            // 点选模式：激活后在网格里点一格即设为起点/终点
+            _pick = (PickMode)GUILayout.Toolbar((int)_pick, new[] { "点击循环状态", "点选起点", "点选终点" });
         }
 
         void DrawLegend()
@@ -146,13 +188,24 @@ namespace Game.EditorTools
 
             if (Event.current.type != EventType.MouseDown || !rect.Contains(Event.current.mousePosition)) return;
 
-            if (!reserved)
+            Undo.RecordObject(painter, "Board Level Painter");
+            switch (_pick)
             {
-                Undo.RecordObject(painter, "Board Level Painter");
-                painter.CycleState(x, y, Event.current.button == 1 ? -1 : 1);
-                EditorUtility.SetDirty(painter);
+                case PickMode.Start:
+                    painter.SetStartCell(x, y);
+                    _pick = PickMode.None;
+                    break;
+                case PickMode.Goal:
+                    painter.SetGoalCell(x, y);
+                    _pick = PickMode.None;
+                    break;
+                default:
+                    if (!reserved)
+                        painter.CycleState(x, y, Event.current.button == 1 ? -1 : 1);
+                    break;
             }
 
+            EditorUtility.SetDirty(painter);
             Event.current.Use();
             Repaint();
         }

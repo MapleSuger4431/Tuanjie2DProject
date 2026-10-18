@@ -29,6 +29,7 @@ namespace Game.EditorTools
         const string PoolConfigPath = "Assets/Resources/Board/BoardTilePoolConfig.asset";
         const string StarConfigPath = "Assets/Resources/Board/LevelStarConfig.asset";
         const string CoinSpritePath = "Assets/Art/Board/Items/Item_Coin.png";
+        const string PortalAssetPath = "Assets/Resources/Board/Effects/Portal.asset";
 
         /// <summary>关卡自带驱动器的根名：清理残留时必须保住它。</summary>
         const string BoardRuntimeRootName = "[BoardRuntime]";
@@ -45,12 +46,22 @@ namespace Game.EditorTools
             public Vector2Int[] abyss = { };
             public Vector2Int[] coins = { };
 
+            [Tooltip("起点格；null = 不改（保留画笔现状，默认左下角 (0,0)）")]
+            public Vector2Int? startCell;
+
+            [Tooltip("终点格；null = 不改（保留画笔现状，默认右上角）")]
+            public Vector2Int? goalCell;
+
+            [Tooltip("预置传送门，两两成对：每两个坐标构成一对互传端点（踩到任一端传到另一端，两端同时消耗）。" +
+                     "第 4 关起引入（用户 2026-10-18 拍板：第 4/5 关各设计两个传送门格子）")]
+            public Vector2Int[] portals = { };
+
             [Tooltip("固定初始路网，每关一套（用户 2026-10-18 拍板：进关不能满屏深渊，可通行格须 ≥30%，" +
                      "且路网固定不变，方便刷分刷时间）。第一行 = 最上面一行（y 最大），" +
                      "字符：. 深渊 / L 路 / F 火 / I 冰 / M 血色深渊（与 abyss 填同一批坐标即可）")]
             public string[] road = { };
 
-            [Tooltip("是否重建地形：第一关已由他人在格子上钉了传送门效果，重建会把效果层冲掉，故默认跳过")]
+            [Tooltip("是否重建地形：第一关地形已定稿默认跳过（预置效果改由 portals 配置统一管理，重建地形也不会冲掉它）")]
             public bool rebuildTerrain = true;
         }
 
@@ -105,6 +116,7 @@ namespace Game.EditorTools
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
+                portals = new[] { new Vector2Int(2, 1), new Vector2Int(13, 13) },
                 road = new[]
                 {
                     "....LLLLLLLLLLLLLLL.", "..............L.....", "...........L..L.....", "..LLLLLL.LILLLL.LFL.",
@@ -124,6 +136,7 @@ namespace Game.EditorTools
                     new Vector2Int(12, 17), new Vector2Int(17, 11),
                 },
                 coins = new[] { new Vector2Int(5, 9), new Vector2Int(12, 4) },
+                portals = new[] { new Vector2Int(3, 2), new Vector2Int(13, 16) },
                 road = new[]
                 {
                     "...LLLL.LLLL.LLLL.L.", ".............L......", ".........L...L......", "..LLL.LLLL.LLLI.FLLL",
@@ -249,7 +262,13 @@ namespace Game.EditorTools
             if (spec.rebuildTerrain || (spec.road != null && spec.road.Length > 0)) ApplyTerrain(board, spec);
             else Debug.Log($"[LevelTuning] {spec.sceneName} 跳过地形重建（保留格子上的预置效果）");
 
+            // 传送门放在地形之后写入：即使地形重建顺带重建了格子，效果也落在最终格子上
+            ApplyPortals(board, spec);
+
             ApplyCoins(board, spec);
+
+            // 起终点：只在该关显式配置时写入（null = 保留画笔现状，默认左下/右上）
+            ApplyTerminals(board, spec);
 
             // 自检：驱动器必须还在，否则关卡进得去却没有任何 UI，且不报错
             if (GameObject.Find(BoardRuntimeRootName) == null)
@@ -260,7 +279,8 @@ namespace Game.EditorTools
             RegisterBuildSettings(path);
 
             Debug.Log($"[LevelTuning] {spec.sceneName}（{(existed ? "已存在·更新" : "新建")}）{spec.size}×{spec.size}，" +
-                      $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，三星时限 {spec.timeStarSeconds}s");
+                      $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，" +
+                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s");
         }
 
         /// <summary>
@@ -352,6 +372,91 @@ namespace Game.EditorTools
                 if (type != TileType.Land && type != TileType.Fire && type != TileType.Ice)
                     Debug.LogWarning($"[LevelTuning] {spec.sceneName} 金币 ({coin.x},{coin.y}) 落在 {type} 上，玩家走不过去");
             }
+        }
+
+        /// <summary>起终点：只在该关显式配置时写入画笔并重新应用到格子（null = 保留画笔现状，默认左下/右上）。</summary>
+        static void ApplyTerminals(GameObject board, LevelSpec spec)
+        {
+            if (!spec.startCell.HasValue && !spec.goalCell.HasValue) return;
+
+            var painter = board.GetComponent<BoardLevelPainter>();
+            if (painter == null) return;
+
+            if (spec.startCell.HasValue && !painter.SetStartCell(spec.startCell.Value.x, spec.startCell.Value.y))
+                Debug.LogError($"[LevelTuning] {spec.sceneName} 起点非法：{spec.startCell.Value}（须在棋盘内且不与终点重合）");
+
+            if (spec.goalCell.HasValue && !painter.SetGoalCell(spec.goalCell.Value.x, spec.goalCell.Value.y))
+                Debug.LogError($"[LevelTuning] {spec.sceneName} 终点非法：{spec.goalCell.Value}（须在棋盘内且不与起点重合）");
+
+            // 起终点写在格子预设上，改完要重新应用才会落盘
+            painter.ApplyToTiles();
+        }
+
+        /// <summary>
+        /// 预置传送门：两两成对写入 <see cref="BoardTile.effect" /> 并钉死（pinEffect，方块覆盖不掉——
+        /// 发牌侧每块都带箭头效果，不钉死会被数据层效果遮蔽）。先清掉本生成器此前写入的旧传送门再重建，重跑幂等；
+        /// 两端都要求落在可通行的预置路格上，且不与金币 / 血色深渊 / 起终点重合（违规只告警不阻断，方便先跑起来看）。
+        /// </summary>
+        static void ApplyPortals(GameObject board, LevelSpec spec)
+        {
+            var grid = board.GetComponent<BoardGridView>();
+            if (grid == null) return;
+
+            var byCell = new Dictionary<Vector2Int, BoardTile>();
+            foreach (var tile in grid.GetComponentsInChildren<BoardTile>(true))
+                if (!byCell.ContainsKey(tile.Cell)) byCell.Add(tile.Cell, tile);
+
+            TileEffect portal = null;
+            if (spec.portals != null && spec.portals.Length > 0)
+            {
+                portal = AssetDatabase.LoadAssetAtPath<TileEffect>(PortalAssetPath);
+                if (portal == null) Debug.LogError($"[LevelTuning] 找不到传送门资产 {PortalAssetPath}");
+            }
+
+            // 清场：全项目预置传送门只有本生成器一个来源，按类型清不会误伤别人配的效果
+            foreach (var tile in byCell.Values)
+            {
+                if (!(tile.PresetEffect is PortalEffect)) continue;
+
+                tile.SetEffect(null);
+                tile.SetPinned(false);
+                tile.ApplyEffectVisual(null, false, tile.PresetType);
+                EditorUtility.SetDirty(tile);
+            }
+
+            var written = 0;
+            for (var i = 0; portal != null && i + 1 < spec.portals.Length; i += 2)
+            {
+                var pair = new[] { spec.portals[i], spec.portals[i + 1] };
+                foreach (var cell in pair)
+                {
+                    if (!byCell.TryGetValue(cell, out var tile))
+                    {
+                        Debug.LogError($"[LevelTuning] {spec.sceneName} 传送门 ({cell.x},{cell.y}) 超出棋盘，跳过");
+                        continue;
+                    }
+
+                    if (!TileTypeInfo.IsPassable(tile.PresetType))
+                        Debug.LogWarning($"[LevelTuning] {spec.sceneName} 传送门 ({cell.x},{cell.y}) 落在 {tile.PresetType} 上，" +
+                                         "AI 踏不进去（图标会在格子铺成可走后出现）");
+
+                    foreach (var coin in spec.coins)
+                        if (coin == cell)
+                            Debug.LogWarning($"[LevelTuning] {spec.sceneName} 传送门 ({cell.x},{cell.y}) 与金币重合，踩上去会被传走捡不到");
+
+                    foreach (var abyss in spec.abyss)
+                        if (abyss == cell)
+                            Debug.LogWarning($"[LevelTuning] {spec.sceneName} 传送门 ({cell.x},{cell.y}) 与血色深渊重合");
+
+                    tile.SetEffect(portal);
+                    tile.SetPinned(true);
+                    tile.ApplyEffectVisual(portal, false, tile.PresetType);
+                    EditorUtility.SetDirty(tile);
+                    written++;
+                }
+            }
+
+            if (written > 0) Debug.Log($"[LevelTuning] {spec.sceneName} 写入预置传送门 {written} 格（{written / 2} 对）");
         }
 
         /// <summary>金币：按配置的枚数重建（多枚关卡每枚一个子物体）。</summary>

@@ -6,7 +6,8 @@ namespace Game.Board
     /// <summary>
     /// 关卡配置画笔：用「一维化的二维数组」在 Inspector 上配整盘格子的初始状态，一键应用到棋盘子物体（一一对应）。
     /// Unity 不序列化 int[,]，二维数组用「扁平 int 数组 + 边长」表达，行主序：索引 = y × size + x，与 <see cref="BoardModel" /> 的 Index 规则一致。
-    /// 数值 ↔ <see cref="TileType" /> 直接对齐：0 空 / 1 路 / 2 火 / 3 冰 / 4 山地；左下角固定起点、右上角固定终点，不占数组值（应用时自动写入）。
+    /// 数值 ↔ <see cref="TileType" /> 直接对齐：0 空 / 1 路 / 2 火 / 3 冰 / 4 山地；起点/终点可配置
+    /// （<see cref="SetStartCell" /> / <see cref="SetGoalCell" />，默认仍为左下/右上），不占数组值（应用时自动写入）。
     /// 子物体逐个配的效果走 <see cref="CellEffect" />，与本数组互不影响。
     /// </summary>
     [ExecuteAlways]
@@ -23,6 +24,12 @@ namespace Game.Board
 
         [Tooltip("格子初始状态，行主序（索引 = y × 边长 + x），取值 0~4：0 空 / 1 路 / 2 火 / 3 冰 / 4 山地")]
         [SerializeField] int[] states = new int[BoardModel.MinSize * BoardModel.MinSize];
+
+        [Tooltip("起点格（(0,0) 在左下角）；须在棋盘内且不与终点重合")]
+        [SerializeField] Vector2Int startCell = new Vector2Int(0, 0);
+
+        [Tooltip("终点格；(-1,-1) = 未配置，回落右上角（size-1, size-1）")]
+        [SerializeField] Vector2Int goalCell = new Vector2Int(-1, -1);
 
         public int Size => size;
 
@@ -60,11 +67,46 @@ namespace Game.Board
 
         public bool InBounds(int x, int y) => x >= 0 && x < size && y >= 0 && y < size;
 
-        /// <summary>左下角：固定起点，不参与数组循环。</summary>
-        public bool IsStartCell(int x, int y) => x == 0 && y == 0;
+        /// <summary>起点格（关卡可配）；未配置或越界回落左下角。</summary>
+        public Vector2Int StartCell => InBounds(startCell.x, startCell.y) ? startCell : new Vector2Int(0, 0);
 
-        /// <summary>右上角：固定终点，不参与数组循环。</summary>
-        public bool IsGoalCell(int x, int y) => x == size - 1 && y == size - 1;
+        /// <summary>终点格（关卡可配）；未配置、越界或与起点重合回落右上角。</summary>
+        public Vector2Int GoalCell
+        {
+            get
+            {
+                if (InBounds(goalCell.x, goalCell.y) && goalCell != StartCell) return goalCell;
+                return new Vector2Int(size - 1, size - 1);
+            }
+        }
+
+        /// <summary>设置起点格；越界或与终点重合返回 false（不写入）。</summary>
+        public bool SetStartCell(int x, int y) => SetTerminalCell(x, y, true);
+
+        /// <summary>设置终点格；越界或与起点重合返回 false（不写入）。</summary>
+        public bool SetGoalCell(int x, int y) => SetTerminalCell(x, y, false);
+
+        bool SetTerminalCell(int x, int y, bool isStart)
+        {
+            if (!InBounds(x, y)) return false;
+
+            var cell = new Vector2Int(x, y);
+            if (cell == (isStart ? GoalCell : StartCell))
+            {
+                Debug.LogWarning($"[BoardLevelPainter] 起点与终点不能重合：({x},{y})", this);
+                return false;
+            }
+
+            if (isStart) startCell = cell;
+            else goalCell = cell;
+            return true;
+        }
+
+        /// <summary>该格是否为起点（关卡可配，不再固定左下角）；不参与数组循环。</summary>
+        public bool IsStartCell(int x, int y) => StartCell == new Vector2Int(x, y);
+
+        /// <summary>该格是否为终点（关卡可配，不再固定右上角）；不参与数组循环。</summary>
+        public bool IsGoalCell(int x, int y) => !IsStartCell(x, y) && GoalCell == new Vector2Int(x, y);
 
         /// <summary>该格应用后的最终状态（含起点/终点覆盖）。</summary>
         public TileType FinalTypeAt(int x, int y)
@@ -126,6 +168,18 @@ namespace Game.Board
                     states[y * size + x] = Mathf.Clamp(old[oldIndex], 0, StateCount - 1);
                 }
             }
+
+            NormalizeTerminals();
+        }
+
+        /// <summary>
+        /// 把非法的起终点配置归一到「未配置」语义（终点落 (-1,-1) = 右上角兜底）。
+        /// 旧场景反序列化出的默认值（终点 = 起点 = (0,0)）在这里自动修正，配置过的合法值原样保留。
+        /// </summary>
+        void NormalizeTerminals()
+        {
+            if (!InBounds(startCell.x, startCell.y)) startCell = new Vector2Int(0, 0);
+            if (!InBounds(goalCell.x, goalCell.y) || goalCell == startCell) goalCell = new Vector2Int(-1, -1);
         }
 
         /// <summary>保证数组长度 = 边长²（保留已有值）。</summary>
@@ -215,9 +269,12 @@ namespace Game.Board
             var map = BuildTileMap(grid);
             if (map.Count == 0 || grid.BoardSize != size)
             {
-                grid.BuildTiles(size);
+                grid.BuildTiles(size, StartCell, GoalCell);
                 map = BuildTileMap(grid);
             }
+
+            // 起终点随应用写进棋盘视图（随场景序列化），运行时由此下发数据层
+            grid.SetTerminals(StartCell, GoalCell);
 
             var applied = 0;
             for (var y = 0; y < size; y++)
@@ -252,13 +309,22 @@ namespace Game.Board
             EnsureArrayLength();
 
             var read = 0;
+            Vector2Int? presetStart = null;
+            Vector2Int? presetGoal = null;
             foreach (var pair in map)
             {
                 if (pair.Value == null || !InBounds(pair.Key.x, pair.Key.y)) continue;
 
+                // 起终点从格子预设反推（它们不占数组值），其余状态照常读回
+                if (pair.Value.PresetType == TileType.Start) presetStart = pair.Key;
+                else if (pair.Value.PresetType == TileType.Goal) presetGoal = pair.Key;
+
                 states[pair.Key.y * size + pair.Key.x] = TileTypeToState(pair.Value.PresetType);
                 read++;
             }
+
+            if (presetStart.HasValue) startCell = presetStart.Value;
+            if (presetGoal.HasValue && presetGoal.Value != StartCell) goalCell = presetGoal.Value;
 
             return read;
         }
@@ -279,7 +345,11 @@ namespace Game.Board
             EnsureArrayLength();
         }
 
-        void OnValidate() => EnsureArrayLength();
+        void OnValidate()
+        {
+            EnsureArrayLength();
+            NormalizeTerminals();
+        }
 
         static Dictionary<Vector2Int, BoardTile> BuildTileMap(BoardGridView grid)
         {
