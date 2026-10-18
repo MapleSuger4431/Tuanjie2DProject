@@ -14,7 +14,8 @@ namespace Game.View
     /// <para>
     /// 左上「返回」回主场景、右上「设置」打开设置面板；点已解锁节点打开 LevelDetailPanel。
     /// 静态结构由 Assets/Editor/LevelSelectUIBuilder 产出（改结构改生成器），
-    /// 节点由 <see cref="LevelSelectModel" /> 关卡表驱动运行时生成。
+    /// 节点由 <see cref="LevelSelectModel" /> 关卡表驱动运行时生成，
+    /// 节点位置由 NodesRoot 下的空对象决定（用户在编辑器里自由增删/拖动，Hierarchy 顺序 = 关卡顺序）。
     /// </para>
     /// <para>
     /// 全部文本经 <see cref="Game.Core.Localization" /> 取值，语言切换时整体刷新。
@@ -23,7 +24,7 @@ namespace Game.View
     [AddComponentMenu("")]
     public class LevelSelectPanel : AesirBasePanelViewController<GameContext>
     {
-        [Tooltip("节点容器")]
+        [Tooltip("节点容器（每个直接子物体 = 一个关卡位，Hierarchy 顺序 = 关卡顺序）")]
         [SerializeField]
         RectTransform nodesRoot;
 
@@ -42,14 +43,6 @@ namespace Game.View
         [Tooltip("标题文本")]
         [SerializeField]
         TMP_Text titleLabel;
-
-        [Tooltip("节点水晶图（索引 = 关卡号-1，由生成器路径表回填）")]
-        [SerializeField]
-        Sprite[] crystalSprites;
-
-        [Tooltip("节点编号徽章（索引 = 关卡号-1，由生成器路径表回填）")]
-        [SerializeField]
-        Sprite[] badgeSprites;
 
         [Tooltip("返回按钮文本")]
         [SerializeField]
@@ -113,28 +106,39 @@ namespace Game.View
                 return;
             }
 
-            foreach (var def in _model.Levels)
+            // 节点集合 = NodesRoot 的全部直接子物体（按 Hierarchy 顺序 = 关卡顺序；用户在编辑器里
+            // 自由增删空对象/拖动位置，关卡数不固定）。子物体比 Levels 表多时自动出占位关卡
+            // （sceneName 空，进入按钮预检只打 Warning）。
+            var anchors = new List<RectTransform>();
+            foreach (Transform c in nodesRoot)
+                anchors.Add((RectTransform)c);
+            anchors.Sort((a, b) => a.GetSiblingIndex().CompareTo(b.GetSiblingIndex()));
+
+            foreach (var a in anchors)
             {
-                _nodes.Add(CreateNode(def));
+                var levelId = a.GetSiblingIndex() + 1;
+                var def = _model.GetDef(levelId) ?? new LevelDef { levelId = levelId, sceneName = "" };
+                _nodes.Add(CreateNode(def, a));
             }
         }
 
-        LevelNodeView CreateNode(LevelDef def)
+        LevelNodeView CreateNode(LevelDef def, RectTransform anchor)
         {
-            var nodeGo = Instantiate(levelNodePrefab, nodesRoot);
+            var nodeGo = Instantiate(levelNodePrefab, anchor);
             nodeGo.name = "Node_" + def.levelId;
             var node = (RectTransform)nodeGo.transform;
-            // 锚点定位：anchor 即归一化位置——不依赖布局更新时序
-            node.anchorMin = node.anchorMax = def.nodePos;
+            // 锚点模式：节点居中锚定于空对象（位置=空对象位置，用户拖空对象即拖节点）
+            node.anchorMin = node.anchorMax = new Vector2(0.5f, 0.5f);
             node.anchoredPosition = Vector2.zero;
 
             var button = node.GetComponent<Button>();
-            var crystalImage = node.Find("Crystal")?.GetComponent<Image>();
-            var badgeImage = node.Find("Badge")?.GetComponent<Image>();
-            ApplyNodeIcon(crystalImage, crystalSprites, def.levelId);
-            ApplyNodeIcon(badgeImage, badgeSprites, def.levelId);
+            // 通用节点形态（2026-10-18）：Badge=框框图（生成器固定 badge_01_no_number，全关卡共用）、
+            // Badge/LevNum=框内文本——关卡号直接打字写进去，加关卡零素材成本
+            var frameImage = node.Find("Badge")?.GetComponent<Image>();
+            var numText = node.Find("Badge/LevNum")?.GetComponent<TMP_Text>();
+            if (numText != null) numText.text = def.levelId.ToString();
 
-            var view = new LevelNodeView(crystalImage, badgeImage, button, def);
+            var view = new LevelNodeView(frameImage, numText, button, def);
 
             // 无条件注册点击监听：未解锁由 Refresh 置 interactable=false 挡住点击。
             // 若只在「创建时已解锁」的节点上注册，将来面板存续期间动态解锁时 Refresh 只改外观不补监听，
@@ -148,17 +152,6 @@ namespace Game.View
             return view;
         }
 
-        /// <summary>按关卡号取节点图标（索引 = 关卡号-1）；未配置/越界时隐藏该图，避免占位白块。</summary>
-        static void ApplyNodeIcon(Image image, Sprite[] sprites, int levelId)
-        {
-            if (image == null) return;
-
-            var index = levelId - 1;
-            var sprite = sprites != null && index >= 0 && index < sprites.Length ? sprites[index] : null;
-            image.sprite = sprite;
-            if (sprite == null) image.gameObject.SetActive(false);
-        }
-
         void OpenDetail(LevelDef def)
         {
             // 全项目统一面板形态：详情弹窗也是 Panel，走 UIModule.Show（不用窗口的 Open/Close 接口）。
@@ -169,7 +162,9 @@ namespace Game.View
         /// <summary>按当前语言刷新全部文本（标题 / 按钮 / 节点状态）。</summary>
         void ApplyLocalization()
         {
-            if (titleLabel != null) titleLabel.text = Localization.Get(Localization.Key.LevelSelectTitle);
+            // 2026-10-18 用户定稿：Title 暂时为空（背景图横幅自带「关卡总览」，两行文字会重叠）——
+            // 本地化键 LevelSelectTitle 仍保留「选择关卡」，恢复标题时取消下一行注释即可。
+            // if (titleLabel != null) titleLabel.text = Localization.Get(Localization.Key.LevelSelectTitle);
             if (backButtonLabel != null) backButtonLabel.text = Localization.Get(Localization.Key.LevelSelectBack);
             if (settingsButtonLabel != null) settingsButtonLabel.text = Localization.Get(Localization.Key.SettingsTitle);
 
@@ -177,23 +172,23 @@ namespace Game.View
         }
 
         /// <summary>
-        /// 单个关卡节点的视图句柄：节点是「水晶 + 徽章」图标按钮（无文字），
-        /// 解锁态原色、未解锁整体压灰且不可点；星级/用时记录在详情面板里看。
+        /// 单个关卡节点的视图句柄：节点是「通用框框图 + 框内关卡号文本」，
+        /// 解锁态原色、未解锁框与文本整体压灰且不可点；星级/用时记录在详情面板里看。
         /// </summary>
         sealed class LevelNodeView
         {
             static readonly Color UnlockedColor = Color.white;                   // 有专属美术走原色
             static readonly Color LockedColor = new Color(0.40f, 0.40f, 0.44f); // 未解锁：整体压灰
 
-            readonly Image _crystal;
-            readonly Image _badge;
+            readonly Image _frame;   // 框框图（所有关卡共用）
+            readonly TMP_Text _num;  // 框内关卡号文本
             readonly Button _button;
             readonly LevelDef _def;
 
-            internal LevelNodeView(Image crystal, Image badge, Button button, LevelDef def)
+            internal LevelNodeView(Image frame, TMP_Text num, Button button, LevelDef def)
             {
-                _crystal = crystal;
-                _badge = badge;
+                _frame = frame;
+                _num = num;
                 _button = button;
                 _def = def;
             }
@@ -201,8 +196,8 @@ namespace Game.View
             internal void Refresh(LevelSelectModel model)
             {
                 var unlocked = model.IsUnlocked(_def.levelId);
-                if (_crystal != null) _crystal.color = unlocked ? UnlockedColor : LockedColor;
-                if (_badge != null) _badge.color = unlocked ? UnlockedColor : LockedColor;
+                if (_frame != null) _frame.color = unlocked ? UnlockedColor : LockedColor;
+                if (_num != null) _num.color = unlocked ? UnlockedColor : LockedColor;
                 if (_button != null) _button.interactable = unlocked;
             }
         }

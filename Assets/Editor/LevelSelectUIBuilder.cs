@@ -44,20 +44,9 @@ namespace Game.Editor
         const string EnterBtnBgPath = "Assets/Arts/UI组件/按钮底图_开始_无字.png";   // 进入按钮底图（玫红带翼横幅，Sliced）
         const string CancelBtnBgPath = "Assets/Arts/UI组件/按钮底图_退出_无字.png";  // 取消按钮底图（胶囊，Sliced）
 
-        // 关卡节点图标（2026-10-18 用户拍板：节点 = 水晶主题图 + 编号徽章叠加的图标按钮，目前 3 关）。
-        // 索引 = 关卡号-1；新增关卡在此加一行路径，生成器会把整个数组回填进 LevelSelectPanel。
-        static readonly string[] CrystalSpritePaths =
-        {
-            UiImgDir + "/crystal_blue.png",   // 第 1 关：冰晶王座
-            UiImgDir + "/crystal_fire.png",   // 第 2 关：熔岩晶蛋
-            UiImgDir + "/crystal_purple.png", // 第 3 关：星辉紫晶
-        };
-        static readonly string[] BadgeSpritePaths =
-        {
-            UiImgDir + "/badge_01.png",
-            UiImgDir + "/badge_02.png",
-            UiImgDir + "/badge_03.png",
-        };
+        // 关卡节点框图（2026-10-18 用户拍板通用化：节点 = 框框图 + 框内文本控件，所有关卡共用一张框，
+        // 关卡号由运行时写进 LevNum 文本——加关卡零素材成本）
+        const string NodeFrameSpritePath = UiImgDir + "/badge_01_no_number.png";
 
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
@@ -88,6 +77,19 @@ namespace Game.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[选关] UI 预制体已重建：" + PanelPath + " / " + DetailPath + " / " + NodePath);
+        }
+
+        /// <summary>
+        /// 只重建 LevelNode 节点模板。**不动 LevelSelectPanel / LevelDetailPanel**：
+        /// 二者布局有用户手调（Title 空文本、posi 锚点位置、详情标题微调）尚未同步进生成器，
+        /// 整体重跑会覆盖手调——布局定稿同步前节点类改动一律走本菜单（2026-10-18 约定）。
+        /// </summary>
+        [MenuItem("Tools/选关/仅重建关卡节点")]
+        public static void RebuildNodeOnly()
+        {
+            BuildLevelNode();
+            AssetDatabase.SaveAssets();
+            Debug.Log("[选关] LevelNode 已单独重建：" + NodePath);
         }
 
         // ---------- 关卡详情文案（GameText 表） ----------
@@ -158,6 +160,30 @@ namespace Game.Editor
             var nodesRoot = NewRect("NodesRoot", root.transform);
             Stretch(nodesRoot, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.85f));
 
+            // 位置锚点（2026-10-18 用户工作流）：NodesRoot 下每个空对象 = 一个关卡位——
+            // 用户在编辑器里自由增删空对象（名字随意，如 posi）/拖动位置，Hierarchy 顺序 = 关卡顺序，
+            // 运行时节点以每个空对象为父创建（拖空对象即拖节点）。
+            // 生成器只负责预建初始锚点（posi×关卡数）并保留重建前已有的位置（按顺序对应，用户拖好的不丢）。
+            var oldAnchorPositions = new System.Collections.Generic.List<Vector2>();
+            var existingPanelGo = AssetDatabase.LoadAssetAtPath<GameObject>(PanelPath);
+            if (existingPanelGo != null)
+            {
+                var oldNodesRoot = existingPanelGo.transform.Find("NodesRoot");
+                if (oldNodesRoot != null)
+                    foreach (Transform c in oldNodesRoot)
+                        oldAnchorPositions.Add(((RectTransform)c).anchorMin);
+            }
+
+            var levelCount = Mathf.Max(oldAnchorPositions.Count, new Game.Model.LevelSelectModel().Levels.Length);
+            for (var i = 0; i < levelCount; i++)
+            {
+                var anchorRt = NewRect("posi", nodesRoot);
+                anchorRt.pivot = new Vector2(0.5f, 0.5f);
+                anchorRt.anchorMin = anchorRt.anchorMax = i < oldAnchorPositions.Count ? oldAnchorPositions[i] : new Game.Model.LevelSelectModel().Levels[i].nodePos;
+                anchorRt.anchoredPosition = Vector2.zero;
+                anchorRt.sizeDelta = new Vector2(180f, 180f);
+            }
+
             // 左上：返回按钮——120×120 图标位。图标是方形透明图，配方形按钮才不被压扁；
             // 纯图标不放文字：LevelSelectPanel.ApplyLocalization 会在 label 非空时填中文，
             // 文字压在图标上会糊，故这里不建 Text 子节点、也不回填 backButtonLabel。
@@ -184,8 +210,6 @@ namespace Game.Editor
             so.FindProperty("settingsButton").objectReferenceValue = settingsBtn;
             so.FindProperty("levelNodePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(NodePath);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
-            FillSpriteArray(so, "crystalSprites", CrystalSpritePaths);
-            FillSpriteArray(so, "badgeSprites", BadgeSpritePaths);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             SaveAsPrefab(root, PanelPath);
@@ -313,7 +337,7 @@ namespace Game.Editor
             Object.DestroyImmediate(root);
         }
 
-        // ---------- 关卡节点模板（图标按钮：水晶主题图 + 编号徽章叠加，2026-10-18 用户拍板形态） ----------
+        // ---------- 关卡节点模板（通用形态：框框图 + 框内文本，2026-10-18 用户拍板） ----------
 
         static void BuildLevelNode()
         {
@@ -321,25 +345,25 @@ namespace Game.Editor
             var rt = (RectTransform)root.transform;
             rt.sizeDelta = new Vector2(180f, 180f);
 
-            // 根只有 Button（无 Image）：点击热区由 Crystal/Badge 的 Image 承接，事件冒泡到父级 Button。
-            // 节点不再带 Name/Stars 文字——关卡号在徽章图上，解锁状态由运行时染灰表达。
+            // 根只有 Button（无 Image）：点击热区由框图 Image 承接，事件冒泡到父级 Button
             root.AddComponent<Button>();
 
-            // 主图：关卡主题水晶。素材是 532×785 一类的竖长图，Stretch 满节点 + preserveAspect 自动保比例居中
-            var crystal = NewRect("Crystal", root.transform);
-            Stretch(crystal);
-            var crystalImage = crystal.gameObject.AddComponent<Image>();
-            crystalImage.color = Color.white;   // 有专属美术走原色（项目惯例：不叠底色染色）
-            crystalImage.preserveAspect = true;
-
-            // 编号徽章：叠在水晶之上（sibling 靠后 = 渲染层级在上，用户拍板「层级在上一点」）
+            // 框框：所有关卡共用的通用框图（badge_01_no_number——八边形金边框去数字版），撑满节点；
+            // 素材 640×621 近方形，preserveAspect 下 180×180 内约 175 高、上下微留边
             var badge = NewRect("Badge", root.transform);
-            badge.anchorMin = badge.anchorMax = badge.pivot = new Vector2(0.5f, 0.5f);
-            badge.sizeDelta = new Vector2(100f, 100f);
-            badge.anchoredPosition = Vector2.zero;
+            Stretch(badge);
             var badgeImage = badge.gameObject.AddComponent<Image>();
+            badgeImage.sprite = LoadSprite(NodeFrameSpritePath);
             badgeImage.color = Color.white;
             badgeImage.preserveAspect = true;
+
+            // 框内文本（LevNum：用户手工命名沿用）：运行时由 CreateNode 写关卡号，初始留空；
+            // raycastTarget=false 不挡点击（NewTmp 已设），框外超宽无碍（文字居中渲染）
+            var num = NewRect("LevNum", badge);
+            num.anchorMin = num.anchorMax = num.pivot = new Vector2(0.5f, 0.5f);
+            num.sizeDelta = new Vector2(140f, 90f);
+            num.anchoredPosition = Vector2.zero;
+            NewTmp(num, string.Empty, 56f);
 
             SaveAsPrefab(root, NodePath);
             Object.DestroyImmediate(root);
@@ -354,15 +378,6 @@ namespace Game.Editor
             if (sprite == null)
                 Debug.LogWarning($"[LevelSelectUIBuilder] 未找到素材 {path}，该处回退为纯色占位");
             return sprite;
-        }
-
-        /// <summary>回填 Sprite[] 序列化字段：数组长度 = 路径表长度，缺素材留空（运行时 ApplyNodeIcon 会隐藏空图）。</summary>
-        static void FillSpriteArray(SerializedObject so, string property, string[] paths)
-        {
-            var arr = so.FindProperty(property);
-            arr.arraySize = paths.Length;
-            for (var i = 0; i < paths.Length; i++)
-                arr.GetArrayElementAtIndex(i).objectReferenceValue = LoadSprite(paths[i]);
         }
 
         /// <summary>给按钮挂图标：有图则用原色 + 保持比例，无图则退回纯色块。</summary>
