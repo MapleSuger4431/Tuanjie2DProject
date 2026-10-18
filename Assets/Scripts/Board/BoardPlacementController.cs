@@ -33,7 +33,8 @@ namespace Game.Board
 
         // 鼠标位置与左键放置走 Input Action（GameInputActions 的 Board 表）
         GameInputActions.BoardActions _input;
-        bool _inputReady;
+        // R 键旋转的 action 引用，兼作输入绑定有效性哨兵（域重载会把它冲成 null，见 EnsureInputBound）
+        InputAction _rotateAction;
 
         // 握点：方块里始终压在鼠标格心上的那个实格（取靠近包围盒中心的）。换块即重算
         TilePiece _gripPiece;
@@ -52,16 +53,33 @@ namespace Game.Board
             _ghost = GetComponent<TileGhostView>();
             _fitter = GetComponent<BoardCameraFitter>();
             _camera = Camera.main;
-            _input = GameInput.Instance.Board;
-            // 旋转是「一次按下转一次」的离散动作，走 performed 回调而不是 Update 轮询：
-            // 轮询要正好赶上按下那一帧才读得到 WasPressedThisFrame，事件驱动不会漏（与 Zoom / ResetView 同套写法）
-            _input.Rotate.performed += OnRotatePerformed;
-            _inputReady = true;
+            BindInput();
         }
 
         void OnDestroy()
         {
-            if (_inputReady) _input.Rotate.performed -= OnRotatePerformed;
+            // 域重载后 _rotateAction 为 null：旧订阅已随旧域销毁，此时既无需退订、也不能解引用 _input（内部引用已被冲掉）
+            if (_rotateAction != null) _rotateAction.performed -= OnRotatePerformed;
+        }
+
+        /// <summary>绑定 Board 输入表与 R 键旋转回调；域重载后引用失效时由 EnsureInputBound 惰性重绑。</summary>
+        void BindInput()
+        {
+            _input = GameInput.Instance.Board;
+            // 旋转是「一次按下转一次」的离散动作，走 performed 回调而不是 Update 轮询：
+            // 轮询要正好赶上按下那一帧才读得到 WasPressedThisFrame，事件驱动不会漏（与 Zoom / ResetView 同套写法）
+            _rotateAction = _input.Rotate;
+            _rotateAction.performed += OnRotatePerformed;
+        }
+
+        /// <summary>
+        /// BoardActions 包装内的托管引用不参与序列化恢复：Play 中被重编译（bridge 脚本/并发改动触发）后
+        /// _input 会失效并抛 NRE，这里按 _rotateAction 哨兵惰性重绑。旧订阅已随旧域销毁，直接 += 即可。
+        /// </summary>
+        void EnsureInputBound()
+        {
+            if (_rotateAction != null) return;
+            BindInput();
         }
 
         /// <summary>R 键：只在铺路阶段可转，运行 / 结算阶段棋盘已锁定。</summary>
@@ -93,7 +111,8 @@ namespace Game.Board
                 _gripOffset = ComputeGrip(piece);
             }
 
-            if (!_inputReady || piece == null || piece.Shape == null)
+            EnsureInputBound();
+            if (piece == null || piece.Shape == null)
             {
                 _ghost?.Hide();
                 return;
