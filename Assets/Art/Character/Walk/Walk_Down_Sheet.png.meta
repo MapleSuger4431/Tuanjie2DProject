@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: CX1JtHulWnnFfwirrs9IKdsJt3rmgoDejM0U1UgKaXRAuUMK33lW12Q=
+guid: D3lO5nuvACjjbwMcKvmbvBvoxGS1GNf5ep8tjBxBDERhMUM8//MC+3c=
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,11 +72,11 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     maxPlaceholderSize: 32
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -112,373 +112,9 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WeixinMiniGame
-    maxTextureSize: 2048
-    maxPlaceholderSize: 32
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: PlayableAds
-    maxTextureSize: 2048
-    maxPlaceholderSize: 32
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Walk_Down_00
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 23a002a12e0173c00800000000000000
-      internalID: 880190815461182002
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_01
-      rect:
-        serializedVersion: 2
-        x: 229
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3552691554f9d5840800000000000000
-      internalID: 5214499063635256659
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_02
-      rect:
-        serializedVersion: 2
-        x: 458
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 27748c360a02e0e60800000000000000
-      internalID: 7930311867086948210
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_03
-      rect:
-        serializedVersion: 2
-        x: 687
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bd97cebe18f1c55f0800000000000000
-      internalID: -766703193690441253
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_04
-      rect:
-        serializedVersion: 2
-        x: 916
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d53cbba3e2c4f0b30800000000000000
-      internalID: 4255703934325998429
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_05
-      rect:
-        serializedVersion: 2
-        x: 1145
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e0cf8f55aff6814a0800000000000000
-      internalID: -6622420131073426418
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_06
-      rect:
-        serializedVersion: 2
-        x: 1374
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5793f2831cb204950800000000000000
-      internalID: 6431188376756369781
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_07
-      rect:
-        serializedVersion: 2
-        x: 1603
-        y: 0
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 615e5b27714e950d0800000000000000
-      internalID: -3433462451533388522
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_08
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c8f3d8c628d039b40800000000000000
-      internalID: 5445711228239167372
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_09
-      rect:
-        serializedVersion: 2
-        x: 229
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: daba5c68df6d76850800000000000000
-      internalID: 6370296582315027373
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_10
-      rect:
-        serializedVersion: 2
-        x: 458
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 922d1ad156e372210800000000000000
-      internalID: 1308082820784181801
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_11
-      rect:
-        serializedVersion: 2
-        x: 687
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 82b979a73b6b59ef0800000000000000
-      internalID: -101974534573810904
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_12
-      rect:
-        serializedVersion: 2
-        x: 916
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 938df5c84c6c4ef70800000000000000
-      internalID: 9215709284977858617
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_13
-      rect:
-        serializedVersion: 2
-        x: 1145
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0df769b3b0f1f6c30800000000000000
-      internalID: 4354733497795379152
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_14
-      rect:
-        serializedVersion: 2
-        x: 1374
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5f1336bb8b50b3720800000000000000
-      internalID: 2826859482081079797
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk_Down_15
-      rect:
-        serializedVersion: 2
-        x: 1603
-        y: 247
-        width: 229
-        height: 247
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3a450e1268402a350800000000000000
-      internalID: 6026384225515623587
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -489,23 +125,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      Walk_Down_00: 880190815461182002
-      Walk_Down_01: 5214499063635256659
-      Walk_Down_02: 7930311867086948210
-      Walk_Down_03: -766703193690441253
-      Walk_Down_04: 4255703934325998429
-      Walk_Down_05: -6622420131073426418
-      Walk_Down_06: 6431188376756369781
-      Walk_Down_07: -3433462451533388522
-      Walk_Down_08: 5445711228239167372
-      Walk_Down_09: 6370296582315027373
-      Walk_Down_10: 1308082820784181801
-      Walk_Down_11: -101974534573810904
-      Walk_Down_12: 9215709284977858617
-      Walk_Down_13: 4354733497795379152
-      Walk_Down_14: 2826859482081079797
-      Walk_Down_15: 6026384225515623587
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   doOverrideTextureManagerOperations: 0
