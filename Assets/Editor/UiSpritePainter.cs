@@ -13,6 +13,7 @@ namespace Game.Editor
         public const string SpriteDir = "Assets/Art/Board/UI";
         public const string PanelSpritePath = SpriteDir + "/Panel_DarkPurple.png";
         public const string CardSpritePath = SpriteDir + "/Card_Rounded.png";
+        public const string PlaqueSpritePath = SpriteDir + "/Plaque_Violet.png";
 
         /// <summary>深紫面板：纵向渐变填充 + 亮紫描边，圆角 24px，9-slice 边 36。</summary>
         public static readonly Color PanelTop = new Color(0.133f, 0.082f, 0.216f, 1f);
@@ -26,10 +27,19 @@ namespace Game.Editor
         public static readonly Color CardTop = new Color(1f, 1f, 1f, 1f);
         public static readonly Color CardBottom = new Color(0.82f, 0.82f, 0.86f, 1f);
 
+        /// <summary>按钮牌匾：暗紫宝石底 + 古铜金描边（旧魔导书那套，配羊皮纸卷轴）。</summary>
+        public static readonly Color PlaqueTop = new Color(0.353f, 0.180f, 0.435f, 1f);
+        public static readonly Color PlaqueBottom = new Color(0.196f, 0.078f, 0.267f, 1f);
+        public static readonly Color PlaqueStroke = new Color(0.78f, 0.63f, 0.33f, 1f);
+        public static readonly Color PlaqueOuterStroke = new Color(0.259f, 0.125f, 0.322f, 1f);
+
         /// <summary>生成（或重画）两张皮肤贴图并返回加载好的 Sprite。</summary>
         public static Sprite EnsurePanelSprite() => EnsureSprite(PanelSpritePath, 128, 24f, 3f, PanelTop, PanelBottom, PanelStroke, PanelOuterStroke, new Vector4(36f, 36f, 36f, 36f));
 
         public static Sprite EnsureCardSprite() => EnsureSprite(CardSpritePath, 128, 20f, 0f, CardTop, CardBottom, Color.clear, Color.clear, Vector4.zero);
+
+        /// <summary>按钮牌匾：128px、圆角 28、金边 4px，9-slice 边 40（拉伸到 330×88 仍保住圆角与描边）。</summary>
+        public static Sprite EnsurePlaqueSprite() => EnsureSprite(PlaqueSpritePath, 128, 28f, 4f, PlaqueTop, PlaqueBottom, PlaqueStroke, PlaqueOuterStroke, new Vector4(40f, 40f, 40f, 40f));
 
         static Sprite EnsureSprite(
             string path, int size, float radius, float border,

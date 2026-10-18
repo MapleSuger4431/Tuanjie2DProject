@@ -29,6 +29,12 @@ namespace Game.Board
 
         public override void OnEnter(TileEffectContext ctx) => ctx.Result.ForcedNext = direction;
 
+        /// <summary>
+        /// 方块顺时针转 90° 时箭头跟着转：本资产本身**不改**，换成旋转后那方向对应的资产（上→右→下→左）。
+        /// 缺资产时 <see cref="For" /> 给出同方向的运行期实例，转向逻辑照样成立，只是没图标。
+        /// </summary>
+        public override TileEffect RotatedCW() => For(MoveDirectionInfo.RotateCW(direction));
+
         /// <summary>取该方向的资产；Resources 下缺失时回落到运行期现造的实例（无图标，转向逻辑仍生效）。</summary>
         public static ForcedTurnEffect For(MoveDirection direction)
         {

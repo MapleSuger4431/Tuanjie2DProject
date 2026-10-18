@@ -252,6 +252,22 @@ MonoBehaviour:
     m_Localized: Ice
     m_Metadata:
       m_Items: []
+  - m_Id: 133109763792896
+    m_Localized: Achievement Unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181504
+    m_Localized: 'New Best Time: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181505
+    m_Localized: Element Switched
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181506
+    m_Localized: Witch is now {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

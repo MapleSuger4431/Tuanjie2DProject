@@ -29,5 +29,8 @@ namespace Game.Core
 
         /// <summary>通关失败结算面板：Resources/UIPrefabs/LevelFailPanel。</summary>
         public const string LevelFailPanel = "UIPrefabs/LevelFailPanel";
+
+        /// <summary>关卡内右下角成就 / 消息小窗（Top 层，常驻）：Resources/UIPrefabs/LevelTipPanel。</summary>
+        public const string LevelTipPanel = "UIPrefabs/LevelTipPanel";
     }
 }

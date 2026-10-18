@@ -55,6 +55,13 @@ namespace Game.Board
 
         [SerializeField] ObservableValue<ElementState> element = new ObservableValue<ElementState>(ElementState.Fire);
 
+        /// <summary>
+        /// 本局已捡到的金币枚数（三星制的第二、三颗星判据）。
+        /// 一个关卡可以摆多枚（第 3~5 关各 2 枚），<see cref="CoinTotal" /> 是分母；
+        /// 拾取状态本身记在 <see cref="BoardCoin" /> 上，这里只存「本局捡了几枚」——重开即复位。
+        /// </summary>
+        [SerializeField] ObservableValue<int> coinsCollected = new ObservableValue<int>(0);
+
         /// <summary>上一步所在的格（禁止 180° 掉头的判据）；初始等于起点，表示「还没有来路」。</summary>
         Vector2Int _previousCell;
 
@@ -84,6 +91,15 @@ namespace Game.Board
         /// <summary>AI 当前元素属性（火 / 冰）：出生按关卡配置，反转效果踏入即翻转，重开时复位。</summary>
         public ObservableValue<ElementState> Element => element;
 
+        /// <summary>本局已捡到的金币枚数。</summary>
+        public ObservableValue<int> CoinsCollected => coinsCollected;
+
+        /// <summary>本关一共摆了几枚金币（场景里 <see cref="BoardCoin" /> 的个数）。</summary>
+        public int CoinTotal => BoardCoin.TotalCount;
+
+        /// <summary>本关金币是否已全部捡到（第二颗星的判据）。</summary>
+        public bool AllCoinsCollected => BoardCoin.AllCollected;
+
         public bool IsBuilding => phase.Value == Phase.Building;
         public bool IsRunning => phase.Value == Phase.Running;
 
@@ -111,6 +127,8 @@ namespace Game.Board
             phase.Value = Phase.Building;
             result.Value = RunResult.None;
             stepCount.Value = 0;
+            BoardCoin.ResetAll();
+            coinsCollected.Value = 0;
             _lastDirection = null;
             _forcedDirection = null;
             element.Value = ResolveInitialElement();
@@ -161,6 +179,7 @@ namespace Game.Board
             aiCell.Value = start;
             phase.Value = Phase.Running;
 
+            TryCollectCoin(start);
             AiMoved.Invoke();
 
             // 起点紧贴终点（极小棋盘）等边界情况：出发即在终点上
@@ -199,6 +218,7 @@ namespace Game.Board
             _lastDirection = direction;
             aiCell.Value = target;
             stepCount.Value += 1;
+            TryCollectCoin(target);
             AiMoved.Invoke();
 
             if (target == _board.GoalCell)
@@ -291,9 +311,24 @@ namespace Game.Board
 
             _previousCell = _effectResult.ClearIncoming ? teleportTo : cell;
             aiCell.Value = teleportTo;
+            TryCollectCoin(teleportTo);
             AiMoved.Invoke();
 
             if (teleportTo == _board.GoalCell) Finish(RunResult.Win);
+        }
+
+        /// <summary>
+        /// 踏入某格时的金币结算：金币是本关的固定点（<see cref="BoardCoin" />；没摆金币的关卡恒不触发），
+        /// 走过一次即标记该枚已拾取——多枚关卡要逐枚捡齐才算「全部拿到」（三星第二、三颗星判据）。
+        /// 重开由 <see cref="ResetRun" /> 复位。传送落点同样结算——被传过去也算「走过」。
+        /// </summary>
+        void TryCollectCoin(Vector2Int cell)
+        {
+            var coin = BoardCoin.FindUncollected(cell);
+            if (coin == null) return;
+
+            coin.MarkCollected();
+            coinsCollected.Value = BoardCoin.CollectedCount;
         }
 
         /// <summary>

@@ -54,6 +54,17 @@ namespace Game.Board
         /// </summary>
         public virtual bool IsPortal => false;
 
+        /// <summary>
+        /// 随方块顺时针旋转 90° 后本格应该变成的效果；默认返回自身——大多数效果与朝向无关
+        ///（传送门、属性反转转前转后是同一个作用）。有朝向的效果（强制转向箭头）必须重写，
+        /// 否则方块转过来了、箭头还指着原来的方向。
+        /// <para>
+        /// 必须返回**另一份资产**而不是就地改字段：效果资产是全局共享的 ScriptableObject，
+        /// 就地改方向会污染所有引用它的格子、关卡与后续 Play 会话。
+        /// </para>
+        /// </summary>
+        public virtual TileEffect RotatedCW() => this;
+
         public abstract void OnEnter(TileEffectContext ctx);
     }
 }

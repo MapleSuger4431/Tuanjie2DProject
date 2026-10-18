@@ -21,6 +21,9 @@ namespace Game.Board
             BoardContext.Instance.GetModel<BoardRunModel>().ResetRun();
 
             UIModule.Show<BoardRuntimePanel>(path: panelPath);
+
+            // 右下角成就 / 消息小窗随关卡常驻：它只订阅 BoardTipModel，没消息时整块停用
+            UIModule.Show<LevelTipPanel>(path: UIPaths.LevelTipPanel);
         }
     }
 }

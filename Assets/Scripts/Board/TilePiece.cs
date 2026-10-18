@@ -76,6 +76,10 @@ namespace Game.Board
         /// <summary>
         /// 顺时针旋转 90° 产出**新实例**（形状库里的原件不受影响）：格偏移、每格状态、每格效果一起转，
         /// 三者始终保持同下标对齐——分开转会让「哪一格是火 / 哪一格带箭头」错位。
+        /// <para>
+        /// 有朝向的效果（转向箭头）会换成旋转后对应方向的资产，所以箭头跟着方块一起转；
+        /// 与朝向无关的效果（传送门、属性反转）仍是同一份资产。
+        /// </para>
         /// </summary>
         public TilePiece RotateCW()
         {
@@ -112,9 +116,12 @@ namespace Game.Board
             var orderedEffects = new TileEffect[count];
             for (var i = 0; i < count; i++)
             {
+                var source = _cellEffects[order[i]];
                 orderedCells[i] = rotated[order[i]];
                 orderedTypes[i] = _cellTypes[order[i]];
-                orderedEffects[i] = _cellEffects[order[i]];
+                // 有朝向的效果（转向箭头）跟着方块一起转；与朝向无关的（传送门/属性反转）原样拿过来。
+                // 拿到的是另一份资产，共享的 .asset 本身不会被改。
+                orderedEffects[i] = source != null ? source.RotatedCW() : null;
             }
 
             return new TilePiece(_shape.WithCells(orderedCells), orderedTypes, orderedEffects);

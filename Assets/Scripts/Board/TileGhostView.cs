@@ -20,8 +20,8 @@ namespace Game.Board
         [SerializeField] Color invalidColor = new Color(1f, 0.25f, 0.25f, 0.6f);
 
         [Header("落块边框")]
-        [Tooltip("合法落点时边框的颜色")]
-        [SerializeField] Color outlineColor = new Color(1f, 1f, 1f, 0.95f);
+        [Tooltip("合法落点时边框的颜色（金色调中带一点紫，别写成纯白）")]
+        [SerializeField] Color outlineColor = new Color(1f, 0.8f, 0.45f, 0.95f);
 
         [Tooltip("边框粗细（相对格子尺寸的比例）")]
         [SerializeField, Range(0.02f, 0.4f)] float outlineWidth = 0.1f;

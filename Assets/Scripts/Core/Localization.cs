@@ -106,6 +106,19 @@ namespace Game.Core
 
             /// <summary>结算面板成绩行「已用方块」（{0} = 已用，{1} = 上限）。</summary>
             LevelResultPieces,
+
+            // ---- 关卡内消息小窗 ----
+            /// <summary>小窗标题：成就解锁。</summary>
+            TipAchievement,
+
+            /// <summary>小窗正文：通关刷新最短纪录（{0} = mm:ss.d）。</summary>
+            TipNewRecord,
+
+            /// <summary>小窗标题：AI 元素属性发生反转。</summary>
+            TipElementSwitched,
+
+            /// <summary>小窗正文：元素反转详情（{0} = 属性名，取自 ElementStateInfo.DisplayName）。</summary>
+            TipElementSwitchedBody,
         }
 
         /// <summary>语言切换事件：GameSettings.SetLanguage 保存后触发，已打开的界面应整体刷新文本。</summary>

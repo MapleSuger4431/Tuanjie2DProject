@@ -195,6 +195,22 @@ MonoBehaviour:
     m_Key: TileNameIce
     m_Metadata:
       m_Items: []
+  - m_Id: 133109763792896
+    m_Key: TipAchievement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181504
+    m_Key: TipNewRecord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181505
+    m_Key: TipElementSwitched
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133109772181506
+    m_Key: TipElementSwitchedBody
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

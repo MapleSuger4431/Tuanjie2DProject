@@ -328,7 +328,16 @@ namespace Game.Board
         {
             ApplyLocalization();
             OnRunStateChanged();
+
+            // 元素反转只在实际行进中播报：初始化与重开复位同样会触发本回调，那两种不是「反转」
+            if (_run == null || !_run.IsRunning || _run.StepCount.Value <= 0) return;
+
+            BoardTip.Send(Localization.Key.TipElementSwitched, Localization.Key.TipElementSwitchedBody,
+                ElementStateInfo.DisplayName(_run.Element.Value));
         }
+
+        /// <summary>秒表当前文本（小窗与结算面板共用同一口径）。</summary>
+        string ElapsedText() => _time != null ? _time.FormatElapsed() : "--:--.-";
 
         protected override void OnShow(object payload)
         {
@@ -411,6 +420,11 @@ namespace Game.Board
             {
                 // 通关即写记录（最短用时在此刷新并落存档），破纪录与否传给结算面板展示
                 var isNewRecord = RecordClearForCurrentLevel();
+
+                // 破纪录同时走右下角小窗：结算面板盖住屏幕中央，小窗在 Top 层仍能看见
+                if (isNewRecord)
+                    BoardTip.Send(Localization.Key.TipAchievement, Localization.Key.TipNewRecord, ElapsedText());
+
                 UIModule.Show<LevelClearPanel>((object)isNewRecord, UIPaths.LevelClearPanel);
                 return;
             }
@@ -427,7 +441,8 @@ namespace Game.Board
             if (_time == null) return false;
 
             var service = GameContext.Instance.GetService<LevelProgressService>();
-            return service.RecordClearForCurrentScene(_time.Elapsed.Value, _run.StepCount.Value);
+            return service.RecordClearForCurrentScene(_time.Elapsed.Value, _run.StepCount.Value,
+                _run.CoinsCollected.Value, _run.CoinTotal);
         }
 
         void OnNextChanged(TilePiece piece)
