@@ -43,6 +43,14 @@ namespace Game.View
         [SerializeField]
         TMP_Text titleLabel;
 
+        [Tooltip("节点水晶图（索引 = 关卡号-1，由生成器路径表回填）")]
+        [SerializeField]
+        Sprite[] crystalSprites;
+
+        [Tooltip("节点编号徽章（索引 = 关卡号-1，由生成器路径表回填）")]
+        [SerializeField]
+        Sprite[] badgeSprites;
+
         [Tooltip("返回按钮文本")]
         [SerializeField]
         TMP_Text backButtonLabel;
@@ -121,10 +129,12 @@ namespace Game.View
             node.anchoredPosition = Vector2.zero;
 
             var button = node.GetComponent<Button>();
-            var image = node.GetComponent<Image>();
-            var view = new LevelNodeView(node, image, button,
-                node.Find("Name")?.GetComponent<TMP_Text>(),
-                node.Find("Stars")?.GetComponent<TMP_Text>(), def);
+            var crystalImage = node.Find("Crystal")?.GetComponent<Image>();
+            var badgeImage = node.Find("Badge")?.GetComponent<Image>();
+            ApplyNodeIcon(crystalImage, crystalSprites, def.levelId);
+            ApplyNodeIcon(badgeImage, badgeSprites, def.levelId);
+
+            var view = new LevelNodeView(crystalImage, badgeImage, button, def);
 
             if (button != null && _model.IsUnlocked(def.levelId))
             {
@@ -132,8 +142,18 @@ namespace Game.View
                 button.onClick.AddListener(() => OpenDetail(captured));
             }
 
-            _ = nodeGo;   // 节点视觉后续直接改 LevelNode.prefab
             return view;
+        }
+
+        /// <summary>按关卡号取节点图标（索引 = 关卡号-1）；未配置/越界时隐藏该图，避免占位白块。</summary>
+        static void ApplyNodeIcon(Image image, Sprite[] sprites, int levelId)
+        {
+            if (image == null) return;
+
+            var index = levelId - 1;
+            var sprite = sprites != null && index >= 0 && index < sprites.Length ? sprites[index] : null;
+            image.sprite = sprite;
+            if (sprite == null) image.gameObject.SetActive(false);
         }
 
         void OpenDetail(LevelDef def)
@@ -153,38 +173,34 @@ namespace Game.View
             foreach (var node in _nodes) node.Refresh(_model);
         }
 
-        /// <summary>单个关卡节点的视图句柄：语言切换时按解锁/记录状态重刷文本与配色。</summary>
+        /// <summary>
+        /// 单个关卡节点的视图句柄：节点是「水晶 + 徽章」图标按钮（无文字），
+        /// 解锁态原色、未解锁整体压灰且不可点；星级/用时记录在详情面板里看。
+        /// </summary>
         sealed class LevelNodeView
         {
-            static readonly Color UnlockedColor = new Color(0.24f, 0.46f, 0.62f);
-            static readonly Color LockedColor = new Color(0.30f, 0.30f, 0.33f);
+            static readonly Color UnlockedColor = Color.white;                   // 有专属美术走原色
+            static readonly Color LockedColor = new Color(0.40f, 0.40f, 0.44f); // 未解锁：整体压灰
 
-            readonly Image _image;
+            readonly Image _crystal;
+            readonly Image _badge;
             readonly Button _button;
-            readonly TMP_Text _name;
-            readonly TMP_Text _stars;
             readonly LevelDef _def;
 
-            internal LevelNodeView(RectTransform root, Image image, Button button, TMP_Text name, TMP_Text stars, LevelDef def)
+            internal LevelNodeView(Image crystal, Image badge, Button button, LevelDef def)
             {
-                _image = image;
+                _crystal = crystal;
+                _badge = badge;
                 _button = button;
-                _name = name;
-                _stars = stars;
                 _def = def;
             }
 
             internal void Refresh(LevelSelectModel model)
             {
                 var unlocked = model.IsUnlocked(_def.levelId);
-                if (_image != null) _image.color = unlocked ? UnlockedColor : LockedColor;
+                if (_crystal != null) _crystal.color = unlocked ? UnlockedColor : LockedColor;
+                if (_badge != null) _badge.color = unlocked ? UnlockedColor : LockedColor;
                 if (_button != null) _button.interactable = unlocked;
-                if (_name != null) _name.text = Localization.Get(Localization.Key.LevelName, _def.levelId);
-
-                if (_stars == null) return;
-                if (!unlocked) _stars.text = Localization.Get(Localization.Key.LevelLocked);
-                else if (!model.HasRecord(_def.levelId)) _stars.text = Localization.Get(Localization.Key.LevelNoStar);
-                else _stars.text = new string('★', model.GetBestStars(_def.levelId)).PadRight(3, '☆');
             }
         }
     }

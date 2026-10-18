@@ -37,6 +37,21 @@ namespace Game.Editor
         const string BackSpritePath = UiImgDir + "/back.png";                // 返回图标
         const string SettingsSpritePath = UiImgDir + "/setting-transparent.png"; // 设置图标
 
+        // 关卡节点图标（2026-10-18 用户拍板：节点 = 水晶主题图 + 编号徽章叠加的图标按钮，目前 3 关）。
+        // 索引 = 关卡号-1；新增关卡在此加一行路径，生成器会把整个数组回填进 LevelSelectPanel。
+        static readonly string[] CrystalSpritePaths =
+        {
+            UiImgDir + "/crystal_blue.png",   // 第 1 关：冰晶王座
+            UiImgDir + "/crystal_fire.png",   // 第 2 关：熔岩晶蛋
+            UiImgDir + "/crystal_purple.png", // 第 3 关：星辉紫晶
+        };
+        static readonly string[] BadgeSpritePaths =
+        {
+            UiImgDir + "/badge_01.png",
+            UiImgDir + "/badge_02.png",
+            UiImgDir + "/badge_03.png",
+        };
+
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
 
@@ -123,7 +138,7 @@ namespace Game.Editor
             if (bgSprite != null)
             {
                 bgImage.sprite = bgSprite;
-                bgImage.preserveAspect = true;   // 非 16:9 画面宁可留边，也不把地图拉变形
+                bgImage.preserveAspect = false;  // 图已按 alpha 边界裁掉透明边（内容满幅），Stretch 全屏直接铺满窗口；裁后图比例贴近 16:9，拉伸变形 <3% 无感
                 bgImage.color = Color.white;     // 有美术时保持原色，不再叠深色
             }
             else
@@ -164,6 +179,8 @@ namespace Game.Editor
             so.FindProperty("settingsButton").objectReferenceValue = settingsBtn;
             so.FindProperty("levelNodePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(NodePath);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
+            FillSpriteArray(so, "crystalSprites", CrystalSpritePaths);
+            FillSpriteArray(so, "badgeSprites", BadgeSpritePaths);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             SaveAsPrefab(root, PanelPath);
@@ -244,24 +261,33 @@ namespace Game.Editor
             Object.DestroyImmediate(root);
         }
 
-        // ---------- 关卡节点模板 ----------
+        // ---------- 关卡节点模板（图标按钮：水晶主题图 + 编号徽章叠加，2026-10-18 用户拍板形态） ----------
 
         static void BuildLevelNode()
         {
             var root = new GameObject("LevelNode", typeof(RectTransform));
             var rt = (RectTransform)root.transform;
-            rt.sizeDelta = new Vector2(140f, 140f);
+            rt.sizeDelta = new Vector2(180f, 180f);
 
-            root.AddComponent<Image>().color = Color.white;
+            // 根只有 Button（无 Image）：点击热区由 Crystal/Badge 的 Image 承接，事件冒泡到父级 Button。
+            // 节点不再带 Name/Stars 文字——关卡号在徽章图上，解锁状态由运行时染灰表达。
             root.AddComponent<Button>();
 
-            var nameRow = NewRect("Name", root.transform);
-            Stretch(nameRow, new Vector2(0.05f, 0.42f), new Vector2(0.95f, 0.92f));
-            NewTmp(nameRow, string.Empty, 30f);
+            // 主图：关卡主题水晶。素材是 532×785 一类的竖长图，Stretch 满节点 + preserveAspect 自动保比例居中
+            var crystal = NewRect("Crystal", root.transform);
+            Stretch(crystal);
+            var crystalImage = crystal.gameObject.AddComponent<Image>();
+            crystalImage.color = Color.white;   // 有专属美术走原色（项目惯例：不叠底色染色）
+            crystalImage.preserveAspect = true;
 
-            var starsRow = NewRect("Stars", root.transform);
-            Stretch(starsRow, new Vector2(0.05f, 0.08f), new Vector2(0.95f, 0.42f));
-            NewTmp(starsRow, string.Empty, 24f);
+            // 编号徽章：叠在水晶之上（sibling 靠后 = 渲染层级在上，用户拍板「层级在上一点」）
+            var badge = NewRect("Badge", root.transform);
+            badge.anchorMin = badge.anchorMax = badge.pivot = new Vector2(0.5f, 0.5f);
+            badge.sizeDelta = new Vector2(100f, 100f);
+            badge.anchoredPosition = Vector2.zero;
+            var badgeImage = badge.gameObject.AddComponent<Image>();
+            badgeImage.color = Color.white;
+            badgeImage.preserveAspect = true;
 
             SaveAsPrefab(root, NodePath);
             Object.DestroyImmediate(root);
@@ -276,6 +302,15 @@ namespace Game.Editor
             if (sprite == null)
                 Debug.LogWarning($"[LevelSelectUIBuilder] 未找到素材 {path}，该处回退为纯色占位");
             return sprite;
+        }
+
+        /// <summary>回填 Sprite[] 序列化字段：数组长度 = 路径表长度，缺素材留空（运行时 ApplyNodeIcon 会隐藏空图）。</summary>
+        static void FillSpriteArray(SerializedObject so, string property, string[] paths)
+        {
+            var arr = so.FindProperty(property);
+            arr.arraySize = paths.Length;
+            for (var i = 0; i < paths.Length; i++)
+                arr.GetArrayElementAtIndex(i).objectReferenceValue = LoadSprite(paths[i]);
         }
 
         /// <summary>给按钮挂图标：有图则用原色 + 保持比例，无图则退回纯色块。</summary>
