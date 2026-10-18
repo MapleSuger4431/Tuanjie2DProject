@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: XisZtSL/BSreM+OKPQh7GQudx89JdUimfS6PH5nCwSI1TbEF4bDd2ok=
+guid: Ci5N4y6lVyiAZgFxO3Sv7p4SSPgo/JO5VVkYdkLu4EFc3lGxd+4/iDs=
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -142,7 +142,490 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Panel_Base
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 567
+        width: 501
+        height: 441
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 64, y: 64, z: 64, w: 64}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e76c79b57161cc4fbf0de328841c145
+      internalID: 128361399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Title_Settings
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 449
+        width: 189
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd5dd4284fe1e324aba4819e8901afbe
+      internalID: -101340087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Button_Octagon
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 378
+        width: 95
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f20c0e7f3a851b408f41b0cfae70de2
+      internalID: 1822458119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Button_Close
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 381
+        width: 91
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3ec5e2b5cdfd4e4cb9406a60d868cdb
+      internalID: 2025768751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Icon_X
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 393
+        width: 68
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94378f90cf91aad4399fac3eeec161bc
+      internalID: 1312399104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gem_Small
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 304
+        width: 77
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1e68aea3b0541149869176cae92ef3e
+      internalID: 719200165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gem_Large
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 165
+        width: 74
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39305cb3d9ed3164cae3db3ac8266127
+      internalID: 615874554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_Language
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 25
+        width: 121
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b7033d38a361374c8fb71dfb9d4aec7
+      internalID: -981864539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_Music
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 28
+        width: 101
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7607579f1e1b9747b58de5517de33ed
+      internalID: -489867365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_Chinese
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 27
+        width: 107
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8b5bc01b19614c409f0c1a1f311566a
+      internalID: 347119735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slider_Fill
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 187
+        width: 542
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 26, y: 14, z: 26, w: 14}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6bd7809473b7cd4685a000ffa888786
+      internalID: 931684793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slider_Track
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 247
+        width: 588
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 38, y: 20, z: 38, w: 20}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9c812c577fee7845b9583270f63cab3
+      internalID: 1439829213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Capsule_Selected
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 309
+        width: 257
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 34, y: 24, z: 34, w: 24}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51e63c23352441043b6c357f791dc45a
+      internalID: -1796878014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Capsule_Unselected
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 306
+        width: 254
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 34, y: 26, z: 34, w: 26}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d08f717fc0c024469a4aa25df20c5b2
+      internalID: -447793369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Title_Banner
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 467
+        width: 324
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 72, y: 26, z: 72, w: 26}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d9c50bad4f7a044989a0aa1aeb8498e
+      internalID: -1403540954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Title_Wings
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 464
+        width: 376
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 227146f4d5e782b46a8ce9cfbb70bf3b
+      internalID: 1969198530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Icon_Sparkle
+      rect:
+        serializedVersion: 2
+        x: 747
+        y: 105
+        width: 69
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c74e028dcafa21344bd02911bf55337d
+      internalID: 1357653567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_Sfx
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 104
+        width: 129
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 055c057d5527fd24dbb0e2e2c747da54
+      internalID: 1540485360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_Resolution
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 107
+        width: 149
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dc5aa2fd8bb3594eaa84674c9e70846
+      internalID: -492973648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Label_English
+      rect:
+        serializedVersion: 2
+        x: 628
+        y: 22
+        width: 167
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e0e54aa3f0dfae4a928c2c68b46e634
+      internalID: -1283432933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel_Frame
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 546
+        width: 505
+        height: 469
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 82, y: 82, z: 82, w: 82}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b992c1bbb45f34c4f9bdce606e3ae5b3
+      internalID: 636835769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arrow_Left
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 384
+        width: 76
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7eef59346b9d6b14fb881ab6573c7c5d
+      internalID: -1444517269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arrow_Right
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 387
+        width: 54
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8caa816c8f9fead49a136f0ed41ee4f7
+      internalID: -581894360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -153,7 +636,30 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      imagea92007bf12f4_0: 128361399
+      imagea92007bf12f4_1: -101340087
+      imagea92007bf12f4_10: 931684793
+      imagea92007bf12f4_11: 1439829213
+      imagea92007bf12f4_12: -1796878014
+      imagea92007bf12f4_13: -447793369
+      imagea92007bf12f4_14: -1403540954
+      imagea92007bf12f4_15: 1969198530
+      imagea92007bf12f4_16: 1357653567
+      imagea92007bf12f4_17: 1540485360
+      imagea92007bf12f4_18: -492973648
+      imagea92007bf12f4_19: -1283432933
+      imagea92007bf12f4_2: 1822458119
+      imagea92007bf12f4_20: 636835769
+      imagea92007bf12f4_21: -1444517269
+      imagea92007bf12f4_22: -581894360
+      imagea92007bf12f4_3: 2025768751
+      imagea92007bf12f4_4: 1312399104
+      imagea92007bf12f4_5: 719200165
+      imagea92007bf12f4_6: 615874554
+      imagea92007bf12f4_7: -981864539
+      imagea92007bf12f4_8: -489867365
+      imagea92007bf12f4_9: 347119735
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   doOverrideTextureManagerOperations: 0

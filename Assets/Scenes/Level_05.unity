@@ -18711,7 +18711,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2fcf69f0009c04116908e3aa987995b3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -39040,7 +39040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 4}
-  coinSprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  coinSprite: {fileID: 21300000, guid: 2fcf69f0009c04116908e3aa987995b3, type: 3}
   sizeInCells: 0.7
   collectDuration: 0.4
   riseInCells: 0.8
@@ -41035,7 +41035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 9}
-  coinSprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  coinSprite: {fileID: 21300000, guid: 2fcf69f0009c04116908e3aa987995b3, type: 3}
   sizeInCells: 0.7
   collectDuration: 0.4
   riseInCells: 0.8
@@ -43169,7 +43169,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 489485f3c0fb1f243aa01753f837bb8d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2fcf69f0009c04116908e3aa987995b3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
