@@ -17,11 +17,8 @@ namespace Game.Board
         /// <summary>关卡阶段。</summary>
         public enum Phase
         {
-            /// <summary>铺路阶段：可放方块，用时照算。</summary>
+            /// <summary>铺路阶段：可放方块，用时照算；点 Play 直接进入运行。</summary>
             Building,
-
-            /// <summary>铺路完成：锁定放置、秒表暂停，等玩家点 Play。</summary>
-            Ready,
 
             /// <summary>运行阶段：锁定放置，AI 逐步行走，秒表继续。</summary>
             Running,
@@ -81,7 +78,6 @@ namespace Game.Board
         public ObservableValue<int> StepCount => stepCount;
 
         public bool IsBuilding => phase.Value == Phase.Building;
-        public bool IsReady => phase.Value == Phase.Ready;
         public bool IsRunning => phase.Value == Phase.Running;
 
         /// <summary>本步选用的方向；尚未移动时为 null（UI 高亮用）。</summary>
@@ -140,32 +136,12 @@ namespace Game.Board
         }
 
         /// <summary>
-        /// 铺路完成：锁定放置并暂停秒表，等玩家点 Play（这段时间不计入用时）。
-        /// 一旦完成不回退——要改摆法走「重新开始本关」。
+        /// 点击 Play：铺路阶段直接进入运行阶段（方向偏好已删，铺完即可出发），锁定放置，
+        /// AI 从起点按出生朝向出发。秒表从铺路起一直在走，这里无需再动表。
         /// </summary>
-        public bool CompleteBuilding()
-        {
-            if (_board == null || phase.Value != Phase.Building) return false;
-
-            phase.Value = Phase.Ready;
-            _time?.Pause();
-
-            return true;
-        }
-
-        /// <summary>解除秒表暂停：铺路阶段的时间已计入，这里接着走而不是重新起表。</summary>
-        void ResumeStopwatch()
-        {
-            if (_time == null) return;
-
-            if (_time.IsRunning) _time.Resume();
-            else RestartStopwatch();
-        }
-
-        /// <summary>点击 Play：进入运行阶段，锁定放置，AI 从起点按出生朝向出发，秒表解除暂停继续计。</summary>
         public bool Play()
         {
-            if (_board == null || phase.Value != Phase.Ready) return false;
+            if (_board == null || phase.Value != Phase.Building) return false;
 
             var start = _board.StartCell;
             result.Value = RunResult.None;
@@ -175,8 +151,6 @@ namespace Game.Board
             _previousCell = start;
             aiCell.Value = start;
             phase.Value = Phase.Running;
-
-            ResumeStopwatch();
 
             AiMoved.Invoke();
 

@@ -11,7 +11,7 @@ namespace Game.Board
     /// <summary>
     /// 棋盘运行时常驻面板（挂 UIRoot 的层画布下，自身不带 Canvas）：
     /// 上下白板占位 + 右侧操作面板，面板上方预告下一块。全部数据来自 Model 的 ObservableValue。
-    /// 右侧中下部是运行控制区：用时 / 状态 / 铺路完成与 Play 按钮。
+    /// 右侧中下部是运行控制区：用时 / 状态 / Play 按钮（铺路阶段即可点，铺完直接出发）。
     /// AI 没有方向偏好可调——它出生朝固定方向一路直行，转向全靠铺在格子上的箭头。
     /// </summary>
     public sealed class BoardRuntimePanel : AesirBasePanelViewController<BoardContext>
@@ -35,18 +35,12 @@ namespace Game.Board
         const string BoardFrameName = "BoardFrame";
 
         [Header("运行控制")]
-        [Tooltip("铺路完成按钮；未回填时自动在 Play 按钮左侧创建（两者并排等分原 Play 按钮的宽度）")]
-        [SerializeField] Button finishBuildingButton;
-        [SerializeField] Text finishBuildingButtonLabel;
         [SerializeField] Button playButton;
         [SerializeField] Text playButtonLabel;
         [SerializeField] Text aiStateText;
         [Header("现场创建按钮的配色")]
         [SerializeField] Color buttonColor = new Color(0.98f, 0.98f, 1f, 1f);
         [SerializeField] Color buttonTextColor = new Color(0.13f, 0.12f, 0.18f, 1f);
-
-        [Tooltip("铺路完成按钮底色（现场创建时才用；与绿色 Play 区分，避免看不出是按钮）")]
-        [SerializeField] Color finishButtonColor = new Color(0.98f, 0.83f, 0.42f, 1f);
 
         [Header("关卡出口")]
         [Tooltip("返回选关按钮；未回填时自动在右上角创建")]
@@ -62,11 +56,6 @@ namespace Game.Board
         const float TopBarButtonGap = 12f;
         const float BackButtonWidth = 220f;
         const float RestartButtonWidth = 200f;
-
-        /// <summary>运行控制区两个按钮并排：等分原 Play 按钮的 400 宽，整体仍居中于右侧面板。</summary>
-        const float RunButtonWidth = 194f;
-        const float RunButtonHeight = 80f;
-        const float RunButtonGap = 12f;
 
         PieceModel _piece;
         BoardModel _board;
@@ -95,13 +84,6 @@ namespace Game.Board
             {
                 restartButton.onClick.RemoveAllListeners();
                 restartButton.onClick.AddListener(OnRestartClicked);
-            }
-
-            EnsureFinishBuildingButton();
-            if (finishBuildingButton != null)
-            {
-                finishBuildingButton.onClick.RemoveAllListeners();
-                finishBuildingButton.onClick.AddListener(OnFinishBuildingClicked);
             }
 
             EnsureHintText();
@@ -202,57 +184,6 @@ namespace Game.Board
             GameFonts.Apply(restartButton.transform);
         }
 
-        /// <summary>铺路完成：停表并锁定放置，等玩家点 Play（这段时间不计用时）。</summary>
-        void OnFinishBuildingClicked() => _run?.CompleteBuilding();
-
-        /// <summary>
-        /// 铺路完成按钮缺失时现场创建：紧挨 Play 按钮左侧并排，两者等分原 Play 按钮占的那段宽度、整体仍居中。
-        /// 必须在 playButton 已解析之后调用——要读它的父级与纵向位置，并把它让到右半边。
-        /// </summary>
-        void EnsureFinishBuildingButton()
-        {
-            if (playButton == null) return;
-
-            var parent = playButton.transform.parent;
-            if (parent == null) return;
-
-            const string name = "FinishBuilding";
-            var existing = parent.Find(name);
-            var positionedByCaller = existing != null;
-            if (finishBuildingButton == null)
-            {
-                finishBuildingButton = existing != null
-                    ? existing.GetComponent<Button>()
-                    : CreateButton(name, (RectTransform)parent, string.Empty, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
-                positionedByCaller = false;
-            }
-
-            if (finishBuildingButton == null) return;
-
-            if (!positionedByCaller)
-            {
-                var playRect = (RectTransform)playButton.transform;
-                var y = playRect.anchoredPosition.y;
-                var offset = (RunButtonWidth + RunButtonGap) * 0.5f;
-
-                var rect = (RectTransform)finishBuildingButton.transform;
-                rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 1f);
-                rect.sizeDelta = new Vector2(RunButtonWidth, RunButtonHeight);
-                rect.anchoredPosition = new Vector2(-offset, y);
-
-                // Play 让到右半边，与铺路完成同宽同高
-                playRect.sizeDelta = new Vector2(RunButtonWidth, RunButtonHeight);
-                playRect.anchoredPosition = new Vector2(offset, y);
-
-                var image = finishBuildingButton.GetComponent<Image>();
-                if (image != null) image.color = finishButtonColor;
-            }
-
-            if (finishBuildingButtonLabel == null)
-                finishBuildingButtonLabel = finishBuildingButton.GetComponentInChildren<Text>();
-            GameFonts.Apply(finishBuildingButton.transform);
-        }
-
         /// <summary>
         /// 棋盘外框：一张中间镂空的边框图，由 BoardScreenLayout 铺满棋盘视口矩形，把整块棋盘围起来。
         /// 两个必须：raycastTarget 关掉（它盖在棋盘上方，参与射线就会把放置与平移全挡掉），
@@ -322,8 +253,6 @@ namespace Game.Board
                 backButtonLabel.text = Localization.Get(Localization.Key.LevelBackToSelect);
             if (restartButtonLabel != null)
                 restartButtonLabel.text = Localization.Get(Localization.Key.LevelRestart);
-            if (finishBuildingButtonLabel != null)
-                finishBuildingButtonLabel.text = Localization.Get(Localization.Key.LevelFinishBuilding);
             if (hintText != null)
                 hintText.text = Localization.Get(Localization.Key.LevelBoardHint);
         }
@@ -463,18 +392,12 @@ namespace Game.Board
             // 重来 / 重新开始会回到铺路阶段：此时必须收起结算面板，否则它压在棋盘上挡住放置
             if (!settled) HideResultPanels();
 
-            // 流程是「铺路完成 → Play」：铺路阶段只有前者可点，Play 要等铺路完成才解锁。
-            // 结算后两个按钮一起收起（不再变「重来」），重开一律走右上角「重新开始」与结算面板。
-            if (finishBuildingButton != null)
-            {
-                finishBuildingButton.gameObject.SetActive(!settled);
-                finishBuildingButton.interactable = phase == BoardRunModel.Phase.Building;
-            }
-
+            // 流程是「铺路 → 点 Play 出发」：铺路阶段 Play 即可点（方向偏好已删，无需铺路完成暂停）。
+            // 结算后按钮收起（不再变「重来」），重开一律走右上角「重新开始」与结算面板。
             if (playButton != null)
             {
                 playButton.gameObject.SetActive(!settled);
-                playButton.interactable = phase == BoardRunModel.Phase.Ready;
+                playButton.interactable = phase == BoardRunModel.Phase.Building;
             }
 
             if (playButtonLabel != null) playButtonLabel.text = "Play";
@@ -486,9 +409,6 @@ namespace Game.Board
             {
                 case BoardRunModel.Phase.Building:
                     aiStateText.text = $"AI 待命 · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
-                    break;
-                case BoardRunModel.Phase.Ready:
-                    aiStateText.text = "已铺路完成 · 计时暂停，点 Play 出发";
                     break;
                 case BoardRunModel.Phase.Running:
                     aiStateText.text = $"AI 行进中 · 第 {steps} 步";

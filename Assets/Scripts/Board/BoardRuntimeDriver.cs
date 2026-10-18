@@ -16,7 +16,7 @@ namespace Game.Board
         void Start()
         {
             // 每次进入关卡都重置运行态：BoardContext 跨场景常驻，重进同一关时 BoardRunModel 仍停在上一局的
-            // Settled（阶段 / 结果 / 步数 / AI 位置），不重置则「铺路完成」「Play」都点不动——进得去却玩不了。
+            // Settled（阶段 / 结果 / 步数 / AI 位置），不重置则「Play」都点不动——进得去却玩不了。
             // 地形由场景自身的 ApplyPreset 重建，这里只管运行态与秒表。
             BoardContext.Instance.GetModel<BoardRunModel>().ResetRun();
 

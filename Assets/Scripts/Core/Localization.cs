@@ -55,9 +55,6 @@ namespace Game.Core
             /// <summary>关卡内「重新开始本关」按钮。</summary>
             LevelRestart,
 
-            /// <summary>关卡内「铺路完成」按钮：停表并锁定放置，进入「选偏好 → Play」的待运行阶段。</summary>
-            LevelFinishBuilding,
-
             /// <summary>关卡内操作提示行：放置 / 旋转 / 缩放 / 平移。</summary>
             LevelBoardHint,
 
