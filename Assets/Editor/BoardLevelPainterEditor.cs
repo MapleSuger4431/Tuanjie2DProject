@@ -241,6 +241,25 @@ namespace Game.EditorTools
             }
 
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("按游戏布局排列格子", GUILayout.Height(22f)))
+            {
+                var grid = painter.ResolveGrid();
+                if (grid == null)
+                {
+                    Debug.LogWarning("[BoardLevelPainter] 同物体上没有 BoardGridView，无法排列。", painter);
+                }
+                else
+                {
+                    RecordBoard(painter);
+                    grid.LayoutTiles();
+                    MarkDirty(painter);
+                    Debug.Log($"[BoardLevelPainter] 已按游戏运行布局重排 {painter.CollectTiles().Count} 格（位置/缩放/贴图/排序），记得保存场景。", painter);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         // ---------- 工具 ----------

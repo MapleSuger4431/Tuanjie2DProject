@@ -192,9 +192,8 @@ namespace Game.Board
                         map.Remove(coord);
 
                     tile.transform.SetParent(tilesRoot, false);
-                    tile.transform.localPosition = CellToLocal(coord);
                     tile.Configure(coord, tile.PresetType);
-                    ApplyTileSprite(tile);
+                    LayoutTile(tile);
                     _tiles[y * Width + x] = tile;
                 }
             }
@@ -243,6 +242,29 @@ namespace Game.Board
             for (int i = tilesRoot.childCount - 1; i >= 0; i--)
                 DestroyObject(tilesRoot.GetChild(i).gameObject);
             _tiles = null;
+        }
+
+        /// <summary>
+        /// 编辑器工具入口：把 Tiles 下全部既有格子按游戏运行时的布局重新摆放（位置 / 缩放 / 贴图 / 排序），
+        /// 不增删格子、不改状态与效果。摆完保存场景，编辑器里打开关卡即可直接看到棋盘排布，便于调试。
+        /// 与 <see cref="Build" /> 共用同一份 <see cref="LayoutTile" />，运行时再摆一遍结果不变。
+        /// </summary>
+        public void LayoutTiles()
+        {
+            EnsureRoot();
+            if (tilesRoot == null) return;
+
+            foreach (var tile in tilesRoot.GetComponentsInChildren<BoardTile>(true))
+                LayoutTile(tile);
+        }
+
+        /// <summary>把单个格子摆到运行时位置并套上贴图/缩放/排序——编辑器与运行时共用的唯一布局逻辑。</summary>
+        void LayoutTile(BoardTile tile)
+        {
+            if (tile == null) return;
+
+            tile.transform.localPosition = CellToLocal(tile.Cell);
+            ApplyTileSprite(tile);
         }
 
         /// <summary>收集关卡预设状态（各格 Inspector 里配的），喂给 BoardModel 作为初始状态。</summary>
@@ -349,6 +371,8 @@ namespace Game.Board
         {
             var go = new GameObject($"Cell_{coord.x}_{coord.y}");
             go.transform.SetParent(tilesRoot, false);
+            // 新建即落位：编辑器工具重建后场景序列化的就是游戏中的排列，不必等运行时 Build
+            go.transform.localPosition = CellToLocal(coord);
 
             var renderer = go.AddComponent<SpriteRenderer>();
             var sprite = SpriteFor(preset);
