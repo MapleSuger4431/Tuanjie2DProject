@@ -54,8 +54,6 @@ MonoBehaviour:
 
       R: rotate piece
 
-      Z: undo last placement
-
       Space: start,
       AI begins pathing
 

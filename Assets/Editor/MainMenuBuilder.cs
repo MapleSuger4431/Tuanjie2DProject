@@ -519,7 +519,7 @@ public static class MainMenuBuilder
         // Body：操作说明正文。
         // 正文矩形（620×290）与右上角关闭钮有重叠：Text 的射线判定用的是整个文字框而非字形，
         // 故 MakeText 内部 raycastTarget=false；关闭钮仍建在 Body 之后，保证最后绘制、始终压在正文之上。
-        var body = MakeText(contentRt, "Body", "鼠标移动：预览拼块落点\n鼠标左键：放置当前拼块\nR：旋转拼块\nZ：撤销上一次铺设\nSpace：出发，AI 开始寻路\n\n铺得越快、路线越巧，通关评价越高。",
+        var body = MakeText(contentRt, "Body", "鼠标移动：预览拼块落点\n鼠标左键：放置当前拼块\nR：旋转拼块\nSpace：出发，AI 开始寻路\n\n铺得越快、路线越巧，通关评价越高。",
             new Vector2(0f, 8f), new Vector2(620f, 290f), 30, TextAnchor.UpperLeft, new Color32(238, 235, 228, 255));
 
         // BtnClose：八角金边 X（操作面板组件图集切片），框内右上角、牌匾右下方（用户圈定区域，避开角部卷花与标题）。
