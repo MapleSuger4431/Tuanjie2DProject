@@ -7,6 +7,14 @@ using UnityEngine.SceneManagement;
 namespace Game.Core
 {
     /// <summary>
+    /// 实现此接口的面板在场景切换收面板时豁免（不会被 <see cref="SceneTransition.CloseAllPanels" /> 收起）。
+    /// 典型使用者：加载过场面板——需要在旧场景收尾、新场景就绪的全程盖在画面上。
+    /// </summary>
+    public interface IPersistThroughSceneLoad
+    {
+    }
+
+    /// <summary>
     /// 场景切换门面：先收起当前场景的全部面板，再走 <see cref="SceneModule" /> 加载目标场景。
     /// <para>
     /// 为什么必须显式收 UI：<see cref="UIRoot" /> 默认跨场景常驻（DontDestroyOnLoad），
@@ -49,8 +57,21 @@ namespace Game.Core
         /// <param name="onFailed">失败回调（无参，失败原因由 SceneModule 内部 LogError）。</param>
         public static void LoadSingle(string scenePath, Action onFailed = null)
         {
+            LoadSingle(scenePath, null, onFailed);
+        }
+
+        /// <summary>
+        /// 关闭当前全部面板并单场景切换到 <paramref name="scenePath" />（带加载完成回调，
+        /// 供加载过场面板等调用方获知切换时机）。
+        /// </summary>
+        /// <param name="scenePath">目标场景完整资产路径。</param>
+        /// <param name="onCompleted">切换完成回调（无参；时机为场景激活后）。</param>
+        /// <param name="onFailed">失败回调（无参，失败原因由 SceneModule 内部 LogError）。</param>
+        public static void LoadSingle(string scenePath, Action onCompleted, Action onFailed)
+        {
             CloseAllPanels();
             SceneModule.LoadSceneSingle(scenePath,
+                onCompleted: onCompleted,
                 onFailed: onFailed ?? (() => Debug.LogError($"[SceneTransition] 场景切换失败：{scenePath}")));
         }
 
@@ -135,14 +156,15 @@ namespace Game.Core
             }
         }
 
-        /// <summary>递归收集某个节点子树下面板实例（面板挂在分层 Canvas 下，也可能嵌套在别的面板里）。</summary>
+        /// <summary>递归收集某个节点子树下面板实例（面板挂在分层 Canvas 下，也可能嵌套在别的面板里）。
+        /// 实现了 <see cref="IPersistThroughSceneLoad" /> 的面板（加载过场等）不收集、不收起。</summary>
         static void CollectPanels(Transform parent)
         {
             for (var i = 0; i < parent.childCount; i++)
             {
                 var child = parent.GetChild(i);
                 var panel = child.GetComponent<IUIPanel>();
-                if (panel != null && !Panels.Contains(panel))
+                if (panel != null && !Panels.Contains(panel) && !(panel is IPersistThroughSceneLoad))
                 {
                     Panels.Add(panel);
                 }

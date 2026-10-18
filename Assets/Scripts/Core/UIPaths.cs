@@ -35,5 +35,8 @@ namespace Game.Core
 
         /// <summary>关卡内右下角成就 / 消息小窗（Top 层，常驻）：Resources/UIPrefabs/LevelTipPanel。</summary>
         public const string LevelTipPanel = "UIPrefabs/LevelTipPanel";
+
+        /// <summary>加载过场面板（Top 层、跨场景存活）：Resources/UIPrefabs/LoadingPanel，主菜单 → 选关切换时展示。</summary>
+        public const string LoadingPanel = "UIPrefabs/LoadingPanel";
     }
 }

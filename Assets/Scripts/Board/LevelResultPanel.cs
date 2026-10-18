@@ -1,5 +1,6 @@
 using System.Collections;
 using Game.Core;
+using Game.View;
 using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
 using TMPro;
@@ -143,11 +144,10 @@ namespace Game.Board
             HideSelf();
         }
 
-        /// <summary>回到选关界面：走 SceneTransition（先收起全部面板再加载）。</summary>
+        /// <summary>回到选关界面：带加载过场（先盖住结算面板再加载）。</summary>
         void OnBackToSelectClicked()
         {
-            SceneTransition.LoadSingle(ScenePaths.LevelSelect,
-                onFailed: () => Debug.LogError($"[LevelResult] 返回选关失败：{ScenePaths.LevelSelect}"));
+            LoadingPanel.Begin(ScenePaths.LevelSelect);
         }
 
         /// <summary>

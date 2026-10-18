@@ -78,12 +78,11 @@ namespace Game.View
             base.OnDestroy();
         }
 
-        /// <summary>左上返回：回主场景（主菜单）。</summary>
+        /// <summary>左上返回：回主场景（主菜单，带加载过场）。</summary>
         void OnBackClicked()
         {
-            Debug.Log($"[LevelSelect] 返回主场景：{ScenePaths.MainMenu}");
-            SceneTransition.LoadSingle(ScenePaths.MainMenu,
-                onFailed: () => Debug.LogError($"[LevelSelect] 返回主场景失败：{ScenePaths.MainMenu}"));
+            Debug.Log($"[LevelSelect] 返回主场景（带加载过场）：{ScenePaths.MainMenu}");
+            LoadingPanel.Begin(ScenePaths.MainMenu);
         }
 
         /// <summary>右上设置：打开设置面板（Popup 层）。</summary>

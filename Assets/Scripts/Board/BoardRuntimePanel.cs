@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Core;
 using Game.Service;
+using Game.View;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -119,11 +120,10 @@ namespace Game.Board
             base.OnDestroy();
         }
 
-        /// <summary>关卡出口：回选关场景（关卡结算面板落地后可在此前插入确认弹窗）。</summary>
+        /// <summary>关卡出口：回选关场景（带加载过场；关卡结算面板落地后可在此前插入确认弹窗）。</summary>
         void OnBackToLevelSelectClicked()
         {
-            SceneTransition.LoadSingle(ScenePaths.LevelSelect,
-                onFailed: () => Debug.LogError($"[BoardRuntime] 返回选关失败：{ScenePaths.LevelSelect}"));
+            LoadingPanel.Begin(ScenePaths.LevelSelect);
         }
 
         /// <summary>返回按钮缺失时按右侧面板底部条带现场创建（预制体没回填也能用）。</summary>
