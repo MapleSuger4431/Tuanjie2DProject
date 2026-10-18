@@ -16,6 +16,9 @@ namespace Game.Board
 
         /// <summary>已走步数。</summary>
         public int StepCount;
+
+        /// <summary>AI 当前元素属性（火 / 冰）：属性转换类效果据此算目标值。</summary>
+        public ElementState Element;
     }
 
     /// <summary>
@@ -33,10 +36,13 @@ namespace Game.Board
         /// <summary>清空来路（传送后 AI 可朝任意方向走，含回头）。</summary>
         public bool ClearIncoming;
 
-        /// <summary>立即停下判负。</summary>
+        /// <summary>立即停下（判负）。</summary>
         public bool Stop;
 
-        public bool HasAny => TeleportTo.HasValue || ForcedNext.HasValue || ClearIncoming || Stop;
+        /// <summary>元素属性转换目标：踏入本格后 AI 属性变成该值（反转效果按快照算好再填）；null 表示不变。</summary>
+        public ElementState? SetElement;
+
+        public bool HasAny => TeleportTo.HasValue || ForcedNext.HasValue || ClearIncoming || Stop || SetElement.HasValue;
 
         public void Clear()
         {
@@ -44,6 +50,7 @@ namespace Game.Board
             ForcedNext = null;
             ClearIncoming = false;
             Stop = false;
+            SetElement = null;
         }
     }
 

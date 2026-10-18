@@ -22,11 +22,27 @@ namespace Game.Editor
             Write(TableZh, new[]
             {
                 ("LevelBoardHint", "左键放置当前方块　R 键顺时针旋转 90°　滚轮缩放棋盘　右键平移"),
+                ("LevelPlay", "出发"),
+                ("LevelNextPiece", "下一块"),
+                ("LevelStatusCharacter", "角色状态"),
+                ("LevelCharacterName", "女巫"),
+                ("LevelWalkable", "可走：{0}"),
+                ("TileNameLand", "陆地"),
+                ("TileNameFire", "火"),
+                ("TileNameIce", "冰"),
             });
 
             Write(TableEn, new[]
             {
                 ("LevelBoardHint", "Left click to place　R to rotate 90° clockwise　Scroll to zoom　Right drag to pan"),
+                ("LevelPlay", "Play"),
+                ("LevelNextPiece", "Next Piece"),
+                ("LevelStatusCharacter", "Character"),
+                ("LevelCharacterName", "Witch"),
+                ("LevelWalkable", "Walkable: {0}"),
+                ("TileNameLand", "Land"),
+                ("TileNameFire", "Fire"),
+                ("TileNameIce", "Ice"),
             });
 
             AssetDatabase.SaveAssets();

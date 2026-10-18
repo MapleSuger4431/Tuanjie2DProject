@@ -27,6 +27,10 @@ namespace Game.Board
         [SerializeField, Tooltip("为空时自动取同物体上的 BoardGridView")]
         BoardGridView gridView;
 
+        [Header("关卡配置")]
+        [SerializeField, Tooltip("本关 AI 出生时的元素属性：火人走不了冰格、冰人走不了火格（属性反转效果可中途翻转，重开复位到本值）")]
+        ElementState initialElement = ElementState.Fire;
+
         BoardModel _board;
         CellRuntime[] _cells;
         int _width;
@@ -35,6 +39,9 @@ namespace Game.Board
 
         /// <summary>场景内单例：<see cref="BoardRunModel" /> 结算效果时从这里取。</summary>
         public static BoardRoot Instance { get; private set; }
+
+        /// <summary>本关 AI 出生元素属性（关卡在 Inspector 里配置；<see cref="BoardRunModel" /> 在开局 / 重开时读取）。</summary>
+        public ElementState InitialElement => initialElement;
 
         public int Width => _width;
         public int Height => _height;

@@ -10,8 +10,8 @@ namespace Game.Board
 {
     /// <summary>
     /// 棋盘运行时常驻面板（挂 UIRoot 的层画布下，自身不带 Canvas）：
-    /// 上下白板占位 + 右侧操作面板，面板上方预告下一块。全部数据来自 Model 的 ObservableValue。
-    /// 右侧中下部是运行控制区：用时 / 状态 / Play 按钮（铺路阶段即可点，铺完直接出发）。
+    /// 上下深紫占位条 + 右侧操作面板（角色状态卡 / 下一块预告 / 已用与用时 / Play 出发按钮），结构由
+    /// <c>Assets/Editor/BoardRuntimePanelBuilder.cs</c> 重建。全部数据来自 Model 的 ObservableValue。
     /// AI 没有方向偏好可调——它出生朝固定方向一路直行，转向全靠铺在格子上的箭头。
     /// </summary>
     public sealed class BoardRuntimePanel : AesirBasePanelViewController<BoardContext>
@@ -23,6 +23,22 @@ namespace Game.Board
         [SerializeField] Text placedCountText;
         [SerializeField] Text timeText;
         [SerializeField] Text hintText;
+
+        [Header("角色状态卡（元素属性 + 可走地形说明）")]
+        [Tooltip("「角色状态」区块标题文本；运行时按本地化表刷新")]
+        [SerializeField] Text statusTitleText;
+
+        [Tooltip("角色名文本；运行时按本地化表刷新")]
+        [SerializeField] Text statusNameText;
+
+        [Tooltip("可走地形行：可走：陆地 / 火 / 冰（由 TileTypeInfo.IsPassable 动态拼出）")]
+        [SerializeField] Text statusWalkText;
+
+        [Tooltip("「下一块」区块标题文本")]
+        [SerializeField] Text nextTitleText;
+
+        [Tooltip("元素图例的名称标签，顺序固定 陆地 / 火 / 冰（与生成器里三组小图标对齐）")]
+        [SerializeField] Text[] elementLegendLabels;
 
         [Header("棋盘外框")]
         [Tooltip("包裹棋盘的装饰外框；未回填时现场创建一个。位置由 BoardScreenLayout 按视口矩形驱动")]
@@ -255,6 +271,63 @@ namespace Game.Board
                 restartButtonLabel.text = Localization.Get(Localization.Key.LevelRestart);
             if (hintText != null)
                 hintText.text = Localization.Get(Localization.Key.LevelBoardHint);
+            if (playButtonLabel != null)
+                playButtonLabel.text = Localization.Get(Localization.Key.LevelPlay);
+            if (nextTitleText != null)
+                nextTitleText.text = Localization.Get(Localization.Key.LevelNextPiece);
+            if (statusTitleText != null)
+                statusTitleText.text = Localization.Get(Localization.Key.LevelStatusCharacter);
+            if (statusNameText != null)
+                statusNameText.text = Localization.Get(Localization.Key.LevelCharacterName);
+
+            if (statusWalkText != null)
+                statusWalkText.text = Localization.Get(Localization.Key.LevelWalkable, WalkableTerrainNames(CurrentElement()));
+
+            if (elementLegendLabels != null && elementLegendLabels.Length >= 3)
+            {
+                elementLegendLabels[0].text = Localization.Get(Localization.Key.TileNameLand);
+                elementLegendLabels[1].text = Localization.Get(Localization.Key.TileNameFire);
+                elementLegendLabels[2].text = Localization.Get(Localization.Key.TileNameIce);
+            }
+        }
+
+        /// <summary>
+        /// 角色状态卡的元素三元组：类型与本地化键配对，能否可走以 <see cref="ElementStateInfo.CanWalkOn" /> 为真源，
+        /// 属性反转 / 重开时「可走：…」行自动跟随。
+        /// </summary>
+        static readonly (TileType type, Localization.Key key)[] WalkableElements =
+        {
+            (TileType.Land, Localization.Key.TileNameLand),
+            (TileType.Fire, Localization.Key.TileNameFire),
+            (TileType.Ice, Localization.Key.TileNameIce),
+        };
+
+        /// <summary>AI 当前元素属性；面板初始化早于 Model 挂接时回落火人。</summary>
+        ElementState CurrentElement()
+        {
+            var run = _run != null ? _run : this.GetModel<BoardRunModel>();
+            return run != null ? run.Element.Value : ElementState.Fire;
+        }
+
+        /// <summary>拼「可走」列表：陆地恒可走，火格需火属性、冰格需冰属性（06 篇 RB-09 的 HUD 呈现）。</summary>
+        string WalkableTerrainNames(ElementState element)
+        {
+            var names = new List<string>(WalkableElements.Length);
+            foreach (var entry in WalkableElements)
+            {
+                if (!ElementStateInfo.CanWalkOn(element, entry.type)) continue;
+
+                names.Add(Localization.Get(entry.key));
+            }
+
+            return string.Join(" / ", names);
+        }
+
+        /// <summary>元素属性变化（出生 / 反转 / 重开）：刷新「可走」行与 AI 状态行里的属性标识。</summary>
+        void OnElementChanged()
+        {
+            ApplyLocalization();
+            OnRunStateChanged();
         }
 
         protected override void OnShow(object payload)
@@ -297,6 +370,8 @@ namespace Game.Board
             _run.Result.AddListenerAndInvoke(_ => OnRunStateChanged())
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             _run.StepCount.AddListenerAndInvoke(_ => OnRunStateChanged())
+                .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
+            _run.Element.AddListenerAndInvoke(_ => OnElementChanged())
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
             // 只挂一次：本面板实例在同一关卡内可能被反复 Show，重复订阅会让一次结算弹出多个面板
             if (!_resultHooked)
@@ -400,18 +475,19 @@ namespace Game.Board
                 playButton.interactable = phase == BoardRunModel.Phase.Building;
             }
 
-            if (playButtonLabel != null) playButtonLabel.text = "Play";
+            // Play 标签不随阶段变（出发文案归 ApplyLocalization 管），这里只管可用性
 
             if (aiStateText == null) return;
 
             var steps = _run.StepCount.Value;
+            var elementText = $"{ElementStateInfo.DisplayName(_run.Element.Value)}属性";
             switch (phase)
             {
                 case BoardRunModel.Phase.Building:
-                    aiStateText.text = $"AI 待命 · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
+                    aiStateText.text = $"AI 待命 · {elementText} · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
                     break;
                 case BoardRunModel.Phase.Running:
-                    aiStateText.text = $"AI 行进中 · 第 {steps} 步";
+                    aiStateText.text = $"AI 行进中 · 第 {steps} 步 · {elementText}";
                     break;
                 default:
                     var win = _run.Result.Value == BoardRunModel.RunResult.Win;

@@ -220,6 +220,38 @@ MonoBehaviour:
       to zoom\u3000Right drag to pan"
     m_Metadata:
       m_Items: []
+  - m_Id: 114048464052224
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635136
+    m_Localized: Next Piece
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635137
+    m_Localized: Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635138
+    m_Localized: Witch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635139
+    m_Localized: 'Walkable: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635140
+    m_Localized: Land
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635141
+    m_Localized: Fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635142
+    m_Localized: Ice
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

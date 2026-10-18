@@ -58,6 +58,30 @@ namespace Game.Core
             /// <summary>关卡内操作提示行：放置 / 旋转 / 缩放 / 平移。</summary>
             LevelBoardHint,
 
+            /// <summary>关卡内 Play 按钮（出发）。</summary>
+            LevelPlay,
+
+            /// <summary>右侧面板「下一块」区块标题。</summary>
+            LevelNextPiece,
+
+            /// <summary>右侧面板「角色状态」区块标题。</summary>
+            LevelStatusCharacter,
+
+            /// <summary>角色状态卡中的角色名。</summary>
+            LevelCharacterName,
+
+            /// <summary>角色状态卡的可走地形行（{0} = 陆地 / 火 / 冰）。</summary>
+            LevelWalkable,
+
+            /// <summary>元素图例：陆地。</summary>
+            TileNameLand,
+
+            /// <summary>元素图例：火。</summary>
+            TileNameFire,
+
+            /// <summary>元素图例：冰。</summary>
+            TileNameIce,
+
             // ---- 关卡结算 ----
             /// <summary>通关成功结算面板标题。</summary>
             LevelClearTitle,

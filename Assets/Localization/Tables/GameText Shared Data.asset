@@ -163,6 +163,38 @@ MonoBehaviour:
     m_Key: LevelBoardHint
     m_Metadata:
       m_Items: []
+  - m_Id: 114048464052224
+    m_Key: LevelPlay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635136
+    m_Key: LevelNextPiece
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635137
+    m_Key: LevelStatusCharacter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635138
+    m_Key: LevelCharacterName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635139
+    m_Key: LevelWalkable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635140
+    m_Key: TileNameLand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635141
+    m_Key: TileNameFire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114048476635142
+    m_Key: TileNameIce
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -33,6 +33,19 @@ namespace Game.Board
         [Tooltip("渲染层级，需高于棋盘格才能在格子上可见")]
         [SerializeField] int sortingOrder = 5;
 
+        [Header("元素防护罩（RB-14：AI 外观同步切换）")]
+        [Tooltip("防护罩贴图（白色径向光罩，运行时按元素属性染色：火=暖红、冰=亮蓝）；为空则不显示")]
+        [SerializeField] Sprite shieldSprite;
+
+        [Tooltip("火属性防护罩染色")]
+        [SerializeField] Color shieldColorFire = new Color(0.98f, 0.47f, 0.28f, 0.55f);
+
+        [Tooltip("冰属性防护罩染色")]
+        [SerializeField] Color shieldColorIce = new Color(0.42f, 0.76f, 0.98f, 0.55f);
+
+        [Tooltip("防护罩直径相对角色贴图高度的比例")]
+        [SerializeField, Range(0.5f, 2f)] float shieldHeightRatio = 1.15f;
+
         static readonly int MovingHash = Animator.StringToHash("Moving");
         static readonly int DirHash = Animator.StringToHash("Dir");
 
@@ -42,6 +55,14 @@ namespace Game.Board
         Transform _actor;
         SpriteRenderer _renderer;
         Animator _animator;
+        SpriteRenderer _shield;
+        Vector3 _shieldBaseScale = Vector3.one;
+
+        /// <summary>防护罩当前已显示的元素；初始取非法值，保证首帧一定按当前属性初始化一次。</summary>
+        ElementState _shownElement = (ElementState)(-1);
+
+        /// <summary>属性切换后的放大脉冲余量（1 → 0）。</summary>
+        float _shieldPulse;
 
         float _timer;
         bool _moving;
@@ -56,6 +77,7 @@ namespace Game.Board
             _grid = GetComponent<BoardGridView>();
 
             BuildActor();
+            BuildShield();
 
             _run.AiMoved.AddListener(OnAiMoved)
                 .RemoveListenerWhenGameObjectOnDestroyed(gameObject);
@@ -83,6 +105,7 @@ namespace Game.Board
 
             AdvanceMoveAnimation();
             ApplyAnimator();
+            UpdateShield(Time.deltaTime);
         }
 
         void AdvanceMoveAnimation()
@@ -203,6 +226,51 @@ namespace Game.Board
                 _animator.SetInteger(DirHash, (int)MoveDirection.Down);
                 _animator.SetBool(MovingHash, false);
             }
+        }
+
+        /// <summary>
+        /// 元素防护罩：包在角色外的一层半透明光罩，按当前元素属性染色（火=暖红 / 冰=亮蓝），
+        /// 属性反转的瞬间做一次放大脉冲，让「外观同步切换」一眼可辨。贴图未配置时整体跳过。
+        /// </summary>
+        void BuildShield()
+        {
+            if (shieldSprite == null || _actor == null) return;
+
+            var height = _renderer != null && _renderer.sprite != null ? _renderer.sprite.bounds.size.y : 1f;
+            var target = height * shieldHeightRatio;
+            var spriteSize = shieldSprite.bounds.size.x;
+            var parentScale = _actor.localScale.x;
+
+            var shieldObject = new GameObject("ElementShield");
+            shieldObject.transform.SetParent(_actor, false);
+            // 角色锚点在脚底（BottomCenter），光罩中心抬到半身高处才能把角色包住
+            shieldObject.transform.localPosition = Vector3.up * (height * 0.5f);
+
+            _shield = shieldObject.AddComponent<SpriteRenderer>();
+            _shield.sprite = shieldSprite;
+            _shield.sortingOrder = sortingOrder + 1;
+
+            _shieldBaseScale = Vector3.one * (
+                target / (spriteSize > 0f ? spriteSize : 1f) / (parentScale > 0f ? parentScale : 1f));
+            _shield.transform.localScale = _shieldBaseScale;
+        }
+
+        /// <summary>每帧跟随当前元素属性染色；检测到变化时触发一次放大脉冲。</summary>
+        void UpdateShield(float delta)
+        {
+            if (_shield == null || _run == null) return;
+
+            var element = _run.Element.Value;
+            if (element != _shownElement)
+            {
+                _shownElement = element;
+                _shieldPulse = 1f;
+            }
+
+            _shieldPulse = Mathf.Max(0f, _shieldPulse - delta * 2.5f);
+
+            _shield.color = element == ElementState.Fire ? shieldColorFire : shieldColorIce;
+            _shield.transform.localScale = _shieldBaseScale * (1f + 0.22f * _shieldPulse);
         }
 
         /// <summary>
