@@ -44,14 +44,6 @@ namespace Game.View
         [SerializeField]
         TMP_Text titleLabel;
 
-        [Tooltip("节点水晶图（索引 = 关卡号-1，由生成器路径表回填）")]
-        [SerializeField]
-        Sprite[] crystalSprites;
-
-        [Tooltip("节点编号徽章（索引 = 关卡号-1，由生成器路径表回填）")]
-        [SerializeField]
-        Sprite[] badgeSprites;
-
         [Tooltip("返回按钮文本")]
         [SerializeField]
         TMP_Text backButtonLabel;
@@ -140,12 +132,13 @@ namespace Game.View
             node.anchoredPosition = Vector2.zero;
 
             var button = node.GetComponent<Button>();
-            var crystalImage = node.Find("Crystal")?.GetComponent<Image>();
-            var badgeImage = node.Find("Badge")?.GetComponent<Image>();
-            ApplyNodeIcon(crystalImage, crystalSprites, def.levelId);
-            ApplyNodeIcon(badgeImage, badgeSprites, def.levelId);
+            // 通用节点形态（2026-10-18）：Badge=框框图（生成器固定 badge_01_no_number，全关卡共用）、
+            // Badge/LevNum=框内文本——关卡号直接打字写进去，加关卡零素材成本
+            var frameImage = node.Find("Badge")?.GetComponent<Image>();
+            var numText = node.Find("Badge/LevNum")?.GetComponent<TMP_Text>();
+            if (numText != null) numText.text = def.levelId.ToString();
 
-            var view = new LevelNodeView(crystalImage, badgeImage, button, def);
+            var view = new LevelNodeView(frameImage, numText, button, def);
 
             // 无条件注册点击监听：未解锁由 Refresh 置 interactable=false 挡住点击。
             // 若只在「创建时已解锁」的节点上注册，将来面板存续期间动态解锁时 Refresh 只改外观不补监听，
@@ -157,17 +150,6 @@ namespace Game.View
             }
 
             return view;
-        }
-
-        /// <summary>按关卡号取节点图标（索引 = 关卡号-1）；未配置/越界时隐藏该图，避免占位白块。</summary>
-        static void ApplyNodeIcon(Image image, Sprite[] sprites, int levelId)
-        {
-            if (image == null) return;
-
-            var index = levelId - 1;
-            var sprite = sprites != null && index >= 0 && index < sprites.Length ? sprites[index] : null;
-            image.sprite = sprite;
-            if (sprite == null) image.gameObject.SetActive(false);
         }
 
         void OpenDetail(LevelDef def)
@@ -190,23 +172,23 @@ namespace Game.View
         }
 
         /// <summary>
-        /// 单个关卡节点的视图句柄：节点是「水晶 + 徽章」图标按钮（无文字），
-        /// 解锁态原色、未解锁整体压灰且不可点；星级/用时记录在详情面板里看。
+        /// 单个关卡节点的视图句柄：节点是「通用框框图 + 框内关卡号文本」，
+        /// 解锁态原色、未解锁框与文本整体压灰且不可点；星级/用时记录在详情面板里看。
         /// </summary>
         sealed class LevelNodeView
         {
             static readonly Color UnlockedColor = Color.white;                   // 有专属美术走原色
             static readonly Color LockedColor = new Color(0.40f, 0.40f, 0.44f); // 未解锁：整体压灰
 
-            readonly Image _crystal;
-            readonly Image _badge;
+            readonly Image _frame;   // 框框图（所有关卡共用）
+            readonly TMP_Text _num;  // 框内关卡号文本
             readonly Button _button;
             readonly LevelDef _def;
 
-            internal LevelNodeView(Image crystal, Image badge, Button button, LevelDef def)
+            internal LevelNodeView(Image frame, TMP_Text num, Button button, LevelDef def)
             {
-                _crystal = crystal;
-                _badge = badge;
+                _frame = frame;
+                _num = num;
                 _button = button;
                 _def = def;
             }
@@ -214,8 +196,8 @@ namespace Game.View
             internal void Refresh(LevelSelectModel model)
             {
                 var unlocked = model.IsUnlocked(_def.levelId);
-                if (_crystal != null) _crystal.color = unlocked ? UnlockedColor : LockedColor;
-                if (_badge != null) _badge.color = unlocked ? UnlockedColor : LockedColor;
+                if (_frame != null) _frame.color = unlocked ? UnlockedColor : LockedColor;
+                if (_num != null) _num.color = unlocked ? UnlockedColor : LockedColor;
                 if (_button != null) _button.interactable = unlocked;
             }
         }
