@@ -268,6 +268,66 @@ MonoBehaviour:
     m_Localized: "\u2605 3rd star: clear + coin within {0}"
     m_Metadata:
       m_Items: []
+  - m_Id: 138945823236096
+    m_Localized: Achievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013312
+    m_Localized: Achievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013313
+    m_Localized: 'Completed: {0}/{1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013314
+    m_Localized: Locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013315
+    m_Localized: Unlocked {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013316
+    m_Localized: ???
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013317
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013318
+    m_Localized: Thirty-Step Walker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013319
+    m_Localized: Walk 30 steps in a single level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013320
+    m_Localized: First Clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013321
+    m_Localized: Clear any level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013322
+    m_Localized: Two-Faced Witch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013323
+    m_Localized: Trigger an element switch in one run
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013324
+    m_Localized: Getting the Hang of It
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013325
+    m_Localized: Clear levels 3 times in total
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

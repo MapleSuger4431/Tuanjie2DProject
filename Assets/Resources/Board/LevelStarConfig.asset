@@ -13,4 +13,14 @@ MonoBehaviour:
   m_Name: LevelStarConfig
   m_EditorClassIdentifier: 
   defaultTimeStarSeconds: 30
-  levels: []
+  levels:
+  - sceneName: Level_01
+    timeStarSeconds: 30
+  - sceneName: Level_02
+    timeStarSeconds: 40
+  - sceneName: Level_03
+    timeStarSeconds: 50
+  - sceneName: Level_04
+    timeStarSeconds: 60
+  - sceneName: Level_05
+    timeStarSeconds: 70

@@ -211,6 +211,66 @@ MonoBehaviour:
     m_Key: LevelStarGoal
     m_Metadata:
       m_Items: []
+  - m_Id: 138945823236096
+    m_Key: MenuAchievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013312
+    m_Key: AchievementTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013313
+    m_Key: AchievementCompleted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013314
+    m_Key: AchievementLocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013315
+    m_Key: AchievementUnlockedAt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013316
+    m_Key: AchievementHidden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013317
+    m_Key: AchievementClose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013318
+    m_Key: AchSteps30Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013319
+    m_Key: AchSteps30Desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013320
+    m_Key: AchFirstClearName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013321
+    m_Key: AchFirstClearDesc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013322
+    m_Key: AchElementSwitchName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013323
+    m_Key: AchElementSwitchDesc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013324
+    m_Key: AchClear3Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138945840013325
+    m_Key: AchClear3Desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

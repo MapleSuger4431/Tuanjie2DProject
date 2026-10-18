@@ -54,6 +54,9 @@ public static class MainMenuBuilder
     /// <summary>品牌区抠图切片落位目录。</summary>
     const string PiecesFolder = "Assets/Art/MainMenu/pieces";
 
+    /// <summary>成就图鉴按钮的左侧图标（成就徽章，与成就图鉴条目同族美术）。</summary>
+    const string AchTrophyIconPath = "Assets/Art/Achievement/Ach_Banner.png";
+
     /// <summary>中文标题图（边际棋盘，与 PiecesFolder 下其它品牌切片同源）。</summary>
     const string TitleZhPath = PiecesFolder + "/title.png";
 
@@ -467,6 +470,7 @@ public static class MainMenuBuilder
         so.FindProperty("titleSpriteEn").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(TitleEnPath);
         so.FindProperty("newGameButton").objectReferenceValue = newGame;
         so.FindProperty("helpButton").objectReferenceValue = help;
+        so.FindProperty("achievementButton").objectReferenceValue = achievements;
         so.FindProperty("settingsButton").objectReferenceValue = settings;
         so.FindProperty("quitButton").objectReferenceValue = quit;
         so.ApplyModifiedPropertiesWithoutUndo();
