@@ -83,7 +83,8 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 圆角矩形光栅化：对每个像素求到圆角矩形边界的有符号距离，
+        /// 圆角矩形光栅化：对每个像素求到圆角矩形边界的有符号距离（iq 的 sdRoundBox，
+        /// 末尾的 -radius 不能省——漏掉会让整块图形内缩一个圆角半径、9-slice 边界落进透明区），
         /// 内部按 y 向渐变填充，边界 <paramref name="border" /> 像素内画描边，最外圈再垫一圈更暗收边。
         /// </summary>
         static void WritePng(string path, int size, float radius, float border, Color top, Color bottom, Color stroke, Color outerStroke)
@@ -102,7 +103,7 @@ namespace Game.Editor
                     float qy = Mathf.Abs(y - center.y) - inner;
                     // 到边界的有符号距离：内负外正（SDF of rounded box）
                     float dist = new Vector2(Mathf.Max(qx, 0f), Mathf.Max(qy, 0f)).magnitude
-                                 + Mathf.Min(Mathf.Max(qx, qy), 0f);
+                                 + Mathf.Min(Mathf.Max(qx, qy), 0f) - radius;
 
                     var fill = Color.Lerp(bottom, top, y / (size - 1f));
                     pixels[y * size + x] = Shade(dist, fill, border, stroke, outerStroke);
