@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 120, y: -14}
-  m_SizeDelta: {x: -144, y: 36}
+  m_AnchoredPosition: {x: 120, y: -16}
+  m_SizeDelta: {x: -144, y: 40}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8897877539392488458
 CanvasRenderer:
@@ -307,8 +307,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 120, y: -52}
-  m_SizeDelta: {x: -144, y: 30}
+  m_AnchoredPosition: {x: 120, y: -60}
+  m_SizeDelta: {x: -144, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2463797564834488134
 CanvasRenderer:
@@ -468,7 +468,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -782,7 +782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -879,7 +879,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.13, g: 0.12, b: 0.18, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -978,7 +978,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 720}
+  m_SizeDelta: {x: 1000, y: 860}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3028310998021933207
 CanvasRenderer:
@@ -1174,8 +1174,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 120, y: -86}
-  m_SizeDelta: {x: -144, y: 28}
+  m_AnchoredPosition: {x: 120, y: -98}
+  m_SizeDelta: {x: -144, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1373146398249736755
 CanvasRenderer:
@@ -1332,9 +1332,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 120
+  m_MinHeight: 150
   m_PreferredWidth: -1
-  m_PreferredHeight: 120
+  m_PreferredHeight: 150
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1

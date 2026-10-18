@@ -12,7 +12,7 @@ namespace Game.Editor
     /// 成就图鉴面板生成器：重建 Assets/Resources/UIPrefabs/AchievementPanel.prefab。
     /// <para>
     /// 皮肤沿用关卡 HUD 的深紫 fantasy（<c>Panel_DarkPurple</c> 九宫格）+ 图鉴自己的品红强调色，
-    /// 与参考文档「暗紫秘仪 / 旧魔导书」一致；内容卡 1000×720 居中，下方一枚关闭按钮，
+    /// 与参考文档「暗紫秘仪 / 旧魔导书」一致；内容卡 1000×860 居中，下方一枚关闭按钮，
     /// 遮罩点击也关闭。成就行由面板按配置条数**克隆模板**生成（模板停在停用例，不参与布局）。
     /// 文本节点一律留空：文案真源在 GameText 表。
     /// 重跑即覆盖产物；要改结构改这里，禁止手改预制体。
@@ -27,10 +27,10 @@ namespace Game.Editor
 
         // ---- 布局（1920×1080）----
         const float ContentWidth = 1000f;
-        const float ContentHeight = 720f;
+        const float ContentHeight = 860f;
         const float HeaderHeight = 104f;
         const float ListPadding = 24f;
-        const float RowHeight = 120f;
+        const float RowHeight = 150f;
         const float RowSpacing = 12f;
         const float CloseWidth = 220f;
         const float CloseHeight = 68f;
@@ -107,7 +107,7 @@ namespace Game.Editor
             layout.spacing = RowSpacing;
             layout.childAlignment = TextAnchor.UpperCenter;
             layout.childControlWidth = true;
-            layout.childControlHeight = false;
+            layout.childControlHeight = true;   // 驱动行高 = LayoutElement.preferredHeight，否则行背景只有默认 100 高
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
 
@@ -122,7 +122,7 @@ namespace Game.Editor
             var closeButton = close.gameObject.AddComponent<Button>();
             var closeTextRect = NewRect("Text", close);
             Stretch(closeTextRect);
-            var closeLabel = NewTmp(closeTextRect, 30f, new Color(0.13f, 0.12f, 0.18f, 1f),
+            var closeLabel = NewTmp(closeTextRect, 30f, Color.white,
                 TextAlignmentOptions.Center);
 
             var so = new SerializedObject(panel);
@@ -159,15 +159,15 @@ namespace Game.Editor
             iconImage.raycastTarget = false;
 
             var name = NewRect("NameText", row);
-            TopStretchOffset(name, 120f, 36f, 14f);
+            TopStretchOffset(name, 120f, 40f, 16f);
             NewTmp(name, 32f, Color.white, TextAlignmentOptions.MidlineLeft);
 
             var desc = NewRect("DescText", row);
-            TopStretchOffset(desc, 120f, 30f, 52f);
+            TopStretchOffset(desc, 120f, 32f, 60f);
             NewTmp(desc, 24f, TextColor, TextAlignmentOptions.MidlineLeft);
 
             var status = NewRect("StatusText", row);
-            TopStretchOffset(status, 120f, 28f, 86f);
+            TopStretchOffset(status, 120f, 30f, 98f);
             NewTmp(status, 22f, DimTextColor, TextAlignmentOptions.MidlineLeft);
 
             return row.gameObject;
