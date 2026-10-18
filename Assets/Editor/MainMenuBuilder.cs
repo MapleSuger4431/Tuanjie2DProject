@@ -15,7 +15,7 @@ using UnityEngine.UI;
 ///    按钮底图与品牌切片（棋盘距离键控抠图），主菜单资产不引用沙盒 Assets/Test
 /// 2. 生成 Assets/Resources/UIPrefabs/MainMenuPanel.prefab、MenuHelpPanel.prefab 与 MenuSettingsPanel.prefab
 ///    （按 Assets/Arts/封面设计图/封面全局.png 复刻：AI 抠图成品 封面背景.png 铺底（装饰边框与全部 UI 已抠除），品牌区切片徽章/标题/EDGE GRID/分隔线/标语分层，
-///    四按钮右下锚点 + 右中支点、右边缘距屏幕右缘 70px、y=502/379/257/134（开始=横幅底图、说明/设置=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
+///    五按钮右下锚点 + 右中支点、右边缘距屏幕右缘 70px、自上而下 开始游戏/设置/玩法说明/成就图鉴/退出游戏，y=620/502/379/257/134（开始=横幅底图、说明/设置/成就=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
 ///    标题图按语言切换（中文 pieces/title.png「边际棋盘」、英文 pieces/title_en.png「Marginal Chessboard」，由 MainMenuPanel.ApplyLocalization 运行时换图并重算尺寸），
 ///    操作说明弹窗 + 全屏蒙版（关闭钮为 Button_Close 切片、框内右上），设置面板由 操作面板组件.png 图集切片拼装 1000×790）
 /// 3. 右下角版本号小字（VersionText，文本常量 VersionLabel，发版改常量后重跑）
@@ -408,7 +408,7 @@ public static class MainMenuBuilder
         return n > 0 ? sum / n : new Color(0.05f, 0.05f, 0.09f, 1f);
     }
 
-    /// <summary>生成主菜单面板预制体（MainMenuPanel：封面背景 + 品牌区切片分层 + 右侧四按钮，设置在玩法说明与退出之间）。</summary>
+    /// <summary>生成主菜单面板预制体（MainMenuPanel：封面背景 + 品牌区切片分层 + 右侧五按钮，自上而下 开始/设置/玩法说明/成就图鉴/退出）。</summary>
     public static void BuildMainMenuPanel()
     {
         var root = new GameObject("MainMenuPanel", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -444,12 +444,12 @@ public static class MainMenuBuilder
         if (trophyIcon == null) Debug.LogError($"[MainMenuBuilder] 缺少成就按钮图标 {AchTrophyIconPath}");
         var buttonsRt = CreateRect(root, "Buttons");
         Stretch(buttonsRt);
-        // 成就图鉴排在按钮列最上方：下方四枚保持设计图原有间距（502→134），
-        // 往底部加会撞品牌区标语（slogan 中心 y=69）与右下角版本号
-        var achievements = CreateButton(buttonsRt, "BtnAchievements", "成就图鉴", new Vector2(-ButtonRightMargin, 620f), plaqueSprite, new Vector2(ButtonWidth, 70f), trophyIcon);
-        var newGame = CreateButton(buttonsRt, "BtnNewGame", "开始游戏", new Vector2(-ButtonRightMargin, 502f), startSprite, new Vector2(459f, 98f), null);
+        // 按钮列自上而下：开始游戏 → 设置 → 玩法说明 → 成就图鉴 → 退出游戏（y=620/502/379/257/134，间距沿用设计图；
+        // 顶部不宜超过 620——再往上会压品牌区，退出之下留给右下角版本号）
+        var newGame = CreateButton(buttonsRt, "BtnNewGame", "开始游戏", new Vector2(-ButtonRightMargin, 620f), startSprite, new Vector2(459f, 98f), null);
+        var settings = CreateButton(buttonsRt, "BtnSettings", "设置", new Vector2(-ButtonRightMargin, 502f), plaqueSprite, new Vector2(ButtonWidth, 70f), settingsIcon);
         var help = CreateButton(buttonsRt, "BtnHelp", "玩法说明", new Vector2(-ButtonRightMargin, 379f), plaqueSprite, new Vector2(ButtonWidth, 70f), bookIcon);
-        var settings = CreateButton(buttonsRt, "BtnSettings", "设置", new Vector2(-ButtonRightMargin, 257f), plaqueSprite, new Vector2(ButtonWidth, 70f), settingsIcon);
+        var achievements = CreateButton(buttonsRt, "BtnAchievements", "成就图鉴", new Vector2(-ButtonRightMargin, 257f), plaqueSprite, new Vector2(ButtonWidth, 70f), trophyIcon);
         var quit = CreateButton(buttonsRt, "BtnQuit", "退出游戏", new Vector2(-ButtonRightMargin, 134f), quitSprite, new Vector2(ButtonWidth, 70f), exitIcon);
 
         // VersionText：右下角版本号小字（右对齐屏幕右下角，落在最低按钮之下，不拦截射线）。
