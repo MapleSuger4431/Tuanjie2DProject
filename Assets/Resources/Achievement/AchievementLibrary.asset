@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e4e5926d909b47d09c9eafa6e37059a, type: 3}
+  m_Name: AchievementLibrary
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 11400000, guid: 4a48268b699944db081b1f7875a11e68, type: 2}
+  - {fileID: 11400000, guid: 052549ab1e7b64df084aa725f8731946, type: 2}
+  - {fileID: 11400000, guid: 8fca50dd447bf451aa515ede267cc3fe, type: 2}
+  - {fileID: 11400000, guid: ea5e9f8c5a4ee4995a6ce44152092d25, type: 2}
