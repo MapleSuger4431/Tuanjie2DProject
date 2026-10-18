@@ -467,8 +467,8 @@ public static class MainMenuBuilder
         title.color = new Color32(62, 32, 100, 255);
         title.font = GetLegacyFont();
 
-        // BtnClose：右上角八角金边 X（操作面板组件图集切片，徽章式压在装饰框角外的透明角区）
-        var closeButton = MakeSheetButton(contentRt, "BtnClose", "Button_Close", new Vector2(425f, 375f), new Vector2(94f, 79f));
+        // BtnClose：八角金边 X（操作面板组件图集切片），框内右上角、牌匾右下方（用户圈定区域，避开角部卷花与标题）
+        var closeButton = MakeSheetButton(contentRt, "BtnClose", "Button_Close", new Vector2(315f, 240f), new Vector2(94f, 79f));
 
         // Body：操作说明正文
         var bodyRt = CreateRect(contentRt, "Body");
