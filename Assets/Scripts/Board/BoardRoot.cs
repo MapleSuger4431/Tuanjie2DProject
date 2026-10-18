@@ -31,6 +31,9 @@ namespace Game.Board
         [SerializeField, Tooltip("本关 AI 出生时的元素属性：火人走不了冰格、冰人走不了火格（属性反转效果可中途翻转，重开复位到本值）")]
         ElementState initialElement = ElementState.Fire;
 
+        [SerializeField, Tooltip("本关 AI 出生朝向：出发这一步与之后没箭头时的直行方向（1/3/5 关朝右、2/4 关朝上）")]
+        MoveDirection initialDirection = MoveDirection.Right;
+
         BoardModel _board;
         CellRuntime[] _cells;
         int _width;
@@ -42,6 +45,9 @@ namespace Game.Board
 
         /// <summary>本关 AI 出生元素属性（关卡在 Inspector 里配置；<see cref="BoardRunModel" /> 在开局 / 重开时读取）。</summary>
         public ElementState InitialElement => initialElement;
+
+        /// <summary>本关 AI 出生朝向（关卡在 Inspector 里配置；<see cref="BoardRunModel" /> 在开局 / 重开时读取）。</summary>
+        public MoveDirection InitialDirection => initialDirection;
 
         public int Width => _width;
         public int Height => _height;

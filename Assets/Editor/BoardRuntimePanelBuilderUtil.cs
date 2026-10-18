@@ -42,7 +42,7 @@ namespace Game.Editor
             BoardRuntimePanel panel, GameObject root,
             RectTransform topBar, RectTransform bottomBar, RectTransform right, NextPieceView nextPieceView,
             Text placedCount, Text timeText, Text goalText, Text aiState, Text hintText,
-            Button playButton, Text playLabel, Text statusTitle, Text statusName, Text statusWalk, Text nextTitle,
+            Button playButton, Text playLabel, Text statusTitle, Text statusName, Text statusDir, Text statusWalk, Text nextTitle,
             Image elementIcon,
             Button back, Text backLabel, Button restart, Text restartLabel)
         {
@@ -62,6 +62,7 @@ namespace Game.Editor
             so.FindProperty("aiStateText").objectReferenceValue = aiState;
             so.FindProperty("statusTitleText").objectReferenceValue = statusTitle;
             so.FindProperty("statusNameText").objectReferenceValue = statusName;
+            so.FindProperty("statusDirText").objectReferenceValue = statusDir;
             so.FindProperty("statusWalkText").objectReferenceValue = statusWalk;
             so.FindProperty("nextTitleText").objectReferenceValue = nextTitle;
 

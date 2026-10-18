@@ -29,6 +29,7 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 0
     invertChance: 0
+    pieceLimit: 50
   - sceneName: Level_02
     types:
     - type: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 0
     invertChance: 0
+    pieceLimit: 60
   - sceneName: Level_03
     types:
     - type: 0
@@ -61,6 +63,7 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 1
     invertChance: 0
+    pieceLimit: 70
   - sceneName: Level_04
     types:
     - type: 0
@@ -77,6 +80,7 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 3
     invertChance: 0.35
+    pieceLimit: 80
   - sceneName: Level_05
     types:
     - type: 0
@@ -93,6 +97,7 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 3
     invertChance: 0.3
+    pieceLimit: 90
   fallback:
     sceneName: Fallback
     types:
@@ -110,3 +115,4 @@ MonoBehaviour:
     maxAbyssPerPiece: 1
     maxAbyssPerRun: 0
     invertChance: -1
+    pieceLimit: 0

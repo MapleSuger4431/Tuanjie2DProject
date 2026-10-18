@@ -72,6 +72,9 @@ namespace Game.Board
         /// </summary>
         public float InvertChance => _pool != null ? _pool.invertChance : -1f;
 
+        /// <summary>本关可放置方块的数量上限；0 = 未配置（<see cref="BoardModel" /> 回落到按棋盘尺寸插值的旧规则）。</summary>
+        public int PieceLimit => _pool != null ? Mathf.Max(0, _pool.pieceLimit) : 0;
+
         /// <summary>
         /// 一口气抽 count 个效果（方块每一格独立抽）。没配效果表时返回全 null。
         /// </summary>

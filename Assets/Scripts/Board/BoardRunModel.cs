@@ -135,6 +135,7 @@ namespace Game.Board
             _lastDirection = null;
             _forcedDirection = null;
             element.Value = ResolveInitialElement();
+            initialDirection = ResolveInitialDirection();
 
             var start = _board != null ? _board.StartCell : Vector2Int.zero;
             _previousCell = start;
@@ -178,6 +179,7 @@ namespace Game.Board
             _lastDirection = null;
             _forcedDirection = null;
             element.Value = ResolveInitialElement();
+            initialDirection = ResolveInitialDirection();
             _previousCell = start;
             aiCell.Value = start;
             phase.Value = Phase.Running;
@@ -263,6 +265,16 @@ namespace Game.Board
         {
             var root = BoardRoot.Instance;
             return root != null ? root.InitialElement : ElementState.Fire;
+        }
+
+        /// <summary>
+        /// 本关出生朝向：按关卡配置（<see cref="BoardRoot.InitialDirection" />，每个关卡场景各配各的）；
+        /// 棋盘根还没就绪（纯数据层直驱 / 测试环境）时回落向右。
+        /// </summary>
+        MoveDirection ResolveInitialDirection()
+        {
+            var root = BoardRoot.Instance;
+            return root != null ? root.InitialDirection : MoveDirection.Right;
         }
 
         /// <summary>

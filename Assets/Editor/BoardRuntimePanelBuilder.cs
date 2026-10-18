@@ -40,18 +40,21 @@ namespace Game.Editor
         // ---- 布局（RightPanel 本地坐标，1920×1080 下面板 768×976，自上而下累计）----
         public const float HeaderHeight = 52f;
         public const float RowHeight = 44f;
-        // 状态卡顶部让开右上角两枚按钮（高 72 + 上边距 14 = 底缘 86），再留 18px 间距
-        public const float StatusCardTop = 104f;
-        public const float StatusCardHeight = 204f;
-        public const float NextHeaderTop = 316f;
-        public const float NextAreaTop = 376f;
-        public const float NextAreaHeight = 280f;
+        // 右上角两枚按钮占 [86,158]：顶部 60+px 会被 Game View 的编辑器工具条（Play Focused/Stats/Gizmos 悬浮层）盖住，
+        // 按钮必须整体让到它之下（打包全屏没有这条工具条，但距顶 14px 也过于贴边）
+        public const float TopButtonsTop = 86f;
+        // 状态卡顶 = 按钮底 158 + 8px 间距；高度压缩到 180，给下移后的下方区块腾空间
+        public const float StatusCardTop = 166f;
+        public const float StatusCardHeight = 180f;
+        public const float NextHeaderTop = 352f;
+        public const float NextAreaTop = 410f;
+        public const float NextAreaHeight = 248f;
         public const float PlacedRowTop = 664f;
-        public const float TimeRowTop = 710f;
-        public const float GoalRowTop = 756f;
-        public const float AiStateRowTop = 802f;
-        // 出发按钮上下都留呼吸空间：距 AI 状态行 20px、距面板底 26px
-        public const float PlayTop = 866f;
+        public const float TimeRowTop = 712f;
+        public const float GoalRowTop = 760f;
+        public const float AiStateRowTop = 808f;
+        // 出发按钮上下都留呼吸空间：距 AI 状态行 8px、距面板底 32px
+        public const float PlayTop = 860f;
 
         [MenuItem("Tools/关卡/重建棋盘运行时面板")]
         public static void RebuildAll()
@@ -81,8 +84,7 @@ namespace Game.Editor
             rightImage.sprite = panelSprite;
             rightImage.type = Image.Type.Sliced;
 
-            var (back, backLabel, restart, restartLabel) = BuildTopRightButtons(topBar);
-            var (statusTitle, statusName, statusWalk, elementIcon) = BuildStatusSection(right);
+            var (statusTitle, statusName, statusDir, statusWalk, elementIcon) = BuildStatusSection(right);
             var (nextTitle, nextPieceView) = BuildNextSection(right, cardSprite);
             var placedCount = BuildStatusRow(right, "PlacedCountText", PlacedRowTop, 32);
             var timeText = BuildStatusRow(right, "TimeText", TimeRowTop, 32);
@@ -91,9 +93,13 @@ namespace Game.Editor
             var (playButton, playLabel) = BuildPlayButton(right);
             var hintText = BuildHintText(bottomBar);
 
+            // 右上角两枚按钮必须最后创建（挂根下 = 根的最后子物体），渲染在全高 RightPanel 之上——
+            // 它们挂在先建的 TopBar 子树里时会被后画的 RightPanel 整块盖住（渲染目检实测踩过）
+            var (back, backLabel, restart, restartLabel) = BuildTopRightButtons((RectTransform)root.transform);
+
             WirePanel(panel, root, topBar, bottomBar, right, nextPieceView,
                 placedCount, timeText, goalText, aiState, hintText,
-                playButton, playLabel, statusTitle, statusName, statusWalk, nextTitle, elementIcon,
+                playButton, playLabel, statusTitle, statusName, statusDir, statusWalk, nextTitle, elementIcon,
                 back, backLabel, restart, restartLabel);
 
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);

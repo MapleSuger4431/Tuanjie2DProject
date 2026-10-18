@@ -37,6 +37,9 @@ namespace Game.Board
         [Tooltip("角色名文本；运行时按本地化表刷新")]
         [SerializeField] Text statusNameText;
 
+        [Tooltip("出发朝向行：本关 AI 出生朝向（BoardRoot 按关配置），文本由本地化表填充")]
+        [SerializeField] Text statusDirText;
+
         [Tooltip("可走地形行：可走：陆地 / 火 / 冰（由 TileTypeInfo.IsPassable 动态拼出）")]
         [SerializeField] Text statusWalkText;
 
@@ -81,6 +84,8 @@ namespace Game.Board
 
         /// <summary>右上角两个按钮的尺寸与间距（角锚定，不随父级拉伸）。</summary>
         const float TopBarButtonHeight = 72f;
+        // 与生成器 BoardRuntimePanelBuilder.TopButtonsTop 对齐：让开 Game View 顶部工具条（悬浮层，约盖住 60+px）
+        const float TopButtonTop = 86f;
         const float TopBarButtonGap = 12f;
         const float BackButtonWidth = 220f;
         const float RestartButtonWidth = 200f;
@@ -159,7 +164,7 @@ namespace Game.Board
                 var rect = (RectTransform)backButton.transform;
                 rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 1f);
                 rect.sizeDelta = new Vector2(BackButtonWidth, TopBarButtonHeight);
-                rect.anchoredPosition = new Vector2(-16f, -14f);
+                rect.anchoredPosition = new Vector2(-16f, -TopButtonTop);
             }
 
             if (backButtonLabel == null) backButtonLabel = backButton.GetComponentInChildren<Text>();
@@ -204,7 +209,7 @@ namespace Game.Board
                 rect.sizeDelta = new Vector2(RestartButtonWidth, TopBarButtonHeight);
 
                 var backWidth = backButton != null ? ((RectTransform)backButton.transform).sizeDelta.x : BackButtonWidth;
-                rect.anchoredPosition = new Vector2(-(16f + backWidth + TopBarButtonGap), -14f);
+                rect.anchoredPosition = new Vector2(-(16f + backWidth + TopBarButtonGap), -TopButtonTop);
             }
 
             if (restartButtonLabel == null) restartButtonLabel = restartButton.GetComponentInChildren<Text>();
@@ -292,6 +297,10 @@ namespace Game.Board
                 statusTitleText.text = Localization.Get(Localization.Key.LevelStatusCharacter);
             if (statusNameText != null)
                 statusNameText.text = Localization.Get(Localization.Key.LevelCharacterName);
+            // 出发朝向行：本关出生朝向（BoardRoot 按关配置），与可走行同批刷新
+            if (statusDirText != null)
+                statusDirText.text = Localization.Get(Localization.Key.LevelSpawnDir,
+                    MoveDirectionInfo.DisplayName(CurrentInitialDirection()));
 
             if (statusWalkText != null)
                 statusWalkText.text = Localization.Get(Localization.Key.LevelWalkable, WalkableTerrainNames(CurrentElement()));
@@ -324,6 +333,13 @@ namespace Game.Board
 
             var sprite = CurrentElement() == ElementState.Ice ? elementIconIce : elementIconFire;
             if (sprite != null) elementIcon.sprite = sprite;
+        }
+
+        /// <summary>本关 AI 出生朝向；面板初始化早于 Model 挂接时回落向右。</summary>
+        MoveDirection CurrentInitialDirection()
+        {
+            var run = _run != null ? _run : this.GetModel<BoardRunModel>();
+            return run != null ? run.InitialDirection : MoveDirection.Right;
         }
 
         /// <summary>拼「可走」列表：陆地恒可走，火格需火属性、冰格需冰属性（06 篇 RB-09 的 HUD 呈现）。</summary>
@@ -531,7 +547,8 @@ namespace Game.Board
             switch (phase)
             {
                 case BoardRunModel.Phase.Building:
-                    aiStateText.text = $"AI 待命 · {elementText} · 起点（出发朝向 {MoveDirectionInfo.DisplayName(_run.InitialDirection)}）";
+                    // 出发朝向已上移到角色状态卡（statusDirText），这里不再重复报
+                    aiStateText.text = $"AI 待命 · {elementText} · 起点";
                     break;
                 case BoardRunModel.Phase.Running:
                     aiStateText.text = $"AI 行进中 · 第 {steps} 步 · {elementText}";
