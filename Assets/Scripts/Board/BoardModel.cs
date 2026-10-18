@@ -114,6 +114,8 @@ namespace Game.Board
         {
             _tiles = new TileType[width * height];
             _effects = new TileEffect[width * height];
+            // 效果消耗位必须与尺寸同步重建：BoardContext 跨关卡常驻，上一关遗留的旧尺寸数组会让 IsEffectConsumed 按新尺寸索引越界
+            _consumed = new bool[width * height];
             coveredCount.Value = 0;
             BoardCovered.Invoke();
         }
@@ -278,7 +280,7 @@ namespace Game.Board
 
         /// <summary>该格的效果是否已经消耗掉（传送门用过）。</summary>
         public bool IsEffectConsumed(Vector2Int cell) =>
-            _consumed != null && InBounds(cell) && _consumed[Index(cell)];
+            _consumed != null && _consumed.Length == width * height && InBounds(cell) && _consumed[Index(cell)];
 
         /// <summary>标记该格效果已消耗。</summary>
         public void ConsumeEffect(Vector2Int cell)
