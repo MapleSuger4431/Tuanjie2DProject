@@ -54,23 +54,9 @@ namespace Game.Board
         public int Width => width;
         public int Height => height;
 
-        BoardTilePoolModel _poolLimit;
-
-        /// <summary>
-        /// 本关方块上限：优先取随机表按关配置的值（LevelTuningBuilder 五关 = 50/60/70/80/90）；
-        /// 该关没配置（0，如旧测试场景）时回落按棋盘边长线性插值（10×10→30 块，20×20→50 块，每 +1 边长 +2）。
-        /// </summary>
-        public int PieceLimit
-        {
-            get
-            {
-                if (_poolLimit == null) _poolLimit = this.GetModel<BoardTilePoolModel>();
-                var configured = _poolLimit.PieceLimit;
-                if (configured > 0) return configured;
-
-                return MinPieces + (Mathf.Max(width, height) - MinSize) * (MaxPieces - MinPieces) / (MaxSize - MinSize);
-            }
-        }
+        /// <summary>本关方块上限：随棋盘边长线性插值（10×10→30 块，20×20→50 块，每 +1 边长 +2）。</summary>
+        public int PieceLimit =>
+            MinPieces + (Mathf.Max(width, height) - MinSize) * (MaxPieces - MinPieces) / (MaxSize - MinSize);
 
         /// <summary>起点：关卡可配（<see cref="SetStartGoal" />）；未配置或越界回落左下角。</summary>
         public Vector2Int StartCell => InBounds(startCell) ? startCell : Vector2Int.zero;

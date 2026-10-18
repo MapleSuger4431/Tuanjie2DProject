@@ -16,7 +16,6 @@ namespace Game.EditorTools
     /// <item>血色深渊（<see cref="TileType.Mountain" />）：场地预置 0/3/3/3/5 个，方块可刷出 0/0/1/3/3 个（每块最多 1 格）；</item>
     /// <item>金币：1/1/2/2/2 枚，第二颗星要求全部捡到；</item>
     /// <item>属性反转牌：第 4 关才引入（第 1~3 关概率 0，第 4/5 关 0.35 / 0.3）。</item>
-    /// <item>方块上限：50 / 60 / 70 / 80 / 90（第一关 50，往后每关 +10，用户 2026-10-18 拍板），写进随机表的 pieceLimit。</item>
     /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间），可通行格（路/火/冰）≥30%，
     /// 用户 2026-10-18 拍板「不能一进关全是深渊」；路网含少量火/冰格。</item>
     /// </list>
@@ -44,9 +43,6 @@ namespace Game.EditorTools
             public int maxAbyssPerPiece = 1;
             public int maxAbyssPerRun;
             public float invertChance;
-
-            [Tooltip("本关可放置方块的数量上限（五关难度曲线：第一关 50，往后每关 +10）。0 = 未配置，按棋盘尺寸插值兜底")]
-            public int pieceLimit;
             public Vector2Int[] abyss = { };
             public Vector2Int[] coins = { };
 
@@ -77,7 +73,7 @@ namespace Game.EditorTools
         {
             new LevelSpec
             {
-                sceneName = "Level_01", size = 10, timeStarSeconds = 30, pieceLimit = 50,
+                sceneName = "Level_01", size = 10, timeStarSeconds = 30,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new Vector2Int[] { },
                 coins = new[] { new Vector2Int(3, 6) },
@@ -90,7 +86,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_02", size = 15, timeStarSeconds = 40, pieceLimit = 60,
+                sceneName = "Level_02", size = 15, timeStarSeconds = 40,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new[] { new Vector2Int(4, 3), new Vector2Int(10, 7), new Vector2Int(7, 12) },
                 coins = new[] { new Vector2Int(7, 7) },
@@ -103,7 +99,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_03", size = 15, timeStarSeconds = 50, pieceLimit = 70,
+                sceneName = "Level_03", size = 15, timeStarSeconds = 50,
                 maxAbyssPerRun = 1, invertChance = 0f,
                 abyss = new[] { new Vector2Int(3, 5), new Vector2Int(9, 9), new Vector2Int(12, 3) },
                 coins = new[] { new Vector2Int(5, 4), new Vector2Int(11, 10) },
@@ -116,7 +112,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_04", size = 20, timeStarSeconds = 60, pieceLimit = 80,
+                sceneName = "Level_04", size = 20, timeStarSeconds = 60,
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
@@ -134,7 +130,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_05", size = 20, timeStarSeconds = 70, pieceLimit = 90,
+                sceneName = "Level_05", size = 20, timeStarSeconds = 70,
                 maxAbyssPerRun = 3, invertChance = 0.3f,
                 abyss = new[]
                 {
@@ -195,7 +191,6 @@ namespace Game.EditorTools
                 entry.FindPropertyRelative("maxAbyssPerPiece").intValue = spec.maxAbyssPerPiece;
                 entry.FindPropertyRelative("maxAbyssPerRun").intValue = spec.maxAbyssPerRun;
                 entry.FindPropertyRelative("invertChance").floatValue = spec.invertChance;
-                entry.FindPropertyRelative("pieceLimit").intValue = spec.pieceLimit;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -287,7 +282,7 @@ namespace Game.EditorTools
 
             Debug.Log($"[LevelTuning] {spec.sceneName}（{(existed ? "已存在·更新" : "新建")}）{spec.size}×{spec.size}，" +
                       $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，" +
-                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s，方块上限 {spec.pieceLimit}");
+                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s");
         }
 
         /// <summary>
