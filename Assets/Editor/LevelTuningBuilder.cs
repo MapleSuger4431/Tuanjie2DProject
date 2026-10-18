@@ -16,7 +16,9 @@ namespace Game.EditorTools
     /// <item>血色深渊（<see cref="TileType.Mountain" />）：场地预置 0/3/3/3/5 个，方块可刷出 0/0/1/3/3 个（每块最多 1 格）；</item>
     /// <item>金币：1/1/2/2/2 枚，第二颗星要求全部捡到；</item>
     /// <item>属性反转牌：第 4 关才引入（第 1~3 关概率 0，第 4/5 关 0.35 / 0.3）。</item>
+    /// <item>方块上限：50 / 60 / 70 / 80 / 90（第一关 50，往后每关 +10，用户 2026-10-18 拍板），写进随机表的 pieceLimit。</item>
     /// <item>出生元素：五关按 火 / 冰 / 火 / 冰 / 火 交替（用户 2026-10-18 拍板「每一关最开始的元素不一样」），写在 BoardRoot.initialElement。</item>
+    /// <item>出生朝向：五关全部向右（用户 2026-10-18 拍板），写在 BoardRoot.initialDirection。</item>
     /// <item>预置反转格：第 5 关引入 1 个元素转换格（传送门出口走廊上，钉死不被方块覆盖）。</item>
     /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间）。占比口径（用户 2026-10-18 拍板）：
     /// 关卡开始前、玩家落块之前，非深渊且非血色深渊的格子（路/火/冰）= 棋盘总格数的 30%，相对零散分布、允许少量聚集；
@@ -56,6 +58,13 @@ namespace Game.EditorTools
             [Tooltip("本关 AI 出生元素属性：五关按 火 / 冰 / 火 / 冰 / 火 交替（用户 2026-10-18 拍板），写入 BoardRoot.initialElement，重开复位到本值")]
             public ElementState initialElement = ElementState.Fire;
 
+            [Tooltip("本关 AI 出生朝向：五关全部向右（用户 2026-10-18 拍板），写入 BoardRoot.initialDirection，重开复位到本值")]
+            public MoveDirection initialDirection = MoveDirection.Right;
+
+            [Tooltip("本关可放置方块的数量上限（第一关 50、往后每关 +10，用户 2026-10-18 拍板），写进随机表 pieceLimit；" +
+                     "0 = 不写（BoardModel 回落按棋盘尺寸线性插值）")]
+            public int pieceLimit;
+
             public Vector2Int[] abyss = { };
             public Vector2Int[] coins = { };
 
@@ -91,6 +100,7 @@ namespace Game.EditorTools
             new LevelSpec
             {
                 sceneName = "Level_01", size = 10, timeStarSeconds = 50, initialElement = ElementState.Fire,
+                initialDirection = MoveDirection.Right, pieceLimit = 50,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new Vector2Int[] { },
                 coins = new[] { new Vector2Int(3, 6) },
@@ -104,6 +114,7 @@ namespace Game.EditorTools
             new LevelSpec
             {
                 sceneName = "Level_02", size = 15, timeStarSeconds = 60, initialElement = ElementState.Ice,
+                initialDirection = MoveDirection.Right, pieceLimit = 60,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new[] { new Vector2Int(4, 3), new Vector2Int(10, 7), new Vector2Int(7, 12) },
                 coins = new[] { new Vector2Int(7, 7) },
@@ -117,6 +128,7 @@ namespace Game.EditorTools
             new LevelSpec
             {
                 sceneName = "Level_03", size = 15, timeStarSeconds = 70, initialElement = ElementState.Fire,
+                initialDirection = MoveDirection.Right, pieceLimit = 70,
                 maxAbyssPerRun = 1, invertChance = 0f,
                 abyss = new[] { new Vector2Int(3, 5), new Vector2Int(9, 9), new Vector2Int(12, 3) },
                 coins = new[] { new Vector2Int(5, 4), new Vector2Int(11, 10) },
@@ -130,6 +142,7 @@ namespace Game.EditorTools
             new LevelSpec
             {
                 sceneName = "Level_04", size = 20, timeStarSeconds = 80, initialElement = ElementState.Ice,
+                initialDirection = MoveDirection.Right, pieceLimit = 80,
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
@@ -148,6 +161,7 @@ namespace Game.EditorTools
             new LevelSpec
             {
                 sceneName = "Level_05", size = 20, timeStarSeconds = 90, initialElement = ElementState.Fire,
+                initialDirection = MoveDirection.Right, pieceLimit = 90,
                 maxAbyssPerRun = 3, invertChance = 0.3f,
                 abyss = new[]
                 {
@@ -211,6 +225,7 @@ namespace Game.EditorTools
                 entry.FindPropertyRelative("maxAbyssPerPiece").intValue = spec.maxAbyssPerPiece;
                 entry.FindPropertyRelative("maxAbyssPerRun").intValue = spec.maxAbyssPerRun;
                 entry.FindPropertyRelative("invertChance").floatValue = spec.invertChance;
+                entry.FindPropertyRelative("pieceLimit").intValue = spec.pieceLimit;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -290,8 +305,8 @@ namespace Game.EditorTools
             // 预置反转格同上：写在地形之后才不会被重建冲掉
             ApplyInverts(board, spec);
 
-            // 出生元素：写入 BoardRoot 序列化字段（五关 火 / 冰 / 火 / 冰 / 火 交替，重开复位到本值）
-            ApplyInitialElement(board, spec);
+            // 出生元素 + 出生朝向：写入 BoardRoot 序列化字段（每关一个值，重开复位到本值）
+            ApplyInitialElementAndDirection(board, spec);
 
             ApplyCoins(board, spec);
 
@@ -309,7 +324,8 @@ namespace Game.EditorTools
             Debug.Log($"[LevelTuning] {spec.sceneName}（{(existed ? "已存在·更新" : "新建")}）{spec.size}×{spec.size}，" +
                       $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，" +
                       $"预置传送门 {spec.portals.Length} 格，预置反转格 {spec.inverts.Length} 格，" +
-                      $"出生元素 {spec.initialElement}，三星时限 {spec.timeStarSeconds}s");
+                      $"出生元素 {spec.initialElement}，出生朝向 {spec.initialDirection}，" +
+                      $"三星时限 {spec.timeStarSeconds}s，方块上限 {spec.pieceLimit}");
         }
 
         /// <summary>
@@ -654,18 +670,19 @@ namespace Game.EditorTools
             if (written > 0) Debug.Log($"[LevelTuning] {spec.sceneName} 写入预置反转格 {written} 格");
         }
 
-        /// <summary>出生元素：写入 BoardRoot 的序列化字段（每关一个值，五关 火 / 冰 / 火 / 冰 / 火 交替）。</summary>
-        static void ApplyInitialElement(GameObject board, LevelSpec spec)
+        /// <summary>出生元素 + 出生朝向：写入 BoardRoot 的序列化字段（每关一个值；五关 火/冰/火/冰/火、右/上/右/上/右）。</summary>
+        static void ApplyInitialElementAndDirection(GameObject board, LevelSpec spec)
         {
             var root = board.GetComponent<BoardRoot>();
             if (root == null)
             {
-                Debug.LogError($"[LevelTuning] {spec.sceneName} 的 Board 物体上找不到 BoardRoot，无法写出生元素");
+                Debug.LogError($"[LevelTuning] {spec.sceneName} 的 Board 物体上找不到 BoardRoot，无法写出生元素/朝向");
                 return;
             }
 
             var so = new SerializedObject(root);
             so.FindProperty("initialElement").intValue = (int)spec.initialElement;
+            so.FindProperty("initialDirection").intValue = (int)spec.initialDirection;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
