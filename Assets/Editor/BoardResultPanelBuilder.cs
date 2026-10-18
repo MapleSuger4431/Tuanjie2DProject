@@ -12,12 +12,15 @@ namespace Game.Editor
     /// 关卡结算 UI 生成器：产物落在 Assets/Resources/UIPrefabs/（项目 UI 资产约定，
     /// 运行时由 UIModule 的 ResourcesUILoader 按 <see cref="Game.Core.UIPaths" /> 的 path 加载）。
     /// <para>
-    /// 产物：LevelClearPanel（通关成功，带用时）、LevelFailPanel（通关失败），
+    /// 产物：LevelClearPanel（通关成功，带星级与用时）、LevelFailPanel（通关失败），
     /// 两者都是 **Panel 形态**：根只有 RectTransform（无 Canvas / CanvasScaler / GraphicRaycaster，
     /// 那些由 UIRoot 的层 Canvas 提供），挂 Popup 层，全屏 Mask 拦截射线。
     /// 重跑即覆盖产物；要改结构改这里，禁止在产物 prefab 上手加节点。
     /// </para>
     /// <para>
+    /// 皮肤 = 参考文档「旧魔导书 Grimoire」那套：全屏暗紫蒙版 + 深紫描边背板（<see cref="UiSpritePainter" />）
+    /// + 做旧羊皮纸内页（Tip_Parchment）+ 古铜金分隔线 + 暗紫描金按钮牌匾，文字走深紫（纸面浅色，
+    /// 与棋盘运行时面板那套「深底浅字」相反）。失败页复用同一副壳，只是把内页染成灰紫红、标题转暗红。
     /// 同时同步结算文案到 GameText 表（zh-CN / en）——文案真源在表里，预制体文本节点一律留空。
     /// </para>
     /// </summary>
@@ -32,6 +35,69 @@ namespace Game.Editor
 
         /// <summary>项目中文字体资产（TMPChineseText 扩展落地），不足时回退 TMP 默认字体。</summary>
         const string TmpChineseFontPath = "Assets/Codely/Fonts/NotoSansSC-Regular SDF.asset";
+
+        /// <summary>星级图标（与选关节点同一套美术）。</summary>
+        const string StarSpritePath = "Assets/Resources/UIPrefabs/UIimg/star.png";
+
+        /// <summary>羊皮纸卷轴内页（与关卡成就小窗同一张，1024×576、9-slice 边 40）。</summary>
+        const string ParchmentPath = "Assets/Art/Board/UI/Tip_Parchment.png";
+
+        // ---- 布局（1920×1080 设计分辨率；卡片按像素固定尺寸居中，内部按「距左/距顶/宽/高」摆放）----
+        const float FrameWidth = 1000f;
+        const float FrameHeight = 760f;
+        const float CardInset = 28f;
+
+        const float TitleLeft = 60f;
+        const float TitleTop = 62f;
+        const float TitleHeight = 92f;
+        const float TitleFontSize = 62f;
+
+        const float DividerLeft = 150f;
+        const float DividerTop = 168f;
+        const float DividerWidth = CardWidth - DividerLeft * 2f;
+        const float DividerHeight = 4f;
+
+        const float CardWidth = FrameWidth - CardInset * 2f;
+
+        const float StarRowLeft = 120f;
+        const float StarRowTop = 190f;
+        const float StarRowWidth = 700f;
+        const float StarRowHeight = 150f;
+        const float StarSize = 130f;
+        const float StarGap = 200f;
+
+        const float RowLeft = 90f;
+        const float RowWidth = 760f;
+        const float RowHeight = 46f;
+        const float RowFontSize = 36f;
+
+        const float StepsTop = 360f;
+        const float PiecesTop = 414f;
+        const float TimeTop = 468f;
+        const float FailStepsTop = 330f;
+        const float FailPiecesTop = 384f;
+
+        const float ButtonBottom = 56f;
+        const float ButtonWidth = 330f;
+        const float ButtonHeight = 88f;
+        const float ButtonLeftX = 105f;
+        const float ButtonRightX = 505f;
+        const float ButtonFontSize = 34f;
+
+        // ---- 配色（旧魔导书：羊皮纸浅面 → 文字走深紫）----
+        static readonly Color MaskColor = new Color(0.043f, 0f, 0.086f, 0.80f);
+        static readonly Color GoldColor = new Color(0.78f, 0.63f, 0.33f, 0.9f);
+
+        static readonly Color ClearCardTint = Color.white;
+        static readonly Color ClearTitleColor = new Color(0.165f, 0.078f, 0.212f, 1f);
+        static readonly Color ClearTextColor = new Color(0.294f, 0.200f, 0.322f, 1f);
+
+        static readonly Color FailCardTint = new Color(0.86f, 0.78f, 0.80f, 1f);
+        static readonly Color FailTitleColor = new Color(0.369f, 0.106f, 0.129f, 1f);
+        static readonly Color FailTextColor = new Color(0.353f, 0.216f, 0.235f, 1f);
+
+        /// <summary>牌匾是深底，文字反过来走浅金。</summary>
+        static readonly Color ButtonLabelColor = new Color(0.98f, 0.94f, 0.86f, 1f);
 
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
@@ -67,82 +133,140 @@ namespace Game.Editor
 
         static void BuildClearPanel()
         {
-            var root = BuildShell<LevelClearPanel>("LevelClearPanel", new Color(0.16f, 0.24f, 0.21f),
-                new Color(0.45f, 0.88f, 0.58f));
+            var (root, card) = BuildShell<LevelClearPanel>("LevelClearPanel",
+                ClearCardTint, ClearTitleColor, ClearTextColor, withStars: true);
 
-            // 成功面板独有：本局用时（空文本，运行时由 LevelClearPanel.ApplyResultText 填）
-            var content = root.transform.Find("Content");
-            var timeRow = NewRect("TimeLabel", content);
-            Stretch(timeRow, new Vector2(0.05f, 0.34f), new Vector2(0.95f, 0.45f));
-            var timeLabel = NewTmp(timeRow, string.Empty, 44f);
-            timeLabel.color = new Color(0.88f, 0.95f, 0.90f);
+            // 成功面板独有 1：星级行（三颗星，运行时逐颗点亮，这里只建空位）
+            var starRow = BuildStars(card);
+
+            // 成功面板独有 2：本局用时（空文本，运行时由 LevelClearPanel.ApplyResultText 填）
+            var timeRow = NewRect("TimeLabel", card);
+            AnchorTopLeft(timeRow, RowLeft, TimeTop, RowWidth, RowHeight);
+            var timeLabel = NewTmp(timeRow, string.Empty, RowFontSize, ClearTextColor);
 
             var so = new SerializedObject(root.GetComponent<LevelClearPanel>());
             so.FindProperty("timeLabel").objectReferenceValue = timeLabel;
+            so.FindProperty("starRow").objectReferenceValue = starRow;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             SaveAsPrefab(root, ClearPath);
             Object.DestroyImmediate(root);
         }
 
+        /// <summary>
+        /// 星级行：卡片上部横向三等分，每格一枚固定 130×130 的星（PreserveAspect 保住星星比例），
+        /// 图标走项目美术 star.png；点亮动画在 <see cref="LevelStarRow" /> 里。
+        /// </summary>
+        static LevelStarRow BuildStars(RectTransform card)
+        {
+            var row = NewRect("Stars", card);
+            AnchorTopLeft(row, StarRowLeft, StarRowTop, StarRowWidth, StarRowHeight);
+
+            var component = row.gameObject.AddComponent<LevelStarRow>();
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
+            if (sprite == null)
+                Debug.LogWarning($"[BoardResultPanelBuilder] 未找到星级图标 {StarSpritePath}，星级行退化为纯色块");
+
+            var count = LevelStarRules.MaxStars;
+            var images = new Image[count];
+            for (int i = 0; i < count; i++)
+            {
+                var slot = NewRect("Star" + (i + 1), row);
+                slot.anchorMin = slot.anchorMax = slot.pivot = new Vector2(0.5f, 0.5f);
+                slot.sizeDelta = new Vector2(StarSize, StarSize);
+                slot.anchoredPosition = new Vector2((i - (count - 1) / 2f) * StarGap, 0f);
+
+                var image = slot.gameObject.AddComponent<Image>();
+                image.preserveAspect = true;
+                image.raycastTarget = false;
+                if (sprite != null) image.sprite = sprite;
+                images[i] = image;
+            }
+
+            var so = new SerializedObject(component);
+            var starsProperty = so.FindProperty("stars");
+            starsProperty.arraySize = count;
+            for (int i = 0; i < count; i++)
+                starsProperty.GetArrayElementAtIndex(i).objectReferenceValue = images[i];
+
+            so.FindProperty("starSprite").objectReferenceValue = sprite;
+            // 羊皮纸是浅底：未点亮的星若是「白色半透」会和纸面糊在一起，改成深灰紫才看得出空位
+            so.FindProperty("offColor").colorValue = new Color(0.33f, 0.28f, 0.38f, 0.6f);
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            component.Reset();      // 落盘前先归位到「全部熄灭」，避免预制体存着中间态
+            return component;
+        }
+
         // ---------- 通关失败 ----------
 
         static void BuildFailPanel()
         {
-            var root = BuildShell<LevelFailPanel>("LevelFailPanel", new Color(0.24f, 0.17f, 0.18f),
-                new Color(0.92f, 0.48f, 0.48f));
+            var (root, _) = BuildShell<LevelFailPanel>("LevelFailPanel",
+                FailCardTint, FailTitleColor, FailTextColor, withStars: false);
 
             SaveAsPrefab(root, FailPath);
             Object.DestroyImmediate(root);
         }
 
         /// <summary>
-        /// 两种结算面板共用的外壳：全屏根 → Mask（半透明黑，拦截射线）→ Content（标题 + 两个出口按钮）。
-        /// 失败面板没有成绩行，标题与按钮之间留出更大的空白。
+        /// 两种结算面板共用的壳：全屏根 → Mask（暗紫半透，拦截射线）→ 深紫描边背板 → 羊皮纸内页
+        /// （标题 + 古铜金分隔线 + 成绩行 + 两个牌匾按钮）。失败页没有星级与用时，成绩行上移。
         /// </summary>
-        static GameObject BuildShell<T>(string name, Color contentColor, Color titleColor) where T : LevelResultPanel
+        static (GameObject root, RectTransform card) BuildShell<T>(
+            string name, Color cardTint, Color titleColor, Color textColor, bool withStars)
+            where T : LevelResultPanel
         {
+            var parchment = AssetDatabase.LoadAssetAtPath<Sprite>(ParchmentPath);
+            if (parchment == null) Debug.LogError($"[BoardResultPanelBuilder] 缺少羊皮纸内页 {ParchmentPath}");
+            var plaque = UiSpritePainter.EnsurePlaqueSprite();
+            var frameSprite = UiSpritePainter.EnsurePanelSprite();
+
             var root = new GameObject(name, typeof(RectTransform));
             var script = root.AddComponent<T>();
             Stretch((RectTransform)root.transform);   // 根必须全屏拉伸，否则挂到 Popup 层后缩成 100×100 小块
 
             var mask = NewRect("Mask", root.transform);
             Stretch(mask);
-            mask.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.62f);
+            mask.gameObject.AddComponent<Image>().color = MaskColor;
 
-            var content = NewRect("Content", root.transform);
-            Anchor(content, new Vector2(0.31f, 0.29f), new Vector2(0.69f, 0.71f));
-            content.gameObject.AddComponent<Image>().color = contentColor;
+            // 背板：比内页大一圈，露出深紫描边当卷轴的封皮
+            var frame = NewRect("Frame", root.transform);
+            frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(0.5f, 0.5f);
+            frame.sizeDelta = new Vector2(FrameWidth, FrameHeight);
+            var frameImage = frame.gameObject.AddComponent<Image>();
+            frameImage.sprite = frameSprite;
+            frameImage.type = Image.Type.Sliced;
 
-            var titleRow = NewRect("Title", content);
-            Stretch(titleRow, new Vector2(0.05f, 0.68f), new Vector2(0.95f, 0.93f));
-            var titleLabel = NewTmp(titleRow, string.Empty, 56f);
-            titleLabel.color = titleColor;
+            var card = NewRect("Card", frame);
+            Stretch(card, CardInset);
+            var cardImage = card.gameObject.AddComponent<Image>();
+            cardImage.sprite = parchment;
+            cardImage.type = Image.Type.Sliced;
+            cardImage.color = cardTint;
+
+            var titleRow = NewRect("Title", card);
+            AnchorTopLeft(titleRow, TitleLeft, TitleTop, CardWidth - TitleLeft * 2f, TitleHeight);
+            var titleLabel = NewTmp(titleRow, string.Empty, TitleFontSize, titleColor);
+
+            var divider = NewRect("Divider", card);
+            AnchorTopLeft(divider, DividerLeft, DividerTop, DividerWidth, DividerHeight);
+            divider.gameObject.AddComponent<Image>().color = GoldColor;
 
             // 胜负共用的成绩行：步数 + 已用方块（用时只有通关页有，见 BuildClearPanel）
-            var stepsRow = NewRect("StepsLabel", content);
-            Stretch(stepsRow, new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.67f));
-            var stepsLabel = NewTmp(stepsRow, string.Empty, 38f);
+            var stepsTop = withStars ? StepsTop : FailStepsTop;
+            var piecesTop = withStars ? PiecesTop : FailPiecesTop;
 
-            var piecesRow = NewRect("PiecesLabel", content);
-            Stretch(piecesRow, new Vector2(0.05f, 0.45f), new Vector2(0.95f, 0.56f));
-            var piecesLabel = NewTmp(piecesRow, string.Empty, 38f);
+            var stepsRow = NewRect("StepsLabel", card);
+            AnchorTopLeft(stepsRow, RowLeft, stepsTop, RowWidth, RowHeight);
+            var stepsLabel = NewTmp(stepsRow, string.Empty, RowFontSize, textColor);
 
-            var retry = NewRect("RetryButton", content);
-            Anchor(retry, new Vector2(0.08f, 0.10f), new Vector2(0.48f, 0.32f));
-            retry.gameObject.AddComponent<Image>().color = new Color(0.28f, 0.52f, 0.76f);
-            var retryButton = retry.gameObject.AddComponent<Button>();
-            var retryText = NewRect("Text", retry);
-            Stretch(retryText);
-            var retryLabel = NewTmp(retryText, string.Empty, 32f);
+            var piecesRow = NewRect("PiecesLabel", card);
+            AnchorTopLeft(piecesRow, RowLeft, piecesTop, RowWidth, RowHeight);
+            var piecesLabel = NewTmp(piecesRow, string.Empty, RowFontSize, textColor);
 
-            var back = NewRect("BackToSelectButton", content);
-            Anchor(back, new Vector2(0.52f, 0.10f), new Vector2(0.92f, 0.32f));
-            back.gameObject.AddComponent<Image>().color = new Color(0.42f, 0.44f, 0.52f);
-            var backButton = back.gameObject.AddComponent<Button>();
-            var backText = NewRect("Text", back);
-            Stretch(backText);
-            var backLabel = NewTmp(backText, string.Empty, 32f);
+            var retryButton = BuildPlaqueButton(card, "RetryButton", plaque, ButtonLeftX, out var retryLabel);
+            var backButton = BuildPlaqueButton(card, "BackToSelectButton", plaque, ButtonRightX, out var backLabel);
 
             var so = new SerializedObject(script);
             so.FindProperty("titleLabel").objectReferenceValue = titleLabel;
@@ -156,7 +280,34 @@ namespace Game.Editor
             so.FindProperty("layer").enumValueIndex = (int)UILayer.Popup;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            return root;
+            return (root, card);
+        }
+
+        /// <summary>按钮：暗紫描金牌匾（9-slice）+ 浅金文字，左下角锚定按「距左 / 距底 / 宽 / 高」摆放。</summary>
+        static Button BuildPlaqueButton(RectTransform parent, string name, Sprite plaque, float leftX, out TMP_Text label)
+        {
+            var rect = NewRect(name, parent);
+            rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.zero;
+            rect.sizeDelta = new Vector2(ButtonWidth, ButtonHeight);
+            rect.anchoredPosition = new Vector2(leftX, ButtonBottom);
+
+            var image = rect.gameObject.AddComponent<Image>();
+            image.sprite = plaque;
+            image.type = Image.Type.Sliced;
+
+            var button = rect.gameObject.AddComponent<Button>();
+            var colors = button.colors;
+            colors.normalColor = new Color(0.92f, 0.92f, 0.92f, 1f);
+            colors.highlightedColor = Color.white;
+            colors.pressedColor = new Color(0.76f, 0.76f, 0.76f, 1f);
+            colors.selectedColor = colors.normalColor;
+            colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+            button.colors = colors;
+
+            var textRect = NewRect("Text", rect);
+            Stretch(textRect);
+            label = NewTmp(textRect, string.Empty, ButtonFontSize, ButtonLabelColor);
+            return button;
         }
 
         // ---------- 结算文案（GameText 表） ----------
@@ -213,13 +364,13 @@ namespace Game.Editor
 
         // ---------- 工具 ----------
 
-        static TextMeshProUGUI NewTmp(RectTransform rect, string text, float fontSize)
+        static TextMeshProUGUI NewTmp(RectTransform rect, string text, float fontSize, Color color)
         {
             var tmp = rect.gameObject.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = fontSize;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = Color.white;
+            tmp.color = color;
             tmp.raycastTarget = false;
             var font = ChineseFont;
             if (font != null) tmp.font = font;
@@ -234,16 +385,30 @@ namespace Game.Editor
             return rt;
         }
 
-        static void Stretch(RectTransform rt) => Anchor(rt, Vector2.zero, Vector2.one);
-
-        static void Stretch(RectTransform rt, Vector2 min, Vector2 max) => Anchor(rt, min, max);
-
-        static void Anchor(RectTransform rt, Vector2 min, Vector2 max)
+        static void Stretch(RectTransform rt)
         {
-            rt.anchorMin = min;
-            rt.anchorMax = max;
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 0.5f);
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
+        }
+
+        /// <summary>父级内缩 <paramref name="inset" /> 像素后铺满（羊皮纸内页相对背板）。</summary>
+        static void Stretch(RectTransform rt, float inset)
+        {
+            Stretch(rt);
+            rt.offsetMin = new Vector2(inset, inset);
+            rt.offsetMax = new Vector2(-inset, -inset);
+        }
+
+        /// <summary>左上锚定 + 固定尺寸：按「距左 / 距顶 / 宽 / 高」摆放，不随父级拉伸。</summary>
+        static void AnchorTopLeft(RectTransform rect, float left, float top, float width, float height)
+        {
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.sizeDelta = new Vector2(width, height);
+            rect.anchoredPosition = new Vector2(left, -top);
         }
 
         static void SaveAsPrefab(GameObject root, string path)

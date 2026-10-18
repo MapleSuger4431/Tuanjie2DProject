@@ -23,6 +23,9 @@ namespace Game.EditorTools
         GUIStyle _header;
         GUIStyle _cellLabel;
 
+        /// <summary>效果批量操作的资产槽（只存在 Inspector 会话里，不落盘到画笔组件）。</summary>
+        TileEffect _effect;
+
         BoardLevelPainter Painter => (BoardLevelPainter)target;
 
         void OnEnable() => _gridView = serializedObject.FindProperty("gridView");
@@ -42,10 +45,11 @@ namespace Game.EditorTools
             EditorGUILayout.Space(2f);
             DrawGrid();
             DrawButtons();
+            DrawEffectSection();
 
             EditorGUILayout.HelpBox(
                 "数组按行主序（索引 = y × 边长 + x）与棋盘子物体一一对应；左下角固定起点、右上角固定终点，不参与循环。\n" +
-                "子物体的效果在各自 Inspector 上选（CellEffect 枚举）。",
+                "效果层与状态数组互不影响：逐格在各自 Inspector 上拖 TileEffect 资产，或用下面的「应用到全盘 / 清空效果层」批量处理。",
                 MessageType.None);
         }
 
@@ -132,6 +136,14 @@ namespace Game.EditorTools
             else if (_showNumber)
                 GUI.Label(fill, state.ToString(), CellLabelStyle(color));
 
+            // 有效果的格子右上角点一个青色小方块：效果层与状态数组是两层，别混着看
+            if (EffectAt(painter, x, y) != null)
+            {
+                var mark = Mathf.Max(5f, fill.width * 0.3f);
+                EditorGUI.DrawRect(new Rect(fill.xMax - mark - 1f, fill.y + 1f, mark, mark),
+                    new Color(0.2f, 0.9f, 0.95f));
+            }
+
             if (Event.current.type != EventType.MouseDown || !rect.Contains(Event.current.mousePosition)) return;
 
             if (!reserved)
@@ -143,6 +155,46 @@ namespace Game.EditorTools
 
             Event.current.Use();
             Repaint();
+        }
+
+        // ---------- 效果层 ----------
+
+        void DrawEffectSection()
+        {
+            var painter = Painter;
+
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.LabelField("效果层（叠在格子上，不改变通行性）", EditorStyles.boldLabel);
+
+            _effect = (TileEffect)EditorGUILayout.ObjectField("效果资产", _effect, typeof(TileEffect), false);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("应用到全盘", GUILayout.Height(22f)))
+            {
+                RecordBoard(painter);
+                var applied = painter.ApplyEffectToTiles(_effect);
+                MarkDirty(painter);
+                Debug.Log($"[BoardLevelPainter] 已把「{(_effect != null ? _effect.DisplayName : "空")}」应用到 {applied} 格。", painter);
+            }
+
+            if (GUILayout.Button("清空效果层", GUILayout.Height(22f)))
+            {
+                RecordBoard(painter);
+                var cleared = painter.ClearEffects();
+                MarkDirty(painter);
+                Debug.Log($"[BoardLevelPainter] 已清空 {cleared} 格的效果。", painter);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>该格当前配的效果（用于网格上画标记）；格子还没建好时为 null。</summary>
+        static TileEffect EffectAt(BoardLevelPainter painter, int x, int y)
+        {
+            var grid = painter.ResolveGrid();
+            var tile = grid != null ? grid.TileAt(new Vector2Int(x, y)) : null;
+
+            return tile != null ? tile.PresetEffect : null;
         }
 
         // ---------- 按钮 ----------

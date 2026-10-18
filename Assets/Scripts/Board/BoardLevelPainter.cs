@@ -53,8 +53,8 @@ namespace Game.Board
                 case TileType.Land: return "路";
                 case TileType.Fire: return "火";
                 case TileType.Ice: return "冰";
-                case TileType.Mountain: return "山地";
-                default: return "空";
+                case TileType.Mountain: return "血色深渊";
+                default: return "深渊";
             }
         }
 
@@ -168,6 +168,34 @@ namespace Game.Board
             result.AddRange(grid.GetComponentsInChildren<BoardTile>(true));
             return result;
         }
+
+        /// <summary>
+        /// 把一份效果资产写到全部格子（传 null 即清空效果层）；只动效果层，不动上面的通行状态数组。
+        /// 返回写入格数。
+        /// </summary>
+        public int ApplyEffectToTiles(TileEffect effect)
+        {
+            var grid = ResolveGrid();
+            if (grid == null)
+            {
+                Debug.LogWarning("[BoardLevelPainter] 同物体上没有 BoardGridView，无法应用效果。", this);
+                return 0;
+            }
+
+            var applied = 0;
+            foreach (var tile in CollectTiles())
+            {
+                if (tile == null) continue;
+
+                tile.SetEffect(effect);
+                applied++;
+            }
+
+            return applied;
+        }
+
+        /// <summary>清空全盘效果层（通行状态数组原样保留）。</summary>
+        public int ClearEffects() => ApplyEffectToTiles(null);
 
         /// <summary>
         /// 一键应用：数组尺寸与棋盘不一致或还没有格子时先按数组尺寸程序化生成，再把数组值逐格写进子物体（一一对应）。

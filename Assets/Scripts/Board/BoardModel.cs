@@ -35,6 +35,18 @@ namespace Game.Board
         /// <summary>关卡预设快照（<see cref="ApplyPreset" /> 时留存），供「重新开始本关」还原初始地形。</summary>
         TileType[] _presetTiles;
 
+        /// <summary>效果层：与 <see cref="_tiles" /> 平行（行主序）。效果不改变通行性，只是叠在格子上的一层。</summary>
+        TileEffect[] _effects;
+
+        /// <summary>效果层的关卡预设快照，重开时还原。</summary>
+        TileEffect[] _presetEffects;
+
+        /// <summary>
+        /// 效果的运行期状态（传送门已消耗）。只存在数据层——
+        /// ScriptableObject 资产全局共享，写进去会跨格跨关跨 Play 污染且退出不还原。
+        /// </summary>
+        bool[] _consumed;
+
         public int Width => width;
         public int Height => height;
 
@@ -77,13 +89,14 @@ namespace Game.Board
         public void Reset()
         {
             _tiles = new TileType[width * height];
+            _effects = new TileEffect[width * height];
             coveredCount.Value = 0;
             BoardCovered.Invoke();
         }
 
         /// <summary>
-        /// 还原到关卡预设：清空全部已铺方块、地形回到设计态，已用方块数归零（「重新开始本关」用）。
-        /// 还没应用过预设时退化为整盘空。
+        /// 还原到关卡预设：清空全部已铺方块、地形与效果层回到设计态，已用方块数归零（「重新开始本关」用）。
+        /// 还没应用过预设时退化为整盘空。效果的运行期状态（传送门消耗）一并复位。
         /// </summary>
         public void RestorePreset()
         {
@@ -94,14 +107,29 @@ namespace Game.Board
             else
                 Array.Clear(_tiles, 0, _tiles.Length);
 
+            if (_effects == null || _effects.Length != width * height) _effects = new TileEffect[width * height];
+
+            if (_presetEffects != null && _presetEffects.Length == _effects.Length)
+                Array.Copy(_presetEffects, _effects, _effects.Length);
+            else
+                Array.Clear(_effects, 0, _effects.Length);
+
+            ResetEffectStates();
             coveredCount.Value = 0;
             BoardCovered.Invoke();
         }
 
+        /// <summary>用关卡预设初始化状态层（只含通行状态），并留存快照供重开还原。越界的预设项忽略。</summary>
+        public void ApplyPreset(IEnumerable<KeyValuePair<Vector2Int, TileType>> preset) =>
+            ApplyPreset(preset, null);
+
         /// <summary>
-        /// 用关卡预设初始化状态层（先整盘 Void 再逐格写入），并留存快照供重开还原。越界的预设项忽略。
+        /// 用关卡预设初始化两层：通行状态 <paramref name="preset" /> + 效果层 <paramref name="effects" />，并留存两份快照。
+        /// 越界的预设项忽略；效果可为空（多数关卡没有预置效果）。
         /// </summary>
-        public void ApplyPreset(IEnumerable<KeyValuePair<Vector2Int, TileType>> preset)
+        public void ApplyPreset(
+            IEnumerable<KeyValuePair<Vector2Int, TileType>> preset,
+            IEnumerable<KeyValuePair<Vector2Int, TileEffect>> effects)
         {
             Reset();
 
@@ -114,7 +142,17 @@ namespace Game.Board
                 }
             }
 
+            if (effects != null)
+            {
+                foreach (var entry in effects)
+                {
+                    if (!InBounds(entry.Key)) continue;
+                    _effects[Index(entry.Key)] = entry.Value;
+                }
+            }
+
             _presetTiles = (TileType[])_tiles.Clone();
+            _presetEffects = (TileEffect[])_effects.Clone();
             BoardCovered.Invoke();
         }
 
@@ -151,8 +189,15 @@ namespace Game.Board
 
             if (!CanCover(anchor, shape)) return false;
 
+            EnsureArrays();
+
             for (int i = 0; i < shape.Cells.Length; i++)
-                _tiles[Index(anchor + shape.Cells[i])] = fill;
+            {
+                var index = Index(anchor + shape.Cells[i]);
+                _tiles[index] = fill;
+                // 不带效果的方块铺过来会清掉该格原有的效果（钉死的格子由 BoardRoot 在读取时改回预置值）
+                _effects[index] = null;
+            }
 
             coveredCount.Value += 1;
             BoardCovered.Invoke();
@@ -172,9 +217,15 @@ namespace Game.Board
             if (shape == null || shape.Cells == null || shape.Cells.Length == 0) return false;
             if (!CanCover(anchor, shape)) return false;
 
+            EnsureArrays();
+
             var cells = shape.Cells;
             for (int i = 0; i < cells.Length; i++)
-                _tiles[Index(anchor + cells[i])] = NormalizeFill(piece.TypeAt(i));
+            {
+                var index = Index(anchor + cells[i]);
+                _tiles[index] = NormalizeFill(piece.TypeAt(i));
+                _effects[index] = piece.EffectAt(i);
+            }
 
             coveredCount.Value += 1;
             BoardCovered.Invoke();
@@ -184,6 +235,51 @@ namespace Game.Board
         /// <summary>起终点只能由棋盘固定写入，方块若抽到就回落成路面；其余状态（含山地）原样落盘。</summary>
         static TileType NormalizeFill(TileType fill) =>
             fill == TileType.Start || fill == TileType.Goal ? TileType.Land : fill;
+
+        // ---------- 效果层（与状态层平行，不改变通行性） ----------
+
+        /// <summary>该格的效果；没有则 null（多数格子没有效果）。</summary>
+        public TileEffect EffectAt(Vector2Int cell) =>
+            _effects != null && InBounds(cell) ? _effects[Index(cell)] : null;
+
+        /// <summary>调试与关卡画笔的写入口。</summary>
+        public void SetEffect(Vector2Int cell, TileEffect effect)
+        {
+            EnsureArrays();
+            if (!InBounds(cell)) return;
+
+            _effects[Index(cell)] = effect;
+            BoardCovered.Invoke();
+        }
+
+        /// <summary>该格的效果是否已经消耗掉（传送门用过）。</summary>
+        public bool IsEffectConsumed(Vector2Int cell) =>
+            _consumed != null && InBounds(cell) && _consumed[Index(cell)];
+
+        /// <summary>标记该格效果已消耗。</summary>
+        public void ConsumeEffect(Vector2Int cell)
+        {
+            EnsureArrays();
+            if (!InBounds(cell)) return;
+
+            _consumed[Index(cell)] = true;
+        }
+
+        /// <summary>清空全盘效果的运行期状态（重开本关时调用）。</summary>
+        public void ResetEffectStates()
+        {
+            if (_consumed == null || _consumed.Length != width * height) _consumed = new bool[width * height];
+            else Array.Clear(_consumed, 0, _consumed.Length);
+        }
+
+        /// <summary>保证状态层与效果层数组已按当前尺寸建好（尺寸变化后补齐）。</summary>
+        void EnsureArrays()
+        {
+            var count = width * height;
+            if (_tiles == null || _tiles.Length != count) _tiles = new TileType[count];
+            if (_effects == null || _effects.Length != count) _effects = new TileEffect[count];
+            if (_consumed == null || _consumed.Length != count) _consumed = new bool[count];
+        }
 
         int Index(Vector2Int cell) => cell.y * width + cell.x;
     }

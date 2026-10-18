@@ -43,7 +43,7 @@ namespace Game.Board
             }
 
             _pool = _config.PoolFor(sceneName);
-            Debug.Log($"[BoardTilePoolModel] 关卡 {sceneName} 随机表：{BoardTilePoolConfig.Describe(_pool)}");
+            Debug.Log($"[BoardTilePoolModel] 关卡 {sceneName} 随机表：{BoardTilePoolConfig.Describe(_pool)}｜效果：{BoardTilePoolConfig.DescribeEffects(_pool)}");
         }
 
         /// <summary>抽一个状态。</summary>
@@ -54,6 +54,31 @@ namespace Game.Board
             _config != null
                 ? _config.RandomTypes(_pool, count)
                 : BoardTilePoolConfig.DefaultTypes(count);
+
+        /// <summary>
+        /// 本关有没有配「方块可附带的效果」表。没配时调用方应走自己的发牌规则（如转向箭头的必带规则），
+        /// 而不是退化成「每格都无效果」。
+        /// </summary>
+        public bool HasEffectPool => BoardTilePoolConfig.HasAnyEffect(_pool);
+
+        /// <summary>本关一个方块里最多能出现几格血色深渊（<see cref="TileType.Mountain" />）；0 = 不限制。</summary>
+        public int MaxAbyssPerPiece => _pool != null ? Mathf.Max(0, _pool.maxAbyssPerPiece) : 0;
+
+        /// <summary>本关整局最多能刷出几格血色深渊；0 = 完全刷不出（只有场地预置的那几个）。</summary>
+        public int MaxAbyssPerRun => _pool != null ? Mathf.Max(0, _pool.maxAbyssPerRun) : 0;
+
+        /// <summary>
+        /// 本关方块附带属性反转牌的概率；负数 = 没配，调用方应沿用 <see cref="PieceModel" /> 的默认值。
+        /// </summary>
+        public float InvertChance => _pool != null ? _pool.invertChance : -1f;
+
+        /// <summary>
+        /// 一口气抽 count 个效果（方块每一格独立抽）。没配效果表时返回全 null。
+        /// </summary>
+        public TileEffect[] RollEffects(int count) =>
+            _config != null
+                ? _config.RandomEffects(_pool, count)
+                : new TileEffect[Mathf.Max(0, count)];
 
         /// <summary>本关随机表的文字描述，供日志与调试面板使用。</summary>
         public string Describe() => BoardTilePoolConfig.Describe(_pool);

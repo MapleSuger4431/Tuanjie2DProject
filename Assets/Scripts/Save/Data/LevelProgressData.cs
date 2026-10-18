@@ -19,6 +19,12 @@ namespace Game.Save
         public int bestSteps = -1;
         public int clearCount;
 
+        /// <summary>
+        /// 历史最好星级（0~<see cref="Game.Board.LevelStarRules.MaxStars" />）：通关 1 星、捡金币 +1 星、
+        /// 金币 + 时限内通关再 +1 星，取历史最大值（旧存档没有这个字段时按 1 星兜底）。
+        /// </summary>
+        public int bestStars;
+
         public LevelRecordData() { }
 
         public LevelRecordData(int levelId) => this.levelId = levelId;
@@ -33,6 +39,7 @@ namespace Game.Save
             lastTime = lastTime,
             bestSteps = bestSteps,
             clearCount = clearCount,
+            bestStars = bestStars,
         };
     }
 

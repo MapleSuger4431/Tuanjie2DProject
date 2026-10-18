@@ -172,8 +172,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1024407}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1024407
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -278,8 +280,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 4764540}
+  effectRenderer: {fileID: 0}
 --- !u!212 &4764540
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -384,8 +388,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 9292559}
+  effectRenderer: {fileID: 0}
 --- !u!212 &9292559
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -490,8 +496,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 13313061}
+  effectRenderer: {fileID: 0}
 --- !u!212 &13313061
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -596,8 +604,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 21385333}
+  effectRenderer: {fileID: 0}
 --- !u!212 &21385333
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -702,8 +712,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 22310068}
+  effectRenderer: {fileID: 0}
 --- !u!212 &22310068
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -808,8 +820,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 23149437}
+  effectRenderer: {fileID: 0}
 --- !u!212 &23149437
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -914,8 +928,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 29360591}
+  effectRenderer: {fileID: 0}
 --- !u!212 &29360591
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1020,8 +1036,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 36509204}
+  effectRenderer: {fileID: 0}
 --- !u!212 &36509204
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1126,8 +1144,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 36805819}
+  effectRenderer: {fileID: 0}
 --- !u!212 &36805819
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1219,11 +1239,15 @@ MonoBehaviour:
   topBar: {fileID: 0}
   bottomBar: {fileID: 0}
   rightPanel: {fileID: 0}
+  boardFrame: {fileID: 0}
   designResolution: {x: 1920, y: 1080}
-  paddingLeft: 100
-  reserveTop: 100
-  reserveBottom: 100
-  reserveRight: 572
+  paddingLeft: 40
+  reserveTop: 56
+  reserveBottom: 48
+  rightPanelRatio: 0.4
+  boardInset: 0
+  frameInnerRatio: 0.8867
+  boardToPanelGap: 0
 --- !u!224 &37447556
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1304,8 +1328,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 37796660}
+  effectRenderer: {fileID: 0}
 --- !u!212 &37796660
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1410,8 +1436,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 38523474}
+  effectRenderer: {fileID: 0}
 --- !u!212 &38523474
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1516,8 +1544,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 39777667}
+  effectRenderer: {fileID: 0}
 --- !u!212 &39777667
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1622,8 +1652,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 48659535}
+  effectRenderer: {fileID: 0}
 --- !u!212 &48659535
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1814,8 +1846,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 66346508}
+  effectRenderer: {fileID: 0}
 --- !u!212 &66346508
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1920,8 +1954,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 73740950}
+  effectRenderer: {fileID: 0}
 --- !u!212 &73740950
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2026,8 +2062,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 74244251}
+  effectRenderer: {fileID: 0}
 --- !u!212 &74244251
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2132,8 +2170,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 74977258}
+  effectRenderer: {fileID: 0}
 --- !u!212 &74977258
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2238,8 +2278,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 83951711}
+  effectRenderer: {fileID: 0}
 --- !u!212 &83951711
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2344,8 +2386,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 83985648}
+  effectRenderer: {fileID: 0}
 --- !u!212 &83985648
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2450,8 +2494,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 84046172}
+  effectRenderer: {fileID: 0}
 --- !u!212 &84046172
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2556,8 +2602,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 85854464}
+  effectRenderer: {fileID: 0}
 --- !u!212 &85854464
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2662,8 +2710,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 96411295}
+  effectRenderer: {fileID: 0}
 --- !u!212 &96411295
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2768,8 +2818,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 97794712}
+  effectRenderer: {fileID: 0}
 --- !u!212 &97794712
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2874,8 +2926,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 102460387}
+  effectRenderer: {fileID: 0}
 --- !u!212 &102460387
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2980,8 +3034,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 108699524}
+  effectRenderer: {fileID: 0}
 --- !u!212 &108699524
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3086,8 +3142,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 109833439}
+  effectRenderer: {fileID: 0}
 --- !u!212 &109833439
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3192,8 +3250,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 128653429}
+  effectRenderer: {fileID: 0}
 --- !u!212 &128653429
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3298,8 +3358,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 130023877}
+  effectRenderer: {fileID: 0}
 --- !u!212 &130023877
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3404,8 +3466,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 135579384}
+  effectRenderer: {fileID: 0}
 --- !u!212 &135579384
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3510,8 +3574,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 137645039}
+  effectRenderer: {fileID: 0}
 --- !u!212 &137645039
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3616,8 +3682,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 147402851}
+  effectRenderer: {fileID: 0}
 --- !u!212 &147402851
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3722,8 +3790,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 148116167}
+  effectRenderer: {fileID: 0}
 --- !u!212 &148116167
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3828,8 +3898,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 149677734}
+  effectRenderer: {fileID: 0}
 --- !u!212 &149677734
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3934,8 +4006,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 150518956}
+  effectRenderer: {fileID: 0}
 --- !u!212 &150518956
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4040,8 +4114,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 161061142}
+  effectRenderer: {fileID: 0}
 --- !u!212 &161061142
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4146,8 +4222,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 165045435}
+  effectRenderer: {fileID: 0}
 --- !u!212 &165045435
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4252,8 +4330,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 165874541}
+  effectRenderer: {fileID: 0}
 --- !u!212 &165874541
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4358,8 +4438,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 170494249}
+  effectRenderer: {fileID: 0}
 --- !u!212 &170494249
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4464,8 +4546,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 175412407}
+  effectRenderer: {fileID: 0}
 --- !u!212 &175412407
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4570,8 +4654,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 177034665}
+  effectRenderer: {fileID: 0}
 --- !u!212 &177034665
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4676,8 +4762,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 179714308}
+  effectRenderer: {fileID: 0}
 --- !u!212 &179714308
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4782,8 +4870,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 181116091}
+  effectRenderer: {fileID: 0}
 --- !u!212 &181116091
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4888,8 +4978,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 184026990}
+  effectRenderer: {fileID: 0}
 --- !u!212 &184026990
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4994,8 +5086,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 186304186}
+  effectRenderer: {fileID: 0}
 --- !u!212 &186304186
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5100,8 +5194,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 186461161}
+  effectRenderer: {fileID: 0}
 --- !u!212 &186461161
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5206,8 +5302,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 188912682}
+  effectRenderer: {fileID: 0}
 --- !u!212 &188912682
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5312,8 +5410,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 209082467}
+  effectRenderer: {fileID: 0}
 --- !u!212 &209082467
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5513,8 +5613,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 221883003}
+  effectRenderer: {fileID: 0}
 --- !u!212 &221883003
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5619,8 +5721,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 224426365}
+  effectRenderer: {fileID: 0}
 --- !u!212 &224426365
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5725,8 +5829,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 228516684}
+  effectRenderer: {fileID: 0}
 --- !u!212 &228516684
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5831,8 +5937,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 241738408}
+  effectRenderer: {fileID: 0}
 --- !u!212 &241738408
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5937,8 +6045,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 243114154}
+  effectRenderer: {fileID: 0}
 --- !u!212 &243114154
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6043,8 +6153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 256512192}
+  effectRenderer: {fileID: 0}
 --- !u!212 &256512192
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6149,8 +6261,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 262982103}
+  effectRenderer: {fileID: 0}
 --- !u!212 &262982103
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6255,8 +6369,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 264679032}
+  effectRenderer: {fileID: 0}
 --- !u!212 &264679032
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6361,8 +6477,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 265356827}
+  effectRenderer: {fileID: 0}
 --- !u!212 &265356827
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6467,8 +6585,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 266966817}
+  effectRenderer: {fileID: 0}
 --- !u!212 &266966817
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6573,8 +6693,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 274696696}
+  effectRenderer: {fileID: 0}
 --- !u!212 &274696696
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6679,8 +6801,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 275854314}
+  effectRenderer: {fileID: 0}
 --- !u!212 &275854314
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6785,8 +6909,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 281056636}
+  effectRenderer: {fileID: 0}
 --- !u!212 &281056636
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6891,8 +7017,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 286180240}
+  effectRenderer: {fileID: 0}
 --- !u!212 &286180240
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6997,8 +7125,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 288379267}
+  effectRenderer: {fileID: 0}
 --- !u!212 &288379267
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7103,8 +7233,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 288505999}
+  effectRenderer: {fileID: 0}
 --- !u!212 &288505999
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7209,8 +7341,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 288959626}
+  effectRenderer: {fileID: 0}
 --- !u!212 &288959626
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7315,8 +7449,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 289123508}
+  effectRenderer: {fileID: 0}
 --- !u!212 &289123508
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7421,8 +7557,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 290168133}
+  effectRenderer: {fileID: 0}
 --- !u!212 &290168133
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7527,8 +7665,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 290746050}
+  effectRenderer: {fileID: 0}
 --- !u!212 &290746050
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7633,8 +7773,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 290882789}
+  effectRenderer: {fileID: 0}
 --- !u!212 &290882789
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7739,8 +7881,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 295826939}
+  effectRenderer: {fileID: 0}
 --- !u!212 &295826939
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7845,8 +7989,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 297867930}
+  effectRenderer: {fileID: 0}
 --- !u!212 &297867930
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7951,8 +8097,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 304716319}
+  effectRenderer: {fileID: 0}
 --- !u!212 &304716319
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8057,8 +8205,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 311334658}
+  effectRenderer: {fileID: 0}
 --- !u!212 &311334658
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8163,8 +8313,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 312473819}
+  effectRenderer: {fileID: 0}
 --- !u!212 &312473819
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8269,8 +8421,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 330988558}
+  effectRenderer: {fileID: 0}
 --- !u!212 &330988558
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8375,8 +8529,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 334850785}
+  effectRenderer: {fileID: 0}
 --- !u!212 &334850785
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8481,8 +8637,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 342572065}
+  effectRenderer: {fileID: 0}
 --- !u!212 &342572065
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9019,8 +9177,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 353070971}
+  effectRenderer: {fileID: 0}
 --- !u!212 &353070971
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9125,8 +9285,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 355994349}
+  effectRenderer: {fileID: 0}
 --- !u!212 &355994349
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9231,8 +9393,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 357594333}
+  effectRenderer: {fileID: 0}
 --- !u!212 &357594333
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9337,8 +9501,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 363467115}
+  effectRenderer: {fileID: 0}
 --- !u!212 &363467115
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9443,8 +9609,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 369609057}
+  effectRenderer: {fileID: 0}
 --- !u!212 &369609057
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9549,8 +9717,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 373891008}
+  effectRenderer: {fileID: 0}
 --- !u!212 &373891008
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9655,8 +9825,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 375610291}
+  effectRenderer: {fileID: 0}
 --- !u!212 &375610291
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9761,8 +9933,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 377190036}
+  effectRenderer: {fileID: 0}
 --- !u!212 &377190036
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9867,8 +10041,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 378547399}
+  effectRenderer: {fileID: 0}
 --- !u!212 &378547399
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9973,8 +10149,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 394998577}
+  effectRenderer: {fileID: 0}
 --- !u!212 &394998577
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10079,8 +10257,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 400691823}
+  effectRenderer: {fileID: 0}
 --- !u!212 &400691823
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10185,8 +10365,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 403199626}
+  effectRenderer: {fileID: 0}
 --- !u!212 &403199626
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10291,8 +10473,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 418382020}
+  effectRenderer: {fileID: 0}
 --- !u!212 &418382020
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10397,8 +10581,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 419530250}
+  effectRenderer: {fileID: 0}
 --- !u!212 &419530250
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10503,8 +10689,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 421714311}
+  effectRenderer: {fileID: 0}
 --- !u!212 &421714311
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10609,8 +10797,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 423581343}
+  effectRenderer: {fileID: 0}
 --- !u!212 &423581343
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10715,8 +10905,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 431155741}
+  effectRenderer: {fileID: 0}
 --- !u!212 &431155741
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10821,8 +11013,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 433584634}
+  effectRenderer: {fileID: 0}
 --- !u!212 &433584634
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10927,8 +11121,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 434704386}
+  effectRenderer: {fileID: 0}
 --- !u!212 &434704386
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11033,8 +11229,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 441875249}
+  effectRenderer: {fileID: 0}
 --- !u!212 &441875249
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11139,8 +11337,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 442643075}
+  effectRenderer: {fileID: 0}
 --- !u!212 &442643075
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11245,8 +11445,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 464111287}
+  effectRenderer: {fileID: 0}
 --- !u!212 &464111287
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11351,8 +11553,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 476444882}
+  effectRenderer: {fileID: 0}
 --- !u!212 &476444882
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11457,8 +11661,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 481724555}
+  effectRenderer: {fileID: 0}
 --- !u!212 &481724555
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11563,8 +11769,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 486024430}
+  effectRenderer: {fileID: 0}
 --- !u!212 &486024430
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11669,8 +11877,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 486161798}
+  effectRenderer: {fileID: 0}
 --- !u!212 &486161798
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11775,8 +11985,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 503681988}
+  effectRenderer: {fileID: 0}
 --- !u!212 &503681988
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11881,8 +12093,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 512656946}
+  effectRenderer: {fileID: 0}
 --- !u!212 &512656946
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11987,8 +12201,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 517745244}
+  effectRenderer: {fileID: 0}
 --- !u!212 &517745244
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12093,8 +12309,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 518053508}
+  effectRenderer: {fileID: 0}
 --- !u!212 &518053508
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12199,8 +12417,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 529622336}
+  effectRenderer: {fileID: 0}
 --- !u!212 &529622336
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12305,8 +12525,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 536079844}
+  effectRenderer: {fileID: 0}
 --- !u!212 &536079844
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12411,8 +12633,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 546084892}
+  effectRenderer: {fileID: 0}
 --- !u!212 &546084892
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12517,8 +12741,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 551917967}
+  effectRenderer: {fileID: 0}
 --- !u!212 &551917967
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12623,8 +12849,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 557871406}
+  effectRenderer: {fileID: 0}
 --- !u!212 &557871406
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12729,8 +12957,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 567430133}
+  effectRenderer: {fileID: 0}
 --- !u!212 &567430133
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12835,8 +13065,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 569539043}
+  effectRenderer: {fileID: 0}
 --- !u!212 &569539043
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12941,8 +13173,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 570912497}
+  effectRenderer: {fileID: 0}
 --- !u!212 &570912497
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13047,8 +13281,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 571204003}
+  effectRenderer: {fileID: 0}
 --- !u!212 &571204003
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13153,8 +13389,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 575767521}
+  effectRenderer: {fileID: 0}
 --- !u!212 &575767521
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13259,8 +13497,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 600377014}
+  effectRenderer: {fileID: 0}
 --- !u!212 &600377014
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13365,8 +13605,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 608068530}
+  effectRenderer: {fileID: 0}
 --- !u!212 &608068530
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13471,8 +13713,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 608434604}
+  effectRenderer: {fileID: 0}
 --- !u!212 &608434604
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13577,8 +13821,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 611461244}
+  effectRenderer: {fileID: 0}
 --- !u!212 &611461244
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13683,8 +13929,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 615363165}
+  effectRenderer: {fileID: 0}
 --- !u!212 &615363165
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13789,8 +14037,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 616268488}
+  effectRenderer: {fileID: 0}
 --- !u!212 &616268488
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -13895,8 +14145,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 618978327}
+  effectRenderer: {fileID: 0}
 --- !u!212 &618978327
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14001,8 +14253,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 621498774}
+  effectRenderer: {fileID: 0}
 --- !u!212 &621498774
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14107,8 +14361,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 625235707}
+  effectRenderer: {fileID: 0}
 --- !u!212 &625235707
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14213,8 +14469,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 625881376}
+  effectRenderer: {fileID: 0}
 --- !u!212 &625881376
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14319,8 +14577,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 626253351}
+  effectRenderer: {fileID: 0}
 --- !u!212 &626253351
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14425,8 +14685,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 629851030}
+  effectRenderer: {fileID: 0}
 --- !u!212 &629851030
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14531,8 +14793,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 632021307}
+  effectRenderer: {fileID: 0}
 --- !u!212 &632021307
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14637,8 +14901,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 638107708}
+  effectRenderer: {fileID: 0}
 --- !u!212 &638107708
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14743,8 +15009,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 646975486}
+  effectRenderer: {fileID: 0}
 --- !u!212 &646975486
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14849,8 +15117,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 664241551}
+  effectRenderer: {fileID: 0}
 --- !u!212 &664241551
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14955,8 +15225,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 677017911}
+  effectRenderer: {fileID: 0}
 --- !u!212 &677017911
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15061,8 +15333,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 680560528}
+  effectRenderer: {fileID: 0}
 --- !u!212 &680560528
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15167,8 +15441,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 686568573}
+  effectRenderer: {fileID: 0}
 --- !u!212 &686568573
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15273,8 +15549,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 699115449}
+  effectRenderer: {fileID: 0}
 --- !u!212 &699115449
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15379,8 +15657,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 702136823}
+  effectRenderer: {fileID: 0}
 --- !u!212 &702136823
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15485,8 +15765,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 707374564}
+  effectRenderer: {fileID: 0}
 --- !u!212 &707374564
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15591,8 +15873,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 707981200}
+  effectRenderer: {fileID: 0}
 --- !u!212 &707981200
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15697,8 +15981,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 709960415}
+  effectRenderer: {fileID: 0}
 --- !u!212 &709960415
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15803,8 +16089,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 715292229}
+  effectRenderer: {fileID: 0}
 --- !u!212 &715292229
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -15909,8 +16197,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 719637146}
+  effectRenderer: {fileID: 0}
 --- !u!212 &719637146
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16015,8 +16305,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 721820896}
+  effectRenderer: {fileID: 0}
 --- !u!212 &721820896
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16121,8 +16413,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 725276416}
+  effectRenderer: {fileID: 0}
 --- !u!212 &725276416
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16227,8 +16521,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 730857323}
+  effectRenderer: {fileID: 0}
 --- !u!212 &730857323
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16333,8 +16629,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 741356976}
+  effectRenderer: {fileID: 0}
 --- !u!212 &741356976
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16439,8 +16737,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 746360790}
+  effectRenderer: {fileID: 0}
 --- !u!212 &746360790
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16545,8 +16845,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 766956895}
+  effectRenderer: {fileID: 0}
 --- !u!212 &766956895
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16651,8 +16953,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 782128521}
+  effectRenderer: {fileID: 0}
 --- !u!212 &782128521
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16757,8 +17061,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 787301748}
+  effectRenderer: {fileID: 0}
 --- !u!212 &787301748
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16863,8 +17169,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 788901650}
+  effectRenderer: {fileID: 0}
 --- !u!212 &788901650
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16969,8 +17277,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 792340268}
+  effectRenderer: {fileID: 0}
 --- !u!212 &792340268
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17075,8 +17385,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 798204911}
+  effectRenderer: {fileID: 0}
 --- !u!212 &798204911
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17181,8 +17493,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 810123077}
+  effectRenderer: {fileID: 0}
 --- !u!212 &810123077
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17287,8 +17601,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 812388383}
+  effectRenderer: {fileID: 0}
 --- !u!212 &812388383
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17393,8 +17709,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 812577280}
+  effectRenderer: {fileID: 0}
 --- !u!212 &812577280
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17499,8 +17817,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 841066050}
+  effectRenderer: {fileID: 0}
 --- !u!212 &841066050
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17605,8 +17925,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 843740780}
+  effectRenderer: {fileID: 0}
 --- !u!212 &843740780
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17711,8 +18033,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 846861431}
+  effectRenderer: {fileID: 0}
 --- !u!212 &846861431
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17817,8 +18141,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 866354934}
+  effectRenderer: {fileID: 0}
 --- !u!212 &866354934
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17923,8 +18249,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 867930683}
+  effectRenderer: {fileID: 0}
 --- !u!212 &867930683
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18029,8 +18357,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 874390760}
+  effectRenderer: {fileID: 0}
 --- !u!212 &874390760
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18135,8 +18465,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 875136077}
+  effectRenderer: {fileID: 0}
 --- !u!212 &875136077
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18241,8 +18573,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 876594187}
+  effectRenderer: {fileID: 0}
 --- !u!212 &876594187
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18347,8 +18681,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 877404029}
+  effectRenderer: {fileID: 0}
 --- !u!212 &877404029
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18453,8 +18789,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 878970699}
+  effectRenderer: {fileID: 0}
 --- !u!212 &878970699
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18559,8 +18897,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 898357061}
+  effectRenderer: {fileID: 0}
 --- !u!212 &898357061
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18665,8 +19005,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 900884829}
+  effectRenderer: {fileID: 0}
 --- !u!212 &900884829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18771,8 +19113,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 908042074}
+  effectRenderer: {fileID: 0}
 --- !u!212 &908042074
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18877,8 +19221,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 909408513}
+  effectRenderer: {fileID: 0}
 --- !u!212 &909408513
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18983,8 +19329,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 925916390}
+  effectRenderer: {fileID: 0}
 --- !u!212 &925916390
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19089,8 +19437,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 926235660}
+  effectRenderer: {fileID: 0}
 --- !u!212 &926235660
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19195,8 +19545,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 928093272}
+  effectRenderer: {fileID: 0}
 --- !u!212 &928093272
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19381,8 +19733,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 935715168}
+  effectRenderer: {fileID: 0}
 --- !u!212 &935715168
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19487,8 +19841,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 939216322}
+  effectRenderer: {fileID: 0}
 --- !u!212 &939216322
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19593,8 +19949,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 939782197}
+  effectRenderer: {fileID: 0}
 --- !u!212 &939782197
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19699,8 +20057,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 941940955}
+  effectRenderer: {fileID: 0}
 --- !u!212 &941940955
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19805,8 +20165,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 944426133}
+  effectRenderer: {fileID: 0}
 --- !u!212 &944426133
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19911,8 +20273,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 951753546}
+  effectRenderer: {fileID: 0}
 --- !u!212 &951753546
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20017,8 +20381,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 954814410}
+  effectRenderer: {fileID: 0}
 --- !u!212 &954814410
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20123,8 +20489,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 955120568}
+  effectRenderer: {fileID: 0}
 --- !u!212 &955120568
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20229,8 +20597,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 960358751}
+  effectRenderer: {fileID: 0}
 --- !u!212 &960358751
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20335,8 +20705,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 968108589}
+  effectRenderer: {fileID: 0}
 --- !u!212 &968108589
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20441,8 +20813,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 982124517}
+  effectRenderer: {fileID: 0}
 --- !u!212 &982124517
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20547,8 +20921,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 996428319}
+  effectRenderer: {fileID: 0}
 --- !u!212 &996428319
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20653,8 +21029,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1002401070}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1002401070
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20759,8 +21137,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1014699076}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1014699076
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20865,8 +21245,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1022714882}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1022714882
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20971,8 +21353,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1024857079}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1024857079
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21077,8 +21461,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1029372931}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1029372931
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21183,8 +21569,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1031246076}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1031246076
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21289,8 +21677,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1036952664}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1036952664
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21395,8 +21785,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1038930709}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1038930709
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21501,8 +21893,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1040576005}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1040576005
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21607,8 +22001,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1049734043}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1049734043
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21713,8 +22109,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1050548289}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1050548289
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21819,8 +22217,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1061319688}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1061319688
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -21925,8 +22325,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1061677055}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1061677055
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22031,8 +22433,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1071430545}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1071430545
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22137,8 +22541,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1071519622}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1071519622
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22243,8 +22649,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1076926500}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1076926500
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22349,8 +22757,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1084657110}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1084657110
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22455,8 +22865,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1085576320}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1085576320
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22561,8 +22973,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1086657387}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1086657387
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22667,8 +23081,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1094732669}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1094732669
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22773,8 +23189,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1101582789}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1101582789
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22879,8 +23297,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1103788233}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1103788233
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -22985,8 +23405,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1104950889}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1104950889
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23091,8 +23513,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1126338078}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1126338078
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23197,8 +23621,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1130144622}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1130144622
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23303,8 +23729,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1132159153}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1132159153
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23409,8 +23837,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1134299219}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1134299219
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23515,8 +23945,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1134487502}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1134487502
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23621,8 +24053,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1139956407}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1139956407
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23727,8 +24161,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1143105548}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1143105548
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23833,8 +24269,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 19}
   type: 6
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1150452944}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1150452944
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23939,8 +24377,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1152546095}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1152546095
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24045,8 +24485,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1155928680}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1155928680
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24151,8 +24593,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1161881099}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1161881099
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24257,8 +24701,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1162533518}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1162533518
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24363,8 +24809,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1176690718}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1176690718
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24469,8 +24917,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1180890744}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1180890744
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24575,8 +25025,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1186215487}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1186215487
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24681,8 +25133,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1192422224}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1192422224
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24787,8 +25241,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1197710436}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1197710436
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24893,8 +25349,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1198249584}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1198249584
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24999,8 +25457,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1198792661}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1198792661
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25105,8 +25565,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1200391092}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1200391092
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25211,8 +25673,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1207116145}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1207116145
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25317,8 +25781,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1230617499}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1230617499
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25423,8 +25889,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1232183902}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1232183902
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25529,8 +25997,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1232378750}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1232378750
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25635,8 +26105,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1237703442}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1237703442
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25741,8 +26213,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1244487745}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1244487745
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25847,8 +26321,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1252934832}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1252934832
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25953,8 +26429,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1254288321}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1254288321
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26059,8 +26537,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1274878768}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1274878768
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26165,8 +26645,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1278198996}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1278198996
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26271,8 +26753,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1279997196}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1279997196
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26377,8 +26861,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1287178314}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1287178314
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26483,8 +26969,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1304614321}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1304614321
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26589,8 +27077,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1308019962}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1308019962
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26695,8 +27185,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1330341490}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1330341490
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26801,8 +27293,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1334388695}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1334388695
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -26907,8 +27401,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1334900766}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1334900766
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27013,8 +27509,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1337843448}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1337843448
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27119,8 +27617,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1345307810}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1345307810
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27225,8 +27725,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1345829907}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1345829907
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27331,8 +27833,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1350154775}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1350154775
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27437,8 +27941,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1354452953}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1354452953
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27543,8 +28049,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1357237171}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1357237171
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27649,8 +28157,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1357456690}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1357456690
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27755,8 +28265,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1360953201}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1360953201
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27861,8 +28373,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1362755577}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1362755577
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27967,8 +28481,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1364817803}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1364817803
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28073,8 +28589,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1365337534}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1365337534
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28179,8 +28697,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1372114098}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1372114098
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28285,8 +28805,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1372230840}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1372230840
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28357,6 +28879,7 @@ GameObject:
   - component: {fileID: 1376239724}
   - component: {fileID: 1376239728}
   - component: {fileID: 1376239729}
+  - component: {fileID: 1376239730}
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Board
@@ -28394,6 +28917,8 @@ MonoBehaviour:
   sortingOrder: 10
   ghostAlpha: 0.6
   invalidColor: {r: 1, g: 0.25, b: 0.25, a: 0.6}
+  outlineColor: {r: 1, g: 0.8, b: 0.45, a: 0.95}
+  outlineWidth: 0.1
 --- !u!114 &1376239726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28452,7 +28977,7 @@ MonoBehaviour:
   layout: {fileID: 37447552}
   maxZoom: 3
   minVisibleCells: 10
-  boardMarginPixels: 20
+  boardMarginPixels: 6
   zoomStep: 1.1
 --- !u!114 &1376239729
 MonoBehaviour:
@@ -28466,6 +28991,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da2780e898d3542a9a9405b41651e8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1376239730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1376239723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c984928b723774d8ab96a4bf2db6e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridView: {fileID: 0}
+  initialElement: 0
 --- !u!1 &1379385283
 GameObject:
   m_ObjectHideFlags: 0
@@ -28514,8 +29053,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1379385286}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1379385286
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28620,8 +29161,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1379765550}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1379765550
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28726,8 +29269,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1387011877}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1387011877
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28832,8 +29377,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1411729764}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1411729764
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28938,8 +29485,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1420774163}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1420774163
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29044,8 +29593,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1422284659}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1422284659
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29150,8 +29701,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1425655703}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1425655703
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29256,8 +29809,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1428726733}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1428726733
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29362,8 +29917,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1429656791}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1429656791
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29468,8 +30025,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1435329258}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1435329258
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29574,8 +30133,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1435465804}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1435465804
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29680,8 +30241,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1435743870}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1435743870
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29786,8 +30349,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1435987676}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1435987676
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29892,8 +30457,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1438611436}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1438611436
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -29998,8 +30565,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1439376650}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1439376650
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30104,8 +30673,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1447421458}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1447421458
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30210,8 +30781,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1449571127}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1449571127
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30316,8 +30889,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1462378592}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1462378592
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30422,8 +30997,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1464867041}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1464867041
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30528,8 +31105,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1468332867}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1468332867
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30634,8 +31213,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1476854222}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1476854222
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30740,8 +31321,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1477420422}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1477420422
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30846,8 +31429,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1488751756}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1488751756
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30952,8 +31537,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1510603474}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1510603474
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31058,8 +31645,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1522922221}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1522922221
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31164,8 +31753,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1524259728}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1524259728
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31270,8 +31861,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1530151190}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1530151190
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31376,8 +31969,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1545327878}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1545327878
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31482,8 +32077,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1552020332}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1552020332
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31588,8 +32185,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1555947417}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1555947417
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31694,8 +32293,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1559588309}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1559588309
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31800,8 +32401,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1570799763}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1570799763
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31906,8 +32509,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1583547496}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1583547496
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32012,8 +32617,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1586345742}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1586345742
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32118,8 +32725,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1589353784}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1589353784
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32224,8 +32833,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1595752476}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1595752476
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32330,8 +32941,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1597824142}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1597824142
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32436,8 +33049,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1604506415}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1604506415
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32542,8 +33157,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1623361752}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1623361752
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32648,8 +33265,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1625782304}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1625782304
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32754,8 +33373,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1636638207}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1636638207
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32860,8 +33481,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1647842212}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1647842212
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -32966,8 +33589,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1648881715}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1648881715
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33072,8 +33697,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1648902702}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1648902702
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33178,8 +33805,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1654089512}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1654089512
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33284,8 +33913,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1656231690}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1656231690
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33390,8 +34021,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1657033860}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1657033860
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33496,8 +34129,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1663792671}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1663792671
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33602,8 +34237,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1665014479}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1665014479
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33708,8 +34345,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1668604180}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1668604180
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33814,8 +34453,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1670889597}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1670889597
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33920,8 +34561,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1682413556}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1682413556
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34026,8 +34669,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1695260989}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1695260989
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34132,8 +34777,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1705694697}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1705694697
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34238,8 +34885,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1707070776}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1707070776
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34344,8 +34993,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1707603740}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1707603740
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34450,8 +35101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1712956730}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1712956730
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34556,8 +35209,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1716855850}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1716855850
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34662,8 +35317,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1721140503}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1721140503
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34768,8 +35425,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1721430214}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1721430214
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34874,8 +35533,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1722789671}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1722789671
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34980,8 +35641,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 3}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1723180487}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1723180487
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35086,8 +35749,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1725306467}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1725306467
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35192,8 +35857,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1731330358}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1731330358
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35298,8 +35965,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1737661876}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1737661876
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35404,8 +36073,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1742286655}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1742286655
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35510,8 +36181,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1749349416}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1749349416
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35616,8 +36289,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1749426552}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1749426552
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35722,8 +36397,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1769341404}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1769341404
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35828,8 +36505,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1774403586}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1774403586
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35934,8 +36613,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1777946489}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1777946489
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36040,8 +36721,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1791732869}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1791732869
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36146,8 +36829,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 14, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1801507174}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1801507174
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36252,8 +36937,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1811288482}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1811288482
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36358,8 +37045,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1811484865}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1811484865
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36464,8 +37153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1814479672}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1814479672
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36570,8 +37261,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1816786275}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1816786275
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36676,8 +37369,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1820984004}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1820984004
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36782,8 +37477,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1823473383}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1823473383
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36888,8 +37585,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1831538004}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1831538004
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -36994,8 +37693,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1832209084}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1832209084
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37100,8 +37801,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1835548768}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1835548768
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37206,8 +37909,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1835950928}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1835950928
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37312,8 +38017,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1841672407}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1841672407
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37418,8 +38125,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 8}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1841946401}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1841946401
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37524,8 +38233,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1843284665}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1843284665
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37630,8 +38341,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1847407119}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1847407119
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37736,8 +38449,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1853184469}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1853184469
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37842,8 +38557,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1853253932}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1853253932
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -37948,8 +38665,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1853832116}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1853832116
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38054,8 +38773,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1870683477}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1870683477
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38160,8 +38881,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1890232527}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1890232527
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38266,8 +38989,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1900081965}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1900081965
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38372,8 +39097,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1904417490}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1904417490
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38478,8 +39205,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1905453245}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1905453245
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38584,8 +39313,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1911020675}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1911020675
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38690,8 +39421,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1915412646}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1915412646
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38796,8 +39529,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 6, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1915807281}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1915807281
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -38902,8 +39637,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1926010478}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1926010478
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39008,8 +39745,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1928856673}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1928856673
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39114,8 +39853,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1930459608}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1930459608
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39220,8 +39961,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1932960623}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1932960623
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39326,8 +40069,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1933856893}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1933856893
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39432,8 +40177,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 7}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1941365893}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1941365893
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39538,8 +40285,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 4}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1949884967}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1949884967
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39644,8 +40393,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 9}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1954774032}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1954774032
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39750,8 +40501,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 10}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1958827826}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1958827826
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39856,8 +40609,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1970415963}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1970415963
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -39962,8 +40717,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1988256526}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1988256526
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40068,8 +40825,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 17}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1989014405}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1989014405
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40174,8 +40933,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 18, y: 0}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1999474246}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1999474246
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40280,8 +41041,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 1999839012}
+  effectRenderer: {fileID: 0}
 --- !u!212 &1999839012
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40386,8 +41149,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2004747163}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2004747163
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40492,8 +41257,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 12, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2010899158}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2010899158
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40598,8 +41365,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 9, y: 19}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2011990448}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2011990448
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40704,8 +41473,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2016947914}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2016947914
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40810,8 +41581,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2017792496}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2017792496
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40916,8 +41689,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 11, y: 5}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2018599612}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2018599612
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41022,8 +41797,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2019564238}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2019564238
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41128,8 +41905,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2020135885}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2020135885
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41234,8 +42013,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2027028930}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2027028930
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41340,8 +42121,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 1, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2032546073}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2032546073
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41446,8 +42229,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 15, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2047631440}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2047631440
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41552,8 +42337,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 8, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2058142156}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2058142156
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41658,8 +42445,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2068187449}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2068187449
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41764,8 +42553,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2072242050}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2072242050
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41870,8 +42661,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 18}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2077852909}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2077852909
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41976,8 +42769,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 7, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2080653283}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2080653283
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42082,8 +42877,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 4, y: 12}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2084895265}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2084895265
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42188,8 +42985,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 0, y: 0}
   type: 5
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2090641775}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2090641775
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42294,8 +43093,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2092610265}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2092610265
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42400,8 +43201,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 2}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2098513755}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2098513755
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42506,8 +43309,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2100656846}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2100656846
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42612,8 +43417,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 16, y: 13}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2101511410}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2101511410
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42718,8 +43525,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 19, y: 6}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2119534534}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2119534534
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42824,8 +43633,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 13, y: 14}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2136801365}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2136801365
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -42930,8 +43741,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 17, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2138719947}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2138719947
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -43036,8 +43849,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 5, y: 1}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2139469338}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2139469338
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -43142,8 +43957,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 10, y: 16}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2139665927}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2139665927
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -43248,8 +44065,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 2, y: 15}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2142444808}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2142444808
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -43354,8 +44173,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cell: {x: 3, y: 11}
   type: 0
-  effect: 0
+  effect: {fileID: 0}
+  pinEffect: 0
   tileRenderer: {fileID: 2144351261}
+  effectRenderer: {fileID: 0}
 --- !u!212 &2144351261
 SpriteRenderer:
   m_ObjectHideFlags: 0

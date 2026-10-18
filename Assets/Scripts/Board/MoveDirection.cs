@@ -59,6 +59,21 @@ namespace Game.Board
             }
         }
 
+        /// <summary>
+        /// 顺时针旋转 90°（y 向上：(x, y) → (y, -x)）：上→右→下→左→上。
+        /// 与 <see cref="TilePiece.RotateCW" /> 把格偏移做同一旋转，箭头方向才能跟方块一起转。
+        /// </summary>
+        public static MoveDirection RotateCW(MoveDirection direction)
+        {
+            switch (direction)
+            {
+                case MoveDirection.Up: return MoveDirection.Right;
+                case MoveDirection.Right: return MoveDirection.Down;
+                case MoveDirection.Down: return MoveDirection.Left;
+                default: return MoveDirection.Up;
+            }
+        }
+
         /// <summary>中文名，UI 排序列表直接显示。</summary>
         public static string DisplayName(MoveDirection direction)
         {

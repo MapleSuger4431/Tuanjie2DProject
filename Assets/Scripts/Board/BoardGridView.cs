@@ -116,6 +116,18 @@ namespace Game.Board
         /// <summary>(0,0) 格即父对象原点，向右上增长。</summary>
         public Vector2 Origin => Vector2.zero;
 
+        /// <summary>
+        /// 按坐标取格子视图（供 <see cref="BoardRoot" /> 拉关卡预置效果）。
+        /// 越界或尚未 <see cref="Build" />（_tiles 未建好）时返回 null。
+        /// </summary>
+        public BoardTile TileAt(Vector2Int cell)
+        {
+            if (cell.x < 0 || cell.x >= Width || cell.y < 0 || cell.y >= Height) return null;
+            if (_tiles == null || _tiles.Length != Width * Height) return null;
+
+            return _tiles[cell.y * Width + cell.x];
+        }
+
         /// <summary>起点：左下角。</summary>
         public Vector2Int StartCell => Vector2Int.zero;
 
@@ -133,7 +145,7 @@ namespace Game.Board
                 if (_board.Width != boardSize || _board.Height != boardSize)
                     _board.SetSize(boardSize, boardSize);
 
-                _board.ApplyPreset(CollectPreset());
+                _board.ApplyPreset(CollectPreset(), CollectEffectPreset());
                 Refresh();
 
                 _board.BoardCovered.AddListener(Refresh)
@@ -152,7 +164,7 @@ namespace Game.Board
             if (_board == null) return;
             boardSize = _board.Width;
             Build();
-            _board.ApplyPreset(CollectPreset());
+            _board.ApplyPreset(CollectPreset(), CollectEffectPreset());
             Refresh();
         }
 
@@ -254,6 +266,37 @@ namespace Game.Board
                 {
                     if (tile != null)
                         preset.Add(new KeyValuePair<Vector2Int, TileType>(tile.Cell, tile.PresetType));
+                }
+            }
+
+            return preset;
+        }
+
+        /// <summary>
+        /// 收集关卡预置的效果层（各格 Inspector 里拖的效果资产），喂给 BoardModel 作为效果层初值。
+        /// 与 <see cref="CollectPreset" /> 平行：一层通行状态、一层效果，互不影响。
+        /// </summary>
+        public List<KeyValuePair<Vector2Int, TileEffect>> CollectEffectPreset()
+        {
+            var preset = new List<KeyValuePair<Vector2Int, TileEffect>>();
+
+            if (_tiles != null)
+            {
+                foreach (var tile in _tiles)
+                {
+                    if (tile != null)
+                        preset.Add(new KeyValuePair<Vector2Int, TileEffect>(tile.Cell, tile.PresetEffect));
+                }
+
+                return preset;
+            }
+
+            if (tilesRoot != null)
+            {
+                foreach (var tile in tilesRoot.GetComponentsInChildren<BoardTile>(true))
+                {
+                    if (tile != null)
+                        preset.Add(new KeyValuePair<Vector2Int, TileEffect>(tile.Cell, tile.PresetEffect));
                 }
             }
 

@@ -25,6 +25,10 @@ MonoBehaviour:
       weight: 3
     - type: 4
       weight: 0
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 0
+    invertChance: 0
   - sceneName: Level_02
     types:
     - type: 0
@@ -36,7 +40,11 @@ MonoBehaviour:
     - type: 3
       weight: 3
     - type: 4
-      weight: 1
+      weight: 0
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 0
+    invertChance: 0
   - sceneName: Level_03
     types:
     - type: 0
@@ -49,6 +57,10 @@ MonoBehaviour:
       weight: 4
     - type: 4
       weight: 2
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 1
+    invertChance: 0
   - sceneName: Level_04
     types:
     - type: 0
@@ -61,6 +73,10 @@ MonoBehaviour:
       weight: 4
     - type: 4
       weight: 3
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 3
+    invertChance: 0.35
   - sceneName: Level_05
     types:
     - type: 0
@@ -73,6 +89,10 @@ MonoBehaviour:
       weight: 4
     - type: 4
       weight: 4
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 3
+    invertChance: 0.3
   fallback:
     sceneName: Fallback
     types:
@@ -86,3 +106,7 @@ MonoBehaviour:
       weight: 3
     - type: 4
       weight: 0
+    effects: []
+    maxAbyssPerPiece: 1
+    maxAbyssPerRun: 0
+    invertChance: -1

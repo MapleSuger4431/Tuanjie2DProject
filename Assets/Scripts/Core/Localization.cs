@@ -52,8 +52,35 @@ namespace Game.Core
             /// <summary>关卡内「重新开始本关」按钮。</summary>
             LevelRestart,
 
-            /// <summary>关卡内「铺路完成」按钮：停表并锁定放置，进入「选偏好 → Play」的待运行阶段。</summary>
-            LevelFinishBuilding,
+            /// <summary>关卡内操作提示行：放置 / 旋转 / 缩放 / 平移。</summary>
+            LevelBoardHint,
+
+            /// <summary>关卡内 Play 按钮（出发）。</summary>
+            LevelPlay,
+
+            /// <summary>右侧面板「第三星目标时间」行（{0} = 时限 mm:ss.d，且需捡到金币）。</summary>
+            LevelStarGoal,
+
+            /// <summary>右侧面板「下一块」区块标题。</summary>
+            LevelNextPiece,
+
+            /// <summary>右侧面板「角色状态」区块标题。</summary>
+            LevelStatusCharacter,
+
+            /// <summary>角色状态卡中的角色名。</summary>
+            LevelCharacterName,
+
+            /// <summary>角色状态卡的可走地形行（{0} = 陆地 / 火 / 冰）。</summary>
+            LevelWalkable,
+
+            /// <summary>元素图例：陆地。</summary>
+            TileNameLand,
+
+            /// <summary>元素图例：火。</summary>
+            TileNameFire,
+
+            /// <summary>元素图例：冰。</summary>
+            TileNameIce,
 
             // ---- 关卡结算 ----
             /// <summary>通关成功结算面板标题。</summary>
@@ -79,6 +106,19 @@ namespace Game.Core
 
             /// <summary>结算面板成绩行「已用方块」（{0} = 已用，{1} = 上限）。</summary>
             LevelResultPieces,
+
+            // ---- 关卡内消息小窗 ----
+            /// <summary>小窗标题：成就解锁。</summary>
+            TipAchievement,
+
+            /// <summary>小窗正文：通关刷新最短纪录（{0} = mm:ss.d）。</summary>
+            TipNewRecord,
+
+            /// <summary>小窗标题：AI 元素属性发生反转。</summary>
+            TipElementSwitched,
+
+            /// <summary>小窗正文：元素反转详情（{0} = 属性名，取自 ElementStateInfo.DisplayName）。</summary>
+            TipElementSwitchedBody,
         }
 
         /// <summary>语言切换事件：GameSettings.SetLanguage 保存后触发，已打开的界面应整体刷新文本。</summary>
@@ -86,6 +126,16 @@ namespace Game.Core
 
         /// <summary>字符串表集名（Assets/Localization/Tables/GameText）。</summary>
         const string TableName = "GameText";
+
+        /// <summary>
+        /// 当前语言代码（如 zh-CN / en），取自 Unity Localization 的 SelectedLocale；未初始化时为空串。
+        /// 供需要按语言切换的美术资源（如标题图）判定。
+        /// </summary>
+        public static string LanguageCode =>
+            LocalizationSettings.SelectedLocale != null ? LocalizationSettings.SelectedLocale.Identifier.Code : string.Empty;
+
+        /// <summary>当前语言是否为中文（zh-*）；非中文一律走英文资源。</summary>
+        public static bool IsChinese => LanguageCode.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
 
         /// <summary>按当前语言取文本（Unity Localization 字符串表；表未加载时 WaitForCompletion 短暂等待）。</summary>
         public static string Get(Key key)
@@ -103,6 +153,29 @@ namespace Game.Core
             var op = args == null || args.Length == 0
                 ? LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString())
                 : LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString(), args);
+            return op.WaitForCompletion();
+        }
+
+        /// <summary>
+        /// 按**键名字符串**取文本：给数据驱动的文案用（如成就配置表里的 titleKey / descKey）——
+        /// 新增成就只加表条目，不需要往 <see cref="Key" /> 枚举里加项。
+        /// </summary>
+        public static string Get(string keyName)
+        {
+            if (string.IsNullOrEmpty(keyName)) return string.Empty;
+
+            var op = LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName);
+            return op.WaitForCompletion();
+        }
+
+        /// <summary>按键名字符串取带占位符的文本（{0}、{1} 由 args 依次填位）。</summary>
+        public static string Get(string keyName, params object[] args)
+        {
+            if (string.IsNullOrEmpty(keyName)) return string.Empty;
+
+            var op = args == null || args.Length == 0
+                ? LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName)
+                : LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName, args);
             return op.WaitForCompletion();
         }
 
