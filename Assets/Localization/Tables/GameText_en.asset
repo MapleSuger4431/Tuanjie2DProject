@@ -207,10 +207,6 @@ MonoBehaviour:
     m_Localized: 'Best Time: {0}'
     m_Metadata:
       m_Items: []
-  - m_Id: 68426138640384
-    m_Localized: 'Last Time: {0}'
-    m_Metadata:
-      m_Items: []
   - m_Id: 68451262521344
     m_Localized: "Time: {0}  \u2605 New Record!"
     m_Metadata:

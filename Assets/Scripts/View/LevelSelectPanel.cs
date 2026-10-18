@@ -136,7 +136,10 @@ namespace Game.View
 
             var view = new LevelNodeView(crystalImage, badgeImage, button, def);
 
-            if (button != null && _model.IsUnlocked(def.levelId))
+            // 无条件注册点击监听：未解锁由 Refresh 置 interactable=false 挡住点击。
+            // 若只在「创建时已解锁」的节点上注册，将来面板存续期间动态解锁时 Refresh 只改外观不补监听，
+            // 节点会「看着解锁但点了没反应」（2026-10-18 接口审查发现，已修）。
+            if (button != null)
             {
                 var captured = def;
                 button.onClick.AddListener(() => OpenDetail(captured));

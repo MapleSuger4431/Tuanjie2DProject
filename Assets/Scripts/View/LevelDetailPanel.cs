@@ -39,16 +39,11 @@ namespace Game.View
         [SerializeField]
         Image[] starImages;
 
-        // ⚠️ 两个记录标签（RecordLabel/LastLabel）的数量与形态待定：用户 2026-10-18 手动调整过两者在预制体上的
-        // 布局并表示"后续确定信息后再调整"——改动这两个标签前先与用户确认保留几个；布局参数以预制体手调版为准，
-        // 重跑 LevelSelectUIBuilder 会覆盖手调，勿随意重跑。
+        // 记录标签：2026-10-18 用户定稿——只保留「最短用时」一个（LastLabel 节点/字段/文案键均已清理）；
+        // 布局以预制体手调版为准，重跑 LevelSelectUIBuilder 会覆盖手调，勿随意重跑。
         [Tooltip("最短用时文本")]
         [SerializeField]
         TMP_Text recordLabel;
-
-        [Tooltip("上次用时文本（未通关时留空）——该标签是否保留待定（见上方注释）")]
-        [SerializeField]
-        TMP_Text lastLabel;
 
         [Tooltip("进入按钮")]
         [SerializeField]
@@ -147,11 +142,6 @@ namespace Game.View
             recordLabel.text = cleared
                 ? Localization.Get(Localization.Key.LevelBestTime, FormatTime(_model.GetBestTime(def.levelId)))
                 : Localization.Get(Localization.Key.LevelNoRecord);
-
-            if (lastLabel != null)
-                lastLabel.text = cleared
-                    ? Localization.Get(Localization.Key.LevelLastTime, FormatTime(_model.GetLastTime(def.levelId)))
-                    : string.Empty;
         }
 
         protected override void OnHide()

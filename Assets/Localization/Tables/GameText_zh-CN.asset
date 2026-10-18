@@ -195,10 +195,6 @@ MonoBehaviour:
     m_Localized: "\u6700\u77ED\u7528\u65F6\uFF1A{0}"
     m_Metadata:
       m_Items: []
-  - m_Id: 68426138640384
-    m_Localized: "\u4E0A\u6B21\u7528\u65F6\uFF1A{0}"
-    m_Metadata:
-      m_Items: []
   - m_Id: 68451262521344
     m_Localized: "\u7528\u65F6\uFF1A{0}\u3000\u2605 \u65B0\u7EAA\u5F55\uFF01"
     m_Metadata:

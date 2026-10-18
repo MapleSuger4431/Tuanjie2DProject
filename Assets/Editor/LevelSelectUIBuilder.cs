@@ -101,13 +101,11 @@ namespace Game.Editor
             WriteTexts(TableZh, new[]
             {
                 ("LevelBestTime", "最短用时：{0}"),
-                ("LevelLastTime", "上次用时：{0}"),
             });
 
             WriteTexts(TableEn, new[]
             {
                 ("LevelBestTime", "Best Time: {0}"),
-                ("LevelLastTime", "Last Time: {0}"),
             });
         }
 
@@ -255,12 +253,6 @@ namespace Game.Editor
             Stretch(record, new Vector2(0.05f, 0.44f), new Vector2(0.95f, 0.56f));
             var recordText = NewTmp(record, string.Empty, 40f);
 
-            // 上次用时：与最短用时对照（未通关时留空）
-            var last = NewRect("LastLabel", content);
-            Stretch(last, new Vector2(0.05f, 0.34f), new Vector2(0.95f, 0.44f));
-            var lastText = NewTmp(last, string.Empty, 32f);
-            lastText.color = new Color(0.78f, 0.82f, 0.90f);
-
             var enter = NewRect("EnterButton", content);
             Anchor(enter, new Vector2(0.09f, 0.13f), new Vector2(0.43f, 0.26f));
             // 底图：按钮底图_开始_无字（玫红带翼横幅，九宫格中段水平拉伸、两端翼饰不变形）
@@ -309,7 +301,6 @@ namespace Game.Editor
             for (var i = 0; i < starImages.Length; i++)
                 starsArr.GetArrayElementAtIndex(i).objectReferenceValue = starImages[i];
             so.FindProperty("recordLabel").objectReferenceValue = recordText;
-            so.FindProperty("lastLabel").objectReferenceValue = lastText;
             so.FindProperty("enterButton").objectReferenceValue = enterBtn;
             so.FindProperty("cancelButton").objectReferenceValue = cancelBtn;
             so.FindProperty("enterButtonLabel").objectReferenceValue = enterTmp;
