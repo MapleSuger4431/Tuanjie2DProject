@@ -36,53 +36,59 @@ namespace Game.Editor
         /// <summary>项目中文字体资产（TMPChineseText 扩展落地），不足时回退 TMP 默认字体。</summary>
         const string TmpChineseFontPath = "Assets/Codely/Fonts/NotoSansSC-Regular SDF.asset";
 
-        /// <summary>星级图标（与选关节点同一套美术）。</summary>
-        const string StarSpritePath = "Assets/Resources/UIPrefabs/UIimg/star.png";
-
         /// <summary>羊皮纸卷轴内页（与关卡成就小窗同一张，1024×576、9-slice 边 40）。</summary>
         const string ParchmentPath = "Assets/Art/Board/UI/Tip_Parchment.png";
 
         // ---- 布局（1920×1080 设计分辨率；卡片按像素固定尺寸居中，内部按「距左/距顶/宽/高」摆放）----
+        // 标题金匾与按钮金匾按用户要求**压在羊皮纸的紫色水印边框带上**（亮金底凸显，不躲开水印）；
+        // 其余成绩内容收在水印安全线（四边内渗约 120px）以内。
         const float FrameWidth = 1000f;
-        const float FrameHeight = 760f;
+        const float FrameHeight = 840f;
         const float CardInset = 28f;
 
-        const float TitleLeft = 60f;
-        const float TitleTop = 62f;
-        const float TitleHeight = 92f;
-        const float TitleFontSize = 62f;
+        // 标题金匾：横跨顶部水印带，标题文字居中落在匾上
+        const float TitlePlaqueWidth = 700f;
+        const float TitlePlaqueHeight = 124f;
+        const float TitlePlaqueTop = 36f;
 
-        const float DividerLeft = 150f;
-        const float DividerTop = 168f;
+        const float TitleLeft = 60f;
+        const float TitleTop = 36f;
+        const float TitleHeight = 124f;
+        const float TitleFontSize = 64f;
+
+        const float DividerLeft = 170f;
+        const float DividerTop = 182f;
         const float DividerWidth = CardWidth - DividerLeft * 2f;
         const float DividerHeight = 4f;
 
         const float CardWidth = FrameWidth - CardInset * 2f;
 
-        const float StarRowLeft = 120f;
-        const float StarRowTop = 190f;
-        const float StarRowWidth = 700f;
-        const float StarRowHeight = 150f;
-        const float StarSize = 130f;
-        const float StarGap = 200f;
+        // 三颗大星铺满整行（用户拍板：变大 + 在这一行里填充三颗星）
+        const float StarRowLeft = 80f;
+        const float StarRowTop = 204f;
+        const float StarRowWidth = 784f;
+        const float StarRowHeight = 196f;
+        const float StarSize = 196f;
+        const float StarGap = 280f;
 
-        const float RowLeft = 90f;
-        const float RowWidth = 760f;
+        const float RowLeft = 130f;
+        const float RowWidth = 684f;
         const float RowHeight = 46f;
         const float RowFontSize = 36f;
 
-        const float StepsTop = 360f;
-        const float PiecesTop = 414f;
-        const float TimeTop = 468f;
-        const float FailStepsTop = 330f;
-        const float FailPiecesTop = 384f;
+        const float StepsTop = 420f;
+        const float PiecesTop = 474f;
+        const float TimeTop = 528f;
+        const float FailStepsTop = 310f;
+        const float FailPiecesTop = 364f;
 
-        const float ButtonBottom = 56f;
-        const float ButtonWidth = 330f;
-        const float ButtonHeight = 88f;
-        const float ButtonLeftX = 105f;
-        const float ButtonRightX = 505f;
-        const float ButtonFontSize = 34f;
+        // 按钮金匾：压在底部水印带上，比旧版更大更醒目
+        const float ButtonBottom = 60f;
+        const float ButtonWidth = 380f;
+        const float ButtonHeight = 104f;
+        const float ButtonLeftX = 60f;
+        const float ButtonRightX = 504f;
+        const float ButtonFontSize = 38f;
 
         // ---- 配色（旧魔导书：羊皮纸浅面 → 文字走深紫）----
         static readonly Color MaskColor = new Color(0.043f, 0f, 0.086f, 0.80f);
@@ -96,8 +102,8 @@ namespace Game.Editor
         static readonly Color FailTitleColor = new Color(0.369f, 0.106f, 0.129f, 1f);
         static readonly Color FailTextColor = new Color(0.353f, 0.216f, 0.235f, 1f);
 
-        /// <summary>牌匾是深底，文字反过来走浅金。</summary>
-        static readonly Color ButtonLabelColor = new Color(0.98f, 0.94f, 0.86f, 1f);
+        /// <summary>金匾是亮底，标题与按钮文字反过来走深紫（与暗紫牌匾那套浅金字相反）。</summary>
+        static readonly Color ButtonLabelColor = new Color(0.165f, 0.078f, 0.212f, 1f);
 
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
@@ -163,9 +169,10 @@ namespace Game.Editor
             AnchorTopLeft(row, StarRowLeft, StarRowTop, StarRowWidth, StarRowHeight);
 
             var component = row.gameObject.AddComponent<LevelStarRow>();
-            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
+            // 选关那张 star.png 是调色板 PNG（Unity 不吃它的 tRNS，整块渲染成方块），这里用程序化金星
+            var sprite = UiSpritePainter.EnsureStarSprite();
             if (sprite == null)
-                Debug.LogWarning($"[BoardResultPanelBuilder] 未找到星级图标 {StarSpritePath}，星级行退化为纯色块");
+                Debug.LogWarning($"[BoardResultPanelBuilder] 金星贴图生成失败，星级行退化为纯色块");
 
             var count = LevelStarRules.MaxStars;
             var images = new Image[count];

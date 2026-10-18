@@ -15,7 +15,8 @@ namespace Game.Board
         /// <summary>发一条消息（文本已定稿）。</summary>
         public static void Send(string title, string body)
         {
-            var model = BoardContext.Instance.GetModel<BoardTipModel>();
+            // 走全局 Context（不是 BoardContext）：主菜单与选关界面同样要能弹消息
+            var model = GameContext.Instance.GetModel<BoardTipModel>();
             if (model == null)
             {
                 Debug.LogWarning("[BoardTip] BoardTipModel 未注册，消息被丢弃：" + title);

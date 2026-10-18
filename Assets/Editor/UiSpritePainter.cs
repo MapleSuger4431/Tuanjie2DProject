@@ -14,6 +14,8 @@ namespace Game.Editor
         public const string PanelSpritePath = SpriteDir + "/Panel_DarkPurple.png";
         public const string CardSpritePath = SpriteDir + "/Card_Rounded.png";
         public const string PlaqueSpritePath = SpriteDir + "/Plaque_Violet.png";
+        public const string GoldPlaqueSpritePath = SpriteDir + "/Plaque_Gold.png";
+        public const string StarSpritePath = SpriteDir + "/Star_Gold.png";
 
         /// <summary>深紫面板：纵向渐变填充 + 亮紫描边，圆角 24px，9-slice 边 36。</summary>
         public static readonly Color PanelTop = new Color(0.133f, 0.082f, 0.216f, 1f);
@@ -33,6 +35,17 @@ namespace Game.Editor
         public static readonly Color PlaqueStroke = new Color(0.78f, 0.63f, 0.33f, 1f);
         public static readonly Color PlaqueOuterStroke = new Color(0.259f, 0.125f, 0.322f, 1f);
 
+        /// <summary>金色牌匾：古铜金渐变底 + 深褐描边——给羊皮纸的暗色水印带做「亮色凸显」用（结算标题横幅与按钮）。</summary>
+        public static readonly Color GoldPlaqueTop = new Color(0.97f, 0.88f, 0.62f, 1f);
+        public static readonly Color GoldPlaqueBottom = new Color(0.82f, 0.64f, 0.31f, 1f);
+        public static readonly Color GoldPlaqueStroke = new Color(0.36f, 0.22f, 0.10f, 1f);
+        public static readonly Color GoldPlaqueOuterStroke = new Color(0.58f, 0.41f, 0.19f, 1f);
+
+        /// <summary>金星：竖向金色渐变 + 深紫褐描边（描边是给羊皮纸浅底准备的，否则金星的亮部糊进纸面）。</summary>
+        public static readonly Color StarTop = new Color(1f, 0.914f, 0.62f, 1f);
+        public static readonly Color StarBottom = new Color(0.851f, 0.604f, 0.157f, 1f);
+        public static readonly Color StarOutline = new Color(0.243f, 0.129f, 0.196f, 1f);
+
         /// <summary>生成（或重画）两张皮肤贴图并返回加载好的 Sprite。</summary>
         public static Sprite EnsurePanelSprite() => EnsureSprite(PanelSpritePath, 128, 24f, 3f, PanelTop, PanelBottom, PanelStroke, PanelOuterStroke, new Vector4(36f, 36f, 36f, 36f));
 
@@ -40,6 +53,21 @@ namespace Game.Editor
 
         /// <summary>按钮牌匾：128px、圆角 28、金边 4px，9-slice 边 40（拉伸到 330×88 仍保住圆角与描边）。</summary>
         public static Sprite EnsurePlaqueSprite() => EnsureSprite(PlaqueSpritePath, 128, 28f, 4f, PlaqueTop, PlaqueBottom, PlaqueStroke, PlaqueOuterStroke, new Vector4(40f, 40f, 40f, 40f));
+
+        /// <summary>金色牌匾：128px、圆角 28、深褐边 4px，9-slice 边 40（与暗紫牌匾同规格，可互相替换）。</summary>
+        public static Sprite EnsureGoldPlaqueSprite() => EnsureSprite(GoldPlaqueSpritePath, 128, 28f, 4f, GoldPlaqueTop, GoldPlaqueBottom, GoldPlaqueStroke, GoldPlaqueOuterStroke, new Vector4(40f, 40f, 40f, 40f));
+
+        /// <summary>五角金星：256px，真正带 alpha 的 PNG（选关那张 star.png 是调色板图，Unity 不吃它的 tRNS，整块渲染成方块）。</summary>
+        public static Sprite EnsureStarSprite()
+        {
+            var dir = Path.GetDirectoryName(StarSpritePath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            WriteStarPng(StarSpritePath, 256);
+            AssetDatabase.ImportAsset(StarSpritePath, ImportAssetOptions.ForceUpdate);
+            ConfigureImporter(StarSpritePath, 256, Vector4.zero);
+            return AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
+        }
 
         static Sprite EnsureSprite(
             string path, int size, float radius, float border,
@@ -85,6 +113,87 @@ namespace Game.Editor
             tex.Apply();
             File.WriteAllBytes(path, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
+        }
+
+        /// <summary>
+        /// 五角星光栅化：3×3 超采样求覆盖率当 alpha，核心区（同一多边形缩到 0.86）按 y 向金色渐变填充，
+        /// 核心之外的一圈画深紫褐描边。
+        /// </summary>
+        static void WriteStarPng(string path, int size)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var pixels = new Color32[size * size];
+            float half = size * 0.5f;
+            var points = StarPoints(half * 0.92f, half * 0.92f * 0.42f);
+            const int ss = 3;
+            var samples = ss * ss;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int inside = 0;
+                    int insideCore = 0;
+                    for (int sy = 0; sy < ss; sy++)
+                    {
+                        for (int sx = 0; sx < ss; sx++)
+                        {
+                            float px = x + (sx + 0.5f) / ss - half;
+                            float py = y + (sy + 0.5f) / ss - half;
+                            if (Inside(points, px, py, 1f)) inside++;
+                            if (Inside(points, px, py, 0.86f)) insideCore++;
+                        }
+                    }
+
+                    float coverage = inside / (float)samples;
+                    if (coverage <= 0f)
+                    {
+                        pixels[y * size + x] = default;
+                        continue;
+                    }
+
+                    var fill = Color.Lerp(StarBottom, StarTop, y / (size - 1f));
+                    var color = insideCore * 2 >= samples ? fill : StarOutline;
+                    pixels[y * size + x] = new Color(color.r, color.g, color.b, coverage);
+                }
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+        }
+
+        /// <summary>五角星的十个顶点（外-内交替，顶角朝上）。</summary>
+        static Vector2[] StarPoints(float outer, float inner)
+        {
+            var points = new Vector2[10];
+            for (int i = 0; i < 5; i++)
+            {
+                float angleOuter = -Mathf.PI / 2f + i * (2f * Mathf.PI / 5f);
+                float angleInner = angleOuter + Mathf.PI / 5f;
+                points[i * 2] = new Vector2(Mathf.Cos(angleOuter) * outer, Mathf.Sin(angleOuter) * outer);
+                points[i * 2 + 1] = new Vector2(Mathf.Cos(angleInner) * inner, Mathf.Sin(angleInner) * inner);
+            }
+
+            return points;
+        }
+
+        /// <summary>射线法判点是否在多边形内（<paramref name="scale" /> 用于取同形状的缩小版当描边内界）。</summary>
+        static bool Inside(Vector2[] poly, float x, float y, float scale)
+        {
+            bool inside = false;
+            for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
+            {
+                float xi = poly[i].x * scale;
+                float yi = poly[i].y * scale;
+                float xj = poly[j].x * scale;
+                float yj = poly[j].y * scale;
+                if ((yi > y) != (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+                    inside = !inside;
+            }
+
+            return inside;
         }
 
         static Color32 Shade(float dist, Color fill, float border, Color stroke, Color outerStroke)

@@ -13,7 +13,6 @@ namespace Game.Board
             RegisterModel(new PieceModel());
             RegisterModel(new BoardTimeModel());
             RegisterModel(new BoardRunModel());
-            RegisterModel(new BoardTipModel());
         }
     }
 }
