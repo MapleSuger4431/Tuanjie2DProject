@@ -78,6 +78,23 @@ namespace Game.Model
             return true;
         }
 
+        /// <summary>
+        /// 标记「解锁通知已发」（随存档持久化）：返回标记前是否尚未通知。
+        /// 服务层用它把「弹提示」收敛为每存档一次——解锁状态只增不回退，
+        /// 通知标志同样只增，重开 / 重进 / 读档都不会再次触发。
+        /// </summary>
+        public bool MarkNotified(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return false;
+
+            var record = GetOrCreate(id);
+            if (record.notified) return false;
+
+            record.notified = true;
+            Changed.Invoke();
+            return true;
+        }
+
         public void WriteTo(AchievementData data)
         {
             data.records = new List<AchievementRecordData>(_records.Count);
@@ -88,6 +105,7 @@ namespace Game.Model
                     unlocked = record.unlocked,
                     unlockTimeUtc = record.unlockTimeUtc,
                     progress = record.progress,
+                    notified = record.notified,
                 });
         }
 
@@ -106,6 +124,7 @@ namespace Game.Model
                     unlocked = record.unlocked,
                     unlockTimeUtc = record.unlockTimeUtc,
                     progress = record.progress,
+                    notified = record.notified,
                 };
             }
 

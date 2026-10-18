@@ -150,6 +150,11 @@ namespace Game.Board
             if (_queue.Count == 0)
             {
                 _stage = Stage.Idle;
+
+                // 播完即清：消息是一次性通知，不留在 Model 里——
+                // 防止未来的订阅路径（AddListenerAndInvoke / 面板重建重订阅）把旧成就提示再弹一遍
+                // （成就提示每存档只允许一次，解锁侧已由 AchievementModel.MarkNotified 持久化把关）。
+                if (_tips != null) _tips.Message.SetValueSilently(null);
                 return;
             }
 

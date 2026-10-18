@@ -66,7 +66,10 @@ namespace Game.Service
                 _model.SetProgress(achievement.Id, value);
                 if (!achievement.IsSatisfied(value)) continue;
 
-                if (_model.Unlock(achievement.Id)) Unlocked.Invoke(achievement);
+                // Unlock 已防同存档重复解锁（AC-06）；MarkNotified 再把「弹提示」收敛为
+                // 每存档一次（notified 随存档持久化），两条都通过才抛 Unlocked。
+                if (!_model.Unlock(achievement.Id)) continue;
+                if (_model.MarkNotified(achievement.Id)) Unlocked.Invoke(achievement);
             }
         }
     }
