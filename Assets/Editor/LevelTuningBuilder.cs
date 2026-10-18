@@ -43,6 +43,9 @@ namespace Game.EditorTools
             public int maxAbyssPerPiece = 1;
             public int maxAbyssPerRun;
             public float invertChance;
+
+            [Tooltip("本关可放置方块的数量上限（五关难度曲线：第一关 50，往后每关 +10）。0 = 未配置，按棋盘尺寸插值兜底")]
+            public int pieceLimit;
             public Vector2Int[] abyss = { };
             public Vector2Int[] coins = { };
 
@@ -73,7 +76,7 @@ namespace Game.EditorTools
         {
             new LevelSpec
             {
-                sceneName = "Level_01", size = 10, timeStarSeconds = 30,
+                sceneName = "Level_01", size = 10, timeStarSeconds = 30, pieceLimit = 50,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new Vector2Int[] { },
                 coins = new[] { new Vector2Int(3, 6) },
@@ -86,7 +89,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_02", size = 15, timeStarSeconds = 40,
+                sceneName = "Level_02", size = 15, timeStarSeconds = 40, pieceLimit = 60,
                 maxAbyssPerRun = 0, invertChance = 0f,
                 abyss = new[] { new Vector2Int(4, 3), new Vector2Int(10, 7), new Vector2Int(7, 12) },
                 coins = new[] { new Vector2Int(7, 7) },
@@ -99,7 +102,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_03", size = 15, timeStarSeconds = 50,
+                sceneName = "Level_03", size = 15, timeStarSeconds = 50, pieceLimit = 70,
                 maxAbyssPerRun = 1, invertChance = 0f,
                 abyss = new[] { new Vector2Int(3, 5), new Vector2Int(9, 9), new Vector2Int(12, 3) },
                 coins = new[] { new Vector2Int(5, 4), new Vector2Int(11, 10) },
@@ -112,11 +115,13 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_04", size = 20, timeStarSeconds = 60,
+                sceneName = "Level_04", size = 20, timeStarSeconds = 60, pieceLimit = 80,
                 maxAbyssPerRun = 3, invertChance = 0.35f,
                 abyss = new[] { new Vector2Int(5, 5), new Vector2Int(13, 8), new Vector2Int(8, 15) },
                 coins = new[] { new Vector2Int(6, 6), new Vector2Int(14, 13) },
-                portals = new[] { new Vector2Int(2, 1), new Vector2Int(13, 13) },
+                // 入口距起点 (0,0) 曼哈顿 5 格（起点右侧竖链 (2,1)→(2,3) 第 5 步即踩到），
+                // 出口挪到右上区远离两枚金币（距 (6,6) 12 格、(14,13) 11 格）——用户 2026-10-18 拍板
+                portals = new[] { new Vector2Int(2, 3), new Vector2Int(16, 4) },
                 road = new[]
                 {
                     "....LLLLLLLLLLLLLLL.", "..............L.....", "...........L..L.....", "..LLLLLL.LILLLL.LFL.",
