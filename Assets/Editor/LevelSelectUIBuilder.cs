@@ -158,6 +158,32 @@ namespace Game.Editor
             var nodesRoot = NewRect("NodesRoot", root.transform);
             Stretch(nodesRoot, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.85f));
 
+            // 位置锚点（2026-10-18 用户工作流）：NodesRoot 下挂空对象 Position_N，用户在 Prefab 编辑模式
+            // 自由增删锚点/拖动位置，运行时按锚点数量与序号创建关卡节点（锚点=关卡布局真源，关卡数不固定）。
+            // 重建策略：已存在的锚点原样保留（含用户拖好的位置）；Levels 表里有而预制体缺失的按 nodePos 补建。
+            var anchorDefs = new System.Collections.Generic.SortedDictionary<int, Vector2>();
+            var existingPanelGo = AssetDatabase.LoadAssetAtPath<GameObject>(PanelPath);
+            if (existingPanelGo != null)
+            {
+                var oldNodesRoot = existingPanelGo.transform.Find("NodesRoot");
+                if (oldNodesRoot != null)
+                    foreach (Transform c in oldNodesRoot)
+                        if (c.name.StartsWith("Position_") && int.TryParse(c.name.Substring("Position_".Length), out var oldId))
+                            anchorDefs[oldId] = ((RectTransform)c).anchorMin;
+            }
+            foreach (var def in new Game.Model.LevelSelectModel().Levels)
+                if (!anchorDefs.ContainsKey(def.levelId))
+                    anchorDefs[def.levelId] = def.nodePos;
+
+            foreach (var pair in anchorDefs)
+            {
+                var anchorRt = NewRect("Position_" + pair.Key, nodesRoot);
+                anchorRt.pivot = new Vector2(0.5f, 0.5f);
+                anchorRt.anchorMin = anchorRt.anchorMax = pair.Value;
+                anchorRt.anchoredPosition = Vector2.zero;
+                anchorRt.sizeDelta = new Vector2(180f, 180f);
+            }
+
             // 左上：返回按钮——120×120 图标位。图标是方形透明图，配方形按钮才不被压扁；
             // 纯图标不放文字：LevelSelectPanel.ApplyLocalization 会在 label 非空时填中文，
             // 文字压在图标上会糊，故这里不建 Text 子节点、也不回填 backButtonLabel。

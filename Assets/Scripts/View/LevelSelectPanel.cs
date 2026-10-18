@@ -14,7 +14,8 @@ namespace Game.View
     /// <para>
     /// 左上「返回」回主场景、右上「设置」打开设置面板；点已解锁节点打开 LevelDetailPanel。
     /// 静态结构由 Assets/Editor/LevelSelectUIBuilder 产出（改结构改生成器），
-    /// 节点由 <see cref="LevelSelectModel" /> 关卡表驱动运行时生成。
+    /// 节点由 <see cref="LevelSelectModel" /> 关卡表驱动运行时生成，
+    /// 节点位置由 NodesRoot 下的 Position_N 锚点对象决定（用户在 Prefab 编辑模式拖动调位置）。
     /// </para>
     /// <para>
     /// 全部文本经 <see cref="Game.Core.Localization" /> 取值，语言切换时整体刷新。
@@ -113,20 +114,47 @@ namespace Game.View
                 return;
             }
 
-            foreach (var def in _model.Levels)
+            // 节点集合 = NodesRoot 下全部 Position_N 锚点（按序号排序；用户在 Prefab 编辑模式自由增删/拖动，
+            // 关卡数不固定）。锚点比 Levels 表多时自动出占位关卡（sceneName 空，进入按钮预检只打 Warning）。
+            // 无锚点时回退按 Levels/nodePos 直铺（旧布局方式兼容）。
+            var anchors = new List<RectTransform>();
+            foreach (Transform c in nodesRoot)
+                if (c.name.StartsWith("Position_") && int.TryParse(c.name.Substring("Position_".Length), out var anchorId))
+                    anchors.Add((RectTransform)c);
+            anchors.Sort((a, b) => int.Parse(a.name.Substring(9)).CompareTo(int.Parse(b.name.Substring(9))));
+
+            if (anchors.Count == 0)
             {
-                _nodes.Add(CreateNode(def));
+                foreach (var def in _model.Levels)
+                    _nodes.Add(CreateNode(def, null));
+                return;
+            }
+
+            foreach (var a in anchors)
+            {
+                var id = int.Parse(a.name.Substring("Position_".Length));
+                var def = _model.GetDef(id) ?? new LevelDef { levelId = id, sceneName = "" };
+                _nodes.Add(CreateNode(def, a));
             }
         }
 
-        LevelNodeView CreateNode(LevelDef def)
+        LevelNodeView CreateNode(LevelDef def, RectTransform anchor)
         {
-            var nodeGo = Instantiate(levelNodePrefab, nodesRoot);
+            var nodeGo = anchor != null ? Instantiate(levelNodePrefab, anchor) : Instantiate(levelNodePrefab, nodesRoot);
             nodeGo.name = "Node_" + def.levelId;
             var node = (RectTransform)nodeGo.transform;
-            // 锚点定位：anchor 即归一化位置——不依赖布局更新时序
-            node.anchorMin = node.anchorMax = def.nodePos;
-            node.anchoredPosition = Vector2.zero;
+            if (anchor != null)
+            {
+                // 锚点模式：节点居中锚定于锚点（位置=锚点位置，用户拖锚点即拖节点）
+                node.anchorMin = node.anchorMax = new Vector2(0.5f, 0.5f);
+                node.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                // 回退：nodePos 数据直铺（anchor 即归一化位置——不依赖布局更新时序）
+                node.anchorMin = node.anchorMax = def.nodePos;
+                node.anchoredPosition = Vector2.zero;
+            }
 
             var button = node.GetComponent<Button>();
             var crystalImage = node.Find("Crystal")?.GetComponent<Image>();
