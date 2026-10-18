@@ -151,10 +151,6 @@ MonoBehaviour:
     m_Key: LevelBestTime
     m_Metadata:
       m_Items: []
-  - m_Id: 68426138640384
-    m_Key: LevelLastTime
-    m_Metadata:
-      m_Items: []
   - m_Id: 68451262521344
     m_Key: LevelClearTimeNewRecord
     m_Metadata:

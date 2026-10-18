@@ -45,9 +45,6 @@ namespace Game.Core
             /// <summary>关卡详情「最短用时」（{0} = mm:ss.d）。</summary>
             LevelBestTime,
 
-            /// <summary>关卡详情「上次用时」（{0} = mm:ss.d）。</summary>
-            LevelLastTime,
-
             // ---- 关卡场景内 ----
             /// <summary>关卡内「返回选关」按钮。</summary>
             LevelBackToSelect,

@@ -36,6 +36,28 @@ namespace Game.Editor
         const string MapSpritePath = UiImgDir + "/map_1920x1080_fit.png";   // 选关大地图背景
         const string BackSpritePath = UiImgDir + "/back.png";                // 返回图标
         const string SettingsSpritePath = UiImgDir + "/setting-transparent.png"; // 设置图标
+        const string StarSpritePath = UiImgDir + "/star.png";                // 星级图标（详情弹窗 3 星显示）
+
+        // 详情弹窗装饰图（Arts 图集区，与主菜单 MenuHelpPanel 共用同源素材）
+        /// <summary>弹窗背景框：操作说明.png（金框+紫光描边+顶部牌匾，2048×2048 方图带透明边距，Simple 全幅）。</summary>
+        const string DetailPanelBgPath = "Assets/Arts/UI组件/操作说明.png";
+        const string EnterBtnBgPath = "Assets/Arts/UI组件/按钮底图_开始_无字.png";   // 进入按钮底图（玫红带翼横幅，Sliced）
+        const string CancelBtnBgPath = "Assets/Arts/UI组件/按钮底图_退出_无字.png";  // 取消按钮底图（胶囊，Sliced）
+
+        // 关卡节点图标（2026-10-18 用户拍板：节点 = 水晶主题图 + 编号徽章叠加的图标按钮，目前 3 关）。
+        // 索引 = 关卡号-1；新增关卡在此加一行路径，生成器会把整个数组回填进 LevelSelectPanel。
+        static readonly string[] CrystalSpritePaths =
+        {
+            UiImgDir + "/crystal_blue.png",   // 第 1 关：冰晶王座
+            UiImgDir + "/crystal_fire.png",   // 第 2 关：熔岩晶蛋
+            UiImgDir + "/crystal_purple.png", // 第 3 关：星辉紫晶
+        };
+        static readonly string[] BadgeSpritePaths =
+        {
+            UiImgDir + "/badge_01.png",
+            UiImgDir + "/badge_02.png",
+            UiImgDir + "/badge_03.png",
+        };
 
         static TMP_FontAsset _chineseFont;
         static bool _fontLookedUp;
@@ -79,13 +101,11 @@ namespace Game.Editor
             WriteTexts(TableZh, new[]
             {
                 ("LevelBestTime", "最短用时：{0}"),
-                ("LevelLastTime", "上次用时：{0}"),
             });
 
             WriteTexts(TableEn, new[]
             {
                 ("LevelBestTime", "Best Time: {0}"),
-                ("LevelLastTime", "Last Time: {0}"),
             });
         }
 
@@ -123,7 +143,7 @@ namespace Game.Editor
             if (bgSprite != null)
             {
                 bgImage.sprite = bgSprite;
-                bgImage.preserveAspect = true;   // 非 16:9 画面宁可留边，也不把地图拉变形
+                bgImage.preserveAspect = false;  // 图已按 alpha 边界裁掉透明边（内容满幅），Stretch 全屏直接铺满窗口；裁后图比例贴近 16:9，拉伸变形 <3% 无感
                 bgImage.color = Color.white;     // 有美术时保持原色，不再叠深色
             }
             else
@@ -164,6 +184,8 @@ namespace Game.Editor
             so.FindProperty("settingsButton").objectReferenceValue = settingsBtn;
             so.FindProperty("levelNodePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(NodePath);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
+            FillSpriteArray(so, "crystalSprites", CrystalSpritePaths);
+            FillSpriteArray(so, "badgeSprites", BadgeSpritePaths);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             SaveAsPrefab(root, PanelPath);
@@ -186,52 +208,99 @@ namespace Game.Editor
             var maskButton = mask.gameObject.AddComponent<Button>();
             maskButton.transition = Selectable.Transition.None;
 
+            // Content：与 MenuHelpPanel 同款 950×950 方卡，承载 2048×2048 方图背景（Simple 全幅无变形）。
+            // 狭长矩形会横向拉坏金框与四角星饰，必须保持 1:1。
             var content = NewRect("Content", root.transform);
-            Anchor(content, new Vector2(0.30f, 0.35f), new Vector2(0.70f, 0.65f));
-            content.gameObject.AddComponent<Image>().color = new Color(0.16f, 0.19f, 0.25f);
+            Anchor(content, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
+            content.sizeDelta = new Vector2(950f, 950f);
+            var contentBg = content.gameObject.AddComponent<Image>();
+            contentBg.sprite = LoadSprite(DetailPanelBgPath);   // 操作说明.png：金框+紫光+顶部牌匾
+            contentBg.color = Color.white;
+            contentBg.raycastTarget = false;
 
             var title = NewRect("Title", content);
-            Stretch(title, new Vector2(0.05f, 0.74f), new Vector2(0.95f, 0.95f));
-            var titleText = NewTmp(title, string.Empty, 48f);
+            // 标题落在背景图顶部牌匾内（参考 MenuHelpPanel 验收布局：牌匾中心约在面板顶部 23% 高度处）
+            Stretch(title, new Vector2(0.05f, 0.72f), new Vector2(0.95f, 0.83f));
+            var titleText = NewTmp(title, string.Empty, 44f);
+            titleText.color = new Color(0.243f, 0.125f, 0.392f);   // 牌匾浅底配深紫字（同 MenuHelpPanel）
 
-            var preview = NewRect("PreviewImage", content);
-            Stretch(preview, new Vector2(0.10f, 0.50f), new Vector2(0.90f, 0.72f));
-            var previewImage = preview.gameObject.AddComponent<Image>();
-            previewImage.color = new Color(0.22f, 0.26f, 0.32f);
-            previewImage.raycastTarget = false;
+            // 星级行（2026-10-18 用户需求：标题与记录之间 3 个星星体现关卡成绩）。
+            // 原预览图占位节点（PreviewImage）已让位于此——要恢复预览图时在此重建节点并回填脚本的 previewImage 字段。
+            // 星星 80×80、水平居中间隔 28px；初始暗灰，点亮与否由 LevelDetailPanel.ShowStars 按 LevelSelectModel.GetBestStars 染色。
+            var starsRow = NewRect("StarsRow", content);
+            Stretch(starsRow, new Vector2(0.05f, 0.56f), new Vector2(0.95f, 0.70f));
+            var starImages = new Image[3];
+            for (var i = 0; i < 3; i++)
+            {
+                var star = NewRect("Star" + (i + 1), starsRow);
+                star.anchorMin = star.anchorMax = star.pivot = new Vector2(0.5f, 0.5f);
+                star.sizeDelta = new Vector2(80f, 80f);
+                star.anchoredPosition = new Vector2((i - 1) * 108f, 0f);
+                var starImage = star.gameObject.AddComponent<Image>();
+                var starSprite = LoadSprite(StarSpritePath);
+                if (starSprite != null)
+                {
+                    starImage.sprite = starSprite;
+                    starImage.preserveAspect = true;
+                }
+                starImage.color = new Color(0.40f, 0.40f, 0.44f);
+                starImage.raycastTarget = false;
+                starImages[i] = starImage;
+            }
 
             // 最短用时：通关后展示该关历史最好成绩（未通关时这里显示「暂无记录」）
             var record = NewRect("RecordLabel", content);
-            Stretch(record, new Vector2(0.05f, 0.38f), new Vector2(0.95f, 0.50f));
-            var recordText = NewTmp(record, string.Empty, 36f);
-
-            // 上次用时：与最短用时对照（未通关时留空）
-            var last = NewRect("LastLabel", content);
-            Stretch(last, new Vector2(0.05f, 0.28f), new Vector2(0.95f, 0.38f));
-            var lastText = NewTmp(last, string.Empty, 30f);
-            lastText.color = new Color(0.78f, 0.82f, 0.90f);
+            Stretch(record, new Vector2(0.05f, 0.44f), new Vector2(0.95f, 0.56f));
+            var recordText = NewTmp(record, string.Empty, 40f);
 
             var enter = NewRect("EnterButton", content);
-            Anchor(enter, new Vector2(0.15f, 0.08f), new Vector2(0.45f, 0.24f));
-            enter.gameObject.AddComponent<Image>().color = new Color(0.30f, 0.55f, 0.75f);
+            Anchor(enter, new Vector2(0.09f, 0.13f), new Vector2(0.43f, 0.26f));
+            // 底图：按钮底图_开始_无字（玫红带翼横幅，九宫格中段水平拉伸、两端翼饰不变形）
+            var enterImage = enter.gameObject.AddComponent<Image>();
+            var enterSprite = LoadSprite(EnterBtnBgPath);
+            if (enterSprite != null)
+            {
+                enterImage.sprite = enterSprite;
+                enterImage.type = Image.Type.Sliced;
+                enterImage.color = Color.white;
+            }
+            else
+            {
+                enterImage.color = new Color(0.30f, 0.55f, 0.75f);
+            }
             var enterBtn = enter.gameObject.AddComponent<Button>();
             var enterText = NewRect("Text", enter);
             Stretch(enterText);
-            var enterTmp = NewTmp(enterText, "进入", 32f);
+            var enterTmp = NewTmp(enterText, "开始", 38f);
 
             var cancel = NewRect("CancelButton", content);
-            Anchor(cancel, new Vector2(0.55f, 0.08f), new Vector2(0.85f, 0.24f));
-            cancel.gameObject.AddComponent<Image>().color = new Color(0.45f, 0.30f, 0.30f);
+            Anchor(cancel, new Vector2(0.57f, 0.13f), new Vector2(0.91f, 0.26f));
+            // 底图：按钮底图_退出_无字（胶囊，Sliced 拉伸）
+            var cancelImage = cancel.gameObject.AddComponent<Image>();
+            var cancelSprite = LoadSprite(CancelBtnBgPath);
+            if (cancelSprite != null)
+            {
+                cancelImage.sprite = cancelSprite;
+                cancelImage.type = Image.Type.Sliced;
+                cancelImage.color = Color.white;
+            }
+            else
+            {
+                cancelImage.color = new Color(0.45f, 0.30f, 0.30f);
+            }
             var cancelBtn = cancel.gameObject.AddComponent<Button>();
             var cancelText = NewRect("Text", cancel);
             Stretch(cancelText);
-            var cancelTmp = NewTmp(cancelText, "取消", 32f);
+            var cancelTmp = NewTmp(cancelText, "取消", 38f);
 
             var so = new SerializedObject(script);
             so.FindProperty("titleLabel").objectReferenceValue = titleText;
-            so.FindProperty("previewImage").objectReferenceValue = previewImage;
+            // 星级图标数组回填（previewImage 字段保留在脚本中但本布局不再回填——见 StarsRow 注释）
+            var starsArr = so.FindProperty("starImages");
+            starsArr.arraySize = starImages.Length;
+            for (var i = 0; i < starImages.Length; i++)
+                starsArr.GetArrayElementAtIndex(i).objectReferenceValue = starImages[i];
             so.FindProperty("recordLabel").objectReferenceValue = recordText;
-            so.FindProperty("lastLabel").objectReferenceValue = lastText;
             so.FindProperty("enterButton").objectReferenceValue = enterBtn;
             so.FindProperty("cancelButton").objectReferenceValue = cancelBtn;
             so.FindProperty("enterButtonLabel").objectReferenceValue = enterTmp;
@@ -244,24 +313,33 @@ namespace Game.Editor
             Object.DestroyImmediate(root);
         }
 
-        // ---------- 关卡节点模板 ----------
+        // ---------- 关卡节点模板（图标按钮：水晶主题图 + 编号徽章叠加，2026-10-18 用户拍板形态） ----------
 
         static void BuildLevelNode()
         {
             var root = new GameObject("LevelNode", typeof(RectTransform));
             var rt = (RectTransform)root.transform;
-            rt.sizeDelta = new Vector2(140f, 140f);
+            rt.sizeDelta = new Vector2(180f, 180f);
 
-            root.AddComponent<Image>().color = Color.white;
+            // 根只有 Button（无 Image）：点击热区由 Crystal/Badge 的 Image 承接，事件冒泡到父级 Button。
+            // 节点不再带 Name/Stars 文字——关卡号在徽章图上，解锁状态由运行时染灰表达。
             root.AddComponent<Button>();
 
-            var nameRow = NewRect("Name", root.transform);
-            Stretch(nameRow, new Vector2(0.05f, 0.42f), new Vector2(0.95f, 0.92f));
-            NewTmp(nameRow, string.Empty, 30f);
+            // 主图：关卡主题水晶。素材是 532×785 一类的竖长图，Stretch 满节点 + preserveAspect 自动保比例居中
+            var crystal = NewRect("Crystal", root.transform);
+            Stretch(crystal);
+            var crystalImage = crystal.gameObject.AddComponent<Image>();
+            crystalImage.color = Color.white;   // 有专属美术走原色（项目惯例：不叠底色染色）
+            crystalImage.preserveAspect = true;
 
-            var starsRow = NewRect("Stars", root.transform);
-            Stretch(starsRow, new Vector2(0.05f, 0.08f), new Vector2(0.95f, 0.42f));
-            NewTmp(starsRow, string.Empty, 24f);
+            // 编号徽章：叠在水晶之上（sibling 靠后 = 渲染层级在上，用户拍板「层级在上一点」）
+            var badge = NewRect("Badge", root.transform);
+            badge.anchorMin = badge.anchorMax = badge.pivot = new Vector2(0.5f, 0.5f);
+            badge.sizeDelta = new Vector2(100f, 100f);
+            badge.anchoredPosition = Vector2.zero;
+            var badgeImage = badge.gameObject.AddComponent<Image>();
+            badgeImage.color = Color.white;
+            badgeImage.preserveAspect = true;
 
             SaveAsPrefab(root, NodePath);
             Object.DestroyImmediate(root);
@@ -276,6 +354,15 @@ namespace Game.Editor
             if (sprite == null)
                 Debug.LogWarning($"[LevelSelectUIBuilder] 未找到素材 {path}，该处回退为纯色占位");
             return sprite;
+        }
+
+        /// <summary>回填 Sprite[] 序列化字段：数组长度 = 路径表长度，缺素材留空（运行时 ApplyNodeIcon 会隐藏空图）。</summary>
+        static void FillSpriteArray(SerializedObject so, string property, string[] paths)
+        {
+            var arr = so.FindProperty(property);
+            arr.arraySize = paths.Length;
+            for (var i = 0; i < paths.Length; i++)
+                arr.GetArrayElementAtIndex(i).objectReferenceValue = LoadSprite(paths[i]);
         }
 
         /// <summary>给按钮挂图标：有图则用原色 + 保持比例，无图则退回纯色块。</summary>
