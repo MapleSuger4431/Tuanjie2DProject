@@ -67,13 +67,13 @@ namespace Game.Editor
         const float DividerWidth = CardWidth - DividerLeft * 2f;
         const float DividerHeight = 4f;
 
-        // 三颗大星铺满整行（用户拍板：变大 + 在这一行里填充三颗星）
+        // 三颗大星铺满整行（用户拍板：变大 + 在这一行里填充三颗星）；间距 312 → 星翼横跨卡片 62..882，占宽 87%
         const float StarRowLeft = 80f;
         const float StarRowTop = 204f;
         const float StarRowWidth = 784f;
         const float StarRowHeight = 196f;
         const float StarSize = 196f;
-        const float StarGap = 280f;
+        const float StarGap = 312f;
 
         const float RowLeft = 130f;
         const float RowWidth = 684f;
@@ -166,7 +166,8 @@ namespace Game.Editor
 
         /// <summary>
         /// 星级行：整行铺满三颗 196×196 的大星（PreserveAspect 保住星星比例），
-        /// 图标走程序化金星 <see cref="UiSpritePainter.EnsureStarSprite" />；点亮动画在 <see cref="LevelStarRow" /> 里。
+        /// 图标走项目星星图标 UIimg/star.png（用户拍板：用专门的那颗，与选关详情弹窗一致）；
+        /// 点亮动画在 <see cref="LevelStarRow" /> 里。
         /// </summary>
         static LevelStarRow BuildStars(RectTransform card)
         {
@@ -174,10 +175,9 @@ namespace Game.Editor
             AnchorTopLeft(row, StarRowLeft, StarRowTop, StarRowWidth, StarRowHeight);
 
             var component = row.gameObject.AddComponent<LevelStarRow>();
-            // 选关那张 star.png 是调色板 PNG（Unity 不吃它的 tRNS，整块渲染成方块），这里用程序化金星
-            var sprite = UiSpritePainter.EnsureStarSprite();
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
             if (sprite == null)
-                Debug.LogWarning($"[BoardResultPanelBuilder] 金星贴图生成失败，星级行退化为纯色块");
+                Debug.LogWarning($"[BoardResultPanelBuilder] 未找到星星图标 {StarSpritePath}，星级行退化为纯色块");
 
             var count = LevelStarRules.MaxStars;
             var images = new Image[count];
@@ -202,9 +202,9 @@ namespace Game.Editor
                 starsProperty.GetArrayElementAtIndex(i).objectReferenceValue = images[i];
 
             so.FindProperty("starSprite").objectReferenceValue = sprite;
-            // 羊皮纸是浅底：未点亮的星若是「白色半透」会和纸面糊在一起，改成深灰紫才看得出空位
-            so.FindProperty("offColor").colorValue = new Color(0.33f, 0.28f, 0.38f, 0.6f);
-            // 贴图本身已是金色渐变：点亮色用白，直接呈现原色（再乘金色整颗会发暗发浊）
+            // 羊皮纸是浅底：未点亮的星染暗灰（与选关详情弹窗同款），才看得出空位
+            so.FindProperty("offColor").colorValue = new Color(0.40f, 0.40f, 0.44f, 1f);
+            // star.png 本身是金色渐变徽章：点亮色用白，直接呈现原色（再乘金色整颗会发暗发浊）
             so.FindProperty("onColor").colorValue = Color.white;
             so.ApplyModifiedPropertiesWithoutUndo();
 
@@ -224,7 +224,7 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 两种结算面板共用的壳：全屏根 → Mask（暗紫半透，拦截射线）→ 深紫描边背板 → 羊皮纸内页
+        /// 两种结算面板共用的壳：全屏根 → Mask（淡紫压暗，拦截射线）→ 羊皮纸卡片（居中 + CanvasGroup 弹入）
         /// （标题 + 古铜金分隔线 + 成绩行 + 两个牌匾按钮）。失败页没有星级与用时，成绩行上移。
         /// </summary>
         static (GameObject root, RectTransform card) BuildShell<T>(
@@ -234,30 +234,25 @@ namespace Game.Editor
             var parchment = AssetDatabase.LoadAssetAtPath<Sprite>(ParchmentPath);
             if (parchment == null) Debug.LogError($"[BoardResultPanelBuilder] 缺少羊皮纸内页 {ParchmentPath}");
             var plaque = UiSpritePainter.EnsureGoldPlaqueSprite();
-            var frameSprite = UiSpritePainter.EnsurePanelSprite();
 
             var root = new GameObject(name, typeof(RectTransform));
             var script = root.AddComponent<T>();
-            Stretch((RectTransform)root.transform);   // 根必须全屏拉伸，否则挂到 Popup 层后缩成 100×100 小块
+            Stretch((RectTransform)root.transform);   // 根必须全屏拉伸，否则挂到层 Canvas 后缩成 100×100 小块
 
             var mask = NewRect("Mask", root.transform);
             Stretch(mask);
             mask.gameObject.AddComponent<Image>().color = MaskColor;
 
-            // 背板：比内页大一圈，露出深紫描边当卷轴的封皮
-            var frame = NewRect("Frame", root.transform);
-            frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(0.5f, 0.5f);
-            frame.sizeDelta = new Vector2(FrameWidth, FrameHeight);
-            var frameImage = frame.gameObject.AddComponent<Image>();
-            frameImage.sprite = frameSprite;
-            frameImage.type = Image.Type.Sliced;
-
-            var card = NewRect("Card", frame);
-            Stretch(card, CardInset);
+            // 卡片：羊皮纸直接就是卡片（用户拍板：去掉外面那圈深紫描边背板），
+            // 居中固定尺寸；弹入动画由 LevelResultPanel.PlayPopIn 驱动（CanvasGroup 控整卡淡入）
+            var card = NewRect("Card", root.transform);
+            card.anchorMin = card.anchorMax = card.pivot = new Vector2(0.5f, 0.5f);
+            card.sizeDelta = new Vector2(CardWidth, CardHeight);
             var cardImage = card.gameObject.AddComponent<Image>();
             cardImage.sprite = parchment;
             cardImage.type = Image.Type.Sliced;
             cardImage.color = cardTint;
+            var cardGroup = card.gameObject.AddComponent<CanvasGroup>();
 
             // 标题金匾：横跨羊皮纸顶部的紫色水印带，亮金底让标题从边框里凸显出来（标题文字居中落在匾上）
             var titlePlaque = NewRect("TitlePlaque", card);
@@ -301,8 +296,11 @@ namespace Game.Editor
             so.FindProperty("retryButtonLabel").objectReferenceValue = retryLabel;
             so.FindProperty("backToSelectButton").objectReferenceValue = backButton;
             so.FindProperty("backToSelectButtonLabel").objectReferenceValue = backLabel;
-            // 结算要压在关卡 HUD 之上：显式挂 Popup 层（面板默认 Normal）
-            so.FindProperty("layer").enumValueIndex = (int)UILayer.Popup;
+            // 弹入动画目标：羊皮纸卡片本体
+            so.FindProperty("cardRoot").objectReferenceValue = card;
+            so.FindProperty("cardGroup").objectReferenceValue = cardGroup;
+            // tip 型面板（用户拍板）：挂 Top 层与右下角成就小窗同层，淡蒙版浮在关卡 HUD 之上
+            so.FindProperty("layer").enumValueIndex = (int)UILayer.Top;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             return (root, card);
@@ -417,14 +415,6 @@ namespace Game.Editor
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
-        }
-
-        /// <summary>父级内缩 <paramref name="inset" /> 像素后铺满（羊皮纸内页相对背板）。</summary>
-        static void Stretch(RectTransform rt, float inset)
-        {
-            Stretch(rt);
-            rt.offsetMin = new Vector2(inset, inset);
-            rt.offsetMax = new Vector2(-inset, -inset);
         }
 
         /// <summary>左上锚定 + 固定尺寸：按「距左 / 距顶 / 宽 / 高」摆放，不随父级拉伸。</summary>
