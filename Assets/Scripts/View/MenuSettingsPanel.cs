@@ -27,6 +27,10 @@ namespace Game.View
         [SerializeField]
         Text titleText;
 
+        [Tooltip("标题美术字（中文模式显示，英文模式回落标题文本）")]
+        [SerializeField]
+        Image titleImage;
+
         [Tooltip("分辨率行标签")]
         [SerializeField]
         Text resolutionRowLabel;
@@ -46,6 +50,22 @@ namespace Game.View
         [Tooltip("语言行标签")]
         [SerializeField]
         Text languageLabel;
+
+        [Tooltip("分辨率行标签美术字（中文模式显示）")]
+        [SerializeField]
+        Image resolutionRowLabelImage;
+
+        [Tooltip("音效行标签美术字（中文模式显示）")]
+        [SerializeField]
+        Image sfxLabelImage;
+
+        [Tooltip("音乐行标签美术字（中文模式显示）")]
+        [SerializeField]
+        Image musicLabelImage;
+
+        [Tooltip("语言行标签美术字（中文模式显示）")]
+        [SerializeField]
+        Image languageLabelImage;
 
         [Tooltip("分辨率上一档按钮")]
         [SerializeField]
@@ -75,6 +95,14 @@ namespace Game.View
         [SerializeField]
         Button closeButton;
 
+        [Tooltip("语言按钮选中态胶囊底图（切片自带发光态）")]
+        [SerializeField]
+        Sprite languageSelectedSprite;
+
+        [Tooltip("语言按钮未选中态胶囊底图")]
+        [SerializeField]
+        Sprite languageUnselectedSprite;
+
         [Tooltip("UI 点击音效 — 经 AudioModule 的 SFX 通道播放，随设置面板的音效滑条即时变化")]
         [SerializeField]
         AudioClip uiClickSfx;
@@ -92,9 +120,6 @@ namespace Game.View
         const float ClickThrottleSeconds = 0.08f;
 
         float lastClickTime = -1f;
-
-        static readonly Color NormalButtonColor = Color.white;
-        static readonly Color SelectedButtonColor = new Color(0.60f, 0.80f, 1.00f, 1f);
 
         protected override void OnInit()
         {
@@ -222,15 +247,36 @@ namespace Game.View
             musicLabel.text = Localization.Get(Localization.Key.SettingsMusic);
             languageLabel.text = Localization.Get(Localization.Key.SettingsLanguage);
 
-            // 语言选中态高亮（按钮 Transition 为 None，由 Image.color 直接呈现选中色）
+            // 中文模式用图集金字切片，英文模式回落运行时文本
+            SetBakedOrText(titleImage, titleText, zh);
+            SetBakedOrText(resolutionRowLabelImage, resolutionRowLabel, zh);
+            SetBakedOrText(sfxLabelImage, sfxLabel, zh);
+            SetBakedOrText(musicLabelImage, musicLabel, zh);
+            SetBakedOrText(languageLabelImage, languageLabel, zh);
+
+            // 语言选中态：胶囊底图互换（切片自带发光/哑光两态，不染色）
             if (chineseButtonImage != null)
             {
-                chineseButtonImage.color = zh ? SelectedButtonColor : NormalButtonColor;
+                chineseButtonImage.sprite = zh ? languageSelectedSprite : languageUnselectedSprite;
             }
 
             if (englishButtonImage != null)
             {
-                englishButtonImage.color = zh ? NormalButtonColor : SelectedButtonColor;
+                englishButtonImage.sprite = zh ? languageUnselectedSprite : languageSelectedSprite;
+            }
+        }
+
+        /// <summary>中文模式显示图集金字切片、英文模式回落运行时文本（切片缺失时文本常显）。</summary>
+        static void SetBakedOrText(Image baked, Text fallback, bool zh)
+        {
+            if (baked != null)
+            {
+                baked.gameObject.SetActive(zh);
+            }
+
+            if (fallback != null)
+            {
+                fallback.gameObject.SetActive(!zh || baked == null);
             }
         }
     }

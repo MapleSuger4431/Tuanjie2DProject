@@ -112,11 +112,39 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WeixinMiniGame
+    maxTextureSize: 2048
+    maxPlaceholderSize: 32
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: PlayableAds
+    maxTextureSize: 2048
+    maxPlaceholderSize: 32
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: imagea92007bf12f4_0
+      name: Panel_Base
       rect:
         serializedVersion: 2
         x: 7
@@ -125,7 +153,7 @@ TextureImporter:
         height: 441
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 64, y: 64, z: 64, w: 64}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -137,7 +165,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_1
+      name: Title_Settings
       rect:
         serializedVersion: 2
         x: 719
@@ -158,7 +186,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_2
+      name: Button_Octagon
       rect:
         serializedVersion: 2
         x: 40
@@ -179,7 +207,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_3
+      name: Button_Close
       rect:
         serializedVersion: 2
         x: 339
@@ -200,7 +228,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_4
+      name: Icon_X
       rect:
         serializedVersion: 2
         x: 457
@@ -221,7 +249,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_5
+      name: Gem_Small
       rect:
         serializedVersion: 2
         x: 585
@@ -242,7 +270,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_6
+      name: Gem_Large
       rect:
         serializedVersion: 2
         x: 624
@@ -263,7 +291,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_7
+      name: Label_Language
       rect:
         serializedVersion: 2
         x: 229
@@ -284,7 +312,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_8
+      name: Label_Music
       rect:
         serializedVersion: 2
         x: 46
@@ -305,7 +333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_9
+      name: Label_Chinese
       rect:
         serializedVersion: 2
         x: 426
@@ -326,7 +354,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_10
+      name: Slider_Fill
       rect:
         serializedVersion: 2
         x: 41
@@ -335,7 +363,7 @@ TextureImporter:
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 26, y: 14, z: 26, w: 14}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -347,7 +375,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_11
+      name: Slider_Track
       rect:
         serializedVersion: 2
         x: 22
@@ -356,7 +384,7 @@ TextureImporter:
         height: 59
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 38, y: 20, z: 38, w: 20}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -368,7 +396,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_12
+      name: Capsule_Selected
       rect:
         serializedVersion: 2
         x: 35
@@ -377,7 +405,7 @@ TextureImporter:
         height: 67
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 34, y: 24, z: 34, w: 24}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -389,7 +417,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_13
+      name: Capsule_Unselected
       rect:
         serializedVersion: 2
         x: 306
@@ -398,7 +426,7 @@ TextureImporter:
         height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 34, y: 26, z: 34, w: 26}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -410,7 +438,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_14
+      name: Title_Banner
       rect:
         serializedVersion: 2
         x: 388
@@ -419,7 +447,7 @@ TextureImporter:
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 13, y: 0, z: 0, w: 0}
+      border: {x: 72, y: 26, z: 72, w: 26}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -431,7 +459,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_15
+      name: Title_Wings
       rect:
         serializedVersion: 2
         x: 0
@@ -452,7 +480,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_16
+      name: Icon_Sparkle
       rect:
         serializedVersion: 2
         x: 747
@@ -473,7 +501,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_17
+      name: Label_Sfx
       rect:
         serializedVersion: 2
         x: 219
@@ -494,7 +522,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_18
+      name: Label_Resolution
       rect:
         serializedVersion: 2
         x: 49
@@ -515,7 +543,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_19
+      name: Label_English
       rect:
         serializedVersion: 2
         x: 628
@@ -536,7 +564,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_20
+      name: Panel_Frame
       rect:
         serializedVersion: 2
         x: 516
@@ -545,7 +573,7 @@ TextureImporter:
         height: 469
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 82, y: 82, z: 82, w: 82}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -557,7 +585,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_21
+      name: Arrow_Left
       rect:
         serializedVersion: 2
         x: 147
@@ -578,7 +606,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: imagea92007bf12f4_22
+      name: Arrow_Right
       rect:
         serializedVersion: 2
         x: 244
