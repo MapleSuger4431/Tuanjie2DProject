@@ -29,9 +29,10 @@ namespace Game.Model
         // 目前只设 3 个关卡（节点图标按 crystal/badge 素材三组一一对应）
         public readonly LevelDef[] Levels =
         {
-            new LevelDef { levelId = 1, displayName = "LEVEL 1", sceneName = "Level_01", nodePos = new Vector2(0.111f, 0.273f) },
+            // nodePos 定位（2026-10-18 用户复核 + 特征色扫描校准）：L1=三棵树中间的大冰锥（冰台中心）、L3=右下紫色虚影中心
+            new LevelDef { levelId = 1, displayName = "LEVEL 1", sceneName = "Level_01", nodePos = new Vector2(0.186f, 0.328f) },
             new LevelDef { levelId = 2, displayName = "LEVEL 2", sceneName = "Level_02", nodePos = new Vector2(0.548f, 0.871f) },
-            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.843f, 0.311f) },
+            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.759f, 0.334f) },
         };
 
         LevelProgressModel _progress;
