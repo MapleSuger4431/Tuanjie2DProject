@@ -31,7 +31,7 @@ namespace Game.Model
         {
             new LevelDef { levelId = 1, displayName = "LEVEL 1", sceneName = "Level_01", nodePos = new Vector2(0.111f, 0.273f) },
             new LevelDef { levelId = 2, displayName = "LEVEL 2", sceneName = "Level_02", nodePos = new Vector2(0.548f, 0.871f) },
-            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.823f, 0.311f) },
+            new LevelDef { levelId = 3, displayName = "LEVEL 3", sceneName = "Level_03", nodePos = new Vector2(0.843f, 0.311f) },
         };
 
         LevelProgressModel _progress;
