@@ -85,12 +85,11 @@ namespace Game.View
                 UIModule.Show<Game.View.AchievementPanel>(UIPaths.AchievementPanel);
             });
 
-            // 开始游戏：切到选择关卡场景（SceneModule 需完整资产路径，Build Settings 已登记）
+            // 开始游戏：带加载过场切到选择关卡场景（加载面板盖住画面 → 加载 → 淡出揭幕）
             newGameButton.onClick.AddListener(() =>
             {
-                Debug.Log($"[MainMenuPanel] 开始游戏：切换选择关卡场景 {ScenePaths.LevelSelect}");
-                SceneTransition.LoadSingle(ScenePaths.LevelSelect,
-                    onFailed: () => Debug.LogError($"[MainMenuPanel] 选择关卡场景切换失败：{ScenePaths.LevelSelect}"));
+                Debug.Log($"[MainMenuPanel] 开始游戏：带加载过场切换选择关卡场景 {ScenePaths.LevelSelect}");
+                LoadingPanel.Begin(ScenePaths.LevelSelect);
             });
 
             // 说明内容：经 UIModule 打开操作说明弹窗（面板形态，Popup 层）；标题/正文由本地化接管
