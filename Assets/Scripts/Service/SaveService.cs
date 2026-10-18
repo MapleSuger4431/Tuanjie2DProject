@@ -22,6 +22,7 @@ namespace Game.Service
         SaveDirector _director;
         SettingsModel _settings;
         LevelProgressModel _levels;
+        AchievementModel _achievements;
         bool _loading;
 
         Action<float> _onBgmChanged;
@@ -29,6 +30,7 @@ namespace Game.Service
         Action<string> _onLanguageChanged;
         Action<int> _onResolutionChanged;
         Action _onProgressChanged;
+        Action _onAchievementChanged;
 
         /// <summary>当前存档位置（诊断/日志用；编辑器为项目根 TestSaves/，打包版为 PlayerPrefs）。</summary>
         public string SaveLocation => SaveStorage.DefaultPath;
@@ -44,10 +46,15 @@ namespace Game.Service
             _onProgressChanged = SaveOnProgressChanged;
             _levels.Changed.AddListener(_onProgressChanged);
 
+            _achievements = this.GetModel<AchievementModel>();
+            _onAchievementChanged = SaveOnAchievementChanged;
+            _achievements.Changed.AddListener(_onAchievementChanged);
+
             _director = new SaveDirector()
                 .Register(new PlaySaveStep(this.GetModel<PlayModel>()))
                 .Register(new SettingsSaveStep(_settings))
-                .Register(new LevelProgressSaveStep(_levels));
+                .Register(new LevelProgressSaveStep(_levels))
+                .Register(new AchievementSaveStep(_achievements));
 
             _onBgmChanged = _ => SaveOnSettingsChanged();
             _onSfxChanged = _ => SaveOnSettingsChanged();
@@ -63,6 +70,8 @@ namespace Game.Service
         protected override void OnDispose()
         {
             if (_levels != null && _onProgressChanged != null) _levels.Changed.RemoveListener(_onProgressChanged);
+            if (_achievements != null && _onAchievementChanged != null)
+                _achievements.Changed.RemoveListener(_onAchievementChanged);
 
             if (_settings == null) return;
 
@@ -97,6 +106,13 @@ namespace Game.Service
         public void Delete() => SaveStorage.DeleteDefault();
 
         void SaveOnSettingsChanged()
+        {
+            if (_loading) return;
+            Save();
+        }
+
+        /// <summary>成就解锁 / 进度推进即落盘：解锁状态与计数进度都要跨会话保留。</summary>
+        void SaveOnAchievementChanged()
         {
             if (_loading) return;
             Save();

@@ -18,6 +18,7 @@ namespace Game.Save
         [SerializeField] PlayData play = new PlayData();
         [SerializeField] SettingsData settings = new SettingsData();
         [SerializeField] LevelProgressData levels = new LevelProgressData();
+        [SerializeField] AchievementData achievements = new AchievementData();
 
         public int Version => version;
 
@@ -40,6 +41,13 @@ namespace Game.Save
         {
             get => levels;
             set => levels = value;
+        }
+
+        /// <summary>成就解锁状态与计数进度。</summary>
+        public AchievementData Achievements
+        {
+            get => achievements;
+            set => achievements = value;
         }
 
         /// <summary>落盘前盖章：写入当前格式版本与 UTC 时间。</summary>

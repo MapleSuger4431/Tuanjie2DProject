@@ -28917,9 +28917,8 @@ MonoBehaviour:
   sortingOrder: 10
   ghostAlpha: 0.6
   invalidColor: {r: 1, g: 0.25, b: 0.25, a: 0.6}
-  outlineColor: {r: 1, g: 1, b: 1, a: 0.95}
+  outlineColor: {r: 1, g: 0.8, b: 0.45, a: 0.95}
   outlineWidth: 0.1
-  arrowScale: 0.6
 --- !u!114 &1376239726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29005,6 +29004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridView: {fileID: 0}
+  initialElement: 0
 --- !u!1 &1379385283
 GameObject:
   m_ObjectHideFlags: 0

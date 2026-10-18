@@ -48,19 +48,19 @@ namespace Game.Editor
         const float CardInset = 28f;
 
         const float TitleLeft = 60f;
-        const float TitleTop = 30f;
-        const float TitleHeight = 96f;
-        const float TitleFontSize = 64f;
+        const float TitleTop = 62f;
+        const float TitleHeight = 92f;
+        const float TitleFontSize = 62f;
 
         const float DividerLeft = 150f;
-        const float DividerTop = 134f;
+        const float DividerTop = 168f;
         const float DividerWidth = CardWidth - DividerLeft * 2f;
         const float DividerHeight = 4f;
 
         const float CardWidth = FrameWidth - CardInset * 2f;
 
         const float StarRowLeft = 120f;
-        const float StarRowTop = 156f;
+        const float StarRowTop = 190f;
         const float StarRowWidth = 700f;
         const float StarRowHeight = 150f;
         const float StarSize = 130f;
@@ -71,13 +71,13 @@ namespace Game.Editor
         const float RowHeight = 46f;
         const float RowFontSize = 36f;
 
-        const float StepsTop = 330f;
-        const float PiecesTop = 384f;
-        const float TimeTop = 438f;
-        const float FailStepsTop = 300f;
-        const float FailPiecesTop = 354f;
+        const float StepsTop = 360f;
+        const float PiecesTop = 414f;
+        const float TimeTop = 468f;
+        const float FailStepsTop = 330f;
+        const float FailPiecesTop = 384f;
 
-        const float ButtonBottom = 46f;
+        const float ButtonBottom = 56f;
         const float ButtonWidth = 330f;
         const float ButtonHeight = 88f;
         const float ButtonLeftX = 105f;
@@ -190,6 +190,8 @@ namespace Game.Editor
                 starsProperty.GetArrayElementAtIndex(i).objectReferenceValue = images[i];
 
             so.FindProperty("starSprite").objectReferenceValue = sprite;
+            // 羊皮纸是浅底：未点亮的星若是「白色半透」会和纸面糊在一起，改成深灰紫才看得出空位
+            so.FindProperty("offColor").colorValue = new Color(0.33f, 0.28f, 0.38f, 0.6f);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             component.Reset();      // 落盘前先归位到「全部熄灭」，避免预制体存着中间态

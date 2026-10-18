@@ -22,6 +22,10 @@ namespace Game.View
         [SerializeField]
         Image backgroundImage;
 
+        [Tooltip("成就图鉴按钮（打开成就图鉴面板）")]
+        [SerializeField]
+        Button achievementButton;
+
         [Tooltip("新游戏按钮")]
         [SerializeField]
         Button newGameButton;
@@ -74,6 +78,13 @@ namespace Game.View
             Localization.OnLanguageChanged += ApplyLocalization;
             ApplyLocalization();
 
+            // 成就图鉴：打开成就图鉴面板（Popup 层），列出全部成就与解锁状态
+            achievementButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[MainMenuPanel] 成就图鉴：打开成就图鉴面板");
+                UIModule.Show<Game.View.AchievementPanel>(UIPaths.AchievementPanel);
+            });
+
             // 开始游戏：切到选择关卡场景（SceneModule 需完整资产路径，Build Settings 已登记）
             newGameButton.onClick.AddListener(() =>
             {
@@ -117,6 +128,7 @@ namespace Game.View
         void ApplyLocalization()
         {
             SetLabel(newGameButton, Localization.Key.MenuNewGame);
+            SetLabelText(achievementButton, Localization.Get("MenuAchievements"));
             SetLabel(helpButton, Localization.Key.MenuHelp);
             SetLabel(settingsButton, Localization.Key.MenuSettings);
             SetLabel(quitButton, Localization.Key.MenuQuit);
@@ -158,6 +170,16 @@ namespace Game.View
             var box = english ? titleBoxEn : titleBoxZh;
             var scale = Mathf.Min(box.x / sprite.rect.width, box.y / sprite.rect.height);
             titleImage.rectTransform.sizeDelta = new Vector2(sprite.rect.width * scale, sprite.rect.height * scale);
+        }
+
+        /// <summary>按**键名字符串**设置按钮文本：数据驱动的文案（如成就）不占 Key 枚举。</summary>
+        static void SetLabelText(Button button, string text)
+        {
+            var label = button != null ? button.GetComponentInChildren<Text>() : null;
+            if (label != null)
+            {
+                label.text = text;
+            }
         }
 
         static void SetLabel(Button button, Localization.Key key)

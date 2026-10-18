@@ -54,6 +54,18 @@ namespace Game.Board
 
             [Tooltip("该关方块可随机附带的效果（叠在格子上，不改变通行性）；留空则该关不发效果")]
             public List<WeightedEffect> effects = new List<WeightedEffect>();
+
+            [Header("血色深渊（TileType.Mountain）刷新上限")]
+            [Tooltip("一个方块里最多能出现几格血色深渊（0 = 不限制，按权重自然抽）。难度曲线统一按「每块最多 1 格」设计")]
+            [Min(0)] public int maxAbyssPerPiece = 1;
+
+            [Tooltip("整局最多能刷出几个血色深渊格（0 = 完全刷不出，只有场地预置的；难度曲线：第 1/2 关 0、第 3 关 1、第 4/5 关 3）。" +
+                     "刷够之后方块里的深渊格一律回落成普通路，重开本关才复位")]
+            [Min(0)] public int maxAbyssPerRun = 0;
+
+            [Tooltip("本关方块附带 1 个「属性反转牌」的概率（第 4 关才引入：0 = 不出反转牌，第 1~3 关一律 0）。" +
+                     "留负数表示沿用 PieceModel.invertChance 的默认值")]
+            [Range(-1f, 1f)] public float invertChance = -1f;
         }
 
         [SerializeField] List<LevelPool> levels = new List<LevelPool>();

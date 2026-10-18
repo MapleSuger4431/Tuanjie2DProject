@@ -23,6 +23,7 @@ namespace Game.Editor
             {
                 ("LevelBoardHint", "左键放置当前方块　R 键顺时针旋转 90°　滚轮缩放棋盘　右键平移"),
                 ("LevelPlay", "出发"),
+                ("LevelStarGoal", "★ 第三星：{0} 内通关并捡到金币"),
                 ("LevelNextPiece", "下一块"),
                 ("LevelStatusCharacter", "角色状态"),
                 ("LevelCharacterName", "女巫"),
@@ -36,6 +37,7 @@ namespace Game.Editor
             {
                 ("LevelBoardHint", "Left click to place　R to rotate 90° clockwise　Scroll to zoom　Right drag to pan"),
                 ("LevelPlay", "Play"),
+                ("LevelStarGoal", "★ 3rd star: clear + coin within {0}"),
                 ("LevelNextPiece", "Next Piece"),
                 ("LevelStatusCharacter", "Character"),
                 ("LevelCharacterName", "Witch"),

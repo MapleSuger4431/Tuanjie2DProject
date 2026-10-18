@@ -44,9 +44,10 @@ namespace Game.Editor
         public const float NextAreaTop = 372f;
         public const float NextAreaHeight = 320f;
         public const float PlacedRowTop = 704f;
-        public const float TimeRowTop = 752f;
-        public const float AiStateRowTop = 800f;
-        public const float PlayTop = 858f;
+        public const float TimeRowTop = 750f;
+        public const float GoalRowTop = 796f;
+        public const float AiStateRowTop = 842f;
+        public const float PlayTop = 892f;
 
         [MenuItem("Tools/关卡/重建棋盘运行时面板")]
         public static void RebuildAll()
@@ -81,12 +82,13 @@ namespace Game.Editor
             var (nextTitle, nextPieceView) = BuildNextSection(right, cardSprite);
             var placedCount = BuildStatusRow(right, "PlacedCountText", PlacedRowTop, 32);
             var timeText = BuildStatusRow(right, "TimeText", TimeRowTop, 32);
+            var goalText = BuildStatusRow(right, "GoalText", GoalRowTop, 28);
             var aiState = BuildStatusRow(right, "AiStateText", AiStateRowTop, 30);
             var (playButton, playLabel) = BuildPlayButton(right);
             var hintText = BuildHintText(bottomBar);
 
             WirePanel(panel, root, topBar, bottomBar, right, nextPieceView,
-                placedCount, timeText, aiState, hintText,
+                placedCount, timeText, goalText, aiState, hintText,
                 playButton, playLabel, statusTitle, statusName, statusWalk, nextTitle, legendLabels,
                 back, backLabel, restart, restartLabel);
 

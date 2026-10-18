@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Core;
 using Game.Service;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Runestone.AesirArchitecture;
 using Runestone.AesirModules;
@@ -22,6 +23,10 @@ namespace Game.Board
         [SerializeField] NextPieceView nextPieceView;
         [SerializeField] Text placedCountText;
         [SerializeField] Text timeText;
+
+        [Tooltip("右侧面板「第三星目标时间」行：本关时限（全局默认 30 秒 / 逐关可覆盖），运行时按本地化表刷新")]
+        [SerializeField] Text goalText;
+
         [SerializeField] Text hintText;
 
         [Header("角色状态卡（元素属性 + 可走地形说明）")]
@@ -273,6 +278,8 @@ namespace Game.Board
                 hintText.text = Localization.Get(Localization.Key.LevelBoardHint);
             if (playButtonLabel != null)
                 playButtonLabel.text = Localization.Get(Localization.Key.LevelPlay);
+            if (goalText != null)
+                goalText.text = Localization.Get(Localization.Key.LevelStarGoal, FormatStarGoalTime());
             if (nextTitleText != null)
                 nextTitleText.text = Localization.Get(Localization.Key.LevelNextPiece);
             if (statusTitleText != null)
@@ -321,6 +328,21 @@ namespace Game.Board
             }
 
             return string.Join(" / ", names);
+        }
+
+        /// <summary>
+        /// 第三星的目标时间（mm:ss.d，与秒表同一口径）：从 <see cref="LevelStarConfig" /> 读本关时限——
+        /// 全局默认 30 秒，逐关可在配置资产里覆盖。没配（&lt;=0）时显示占位横杠。
+        /// </summary>
+        string FormatStarGoalTime()
+        {
+            var config = LevelStarConfig.Asset;
+            var limit = config != null ? config.TimeLimitFor(SceneManager.GetActiveScene().name) : 0f;
+            if (limit <= 0f) return "--";
+
+            var minutes = Mathf.FloorToInt(limit / 60f);
+            var seconds = limit - minutes * 60f;
+            return $"{minutes:00}:{seconds:00.0}";
         }
 
         /// <summary>元素属性变化（出生 / 反转 / 重开）：刷新「可走」行与 AI 状态行里的属性标识。</summary>

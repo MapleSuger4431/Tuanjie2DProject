@@ -211,6 +211,10 @@ MonoBehaviour:
     m_Key: TipElementSwitchedBody
     m_Metadata:
       m_Items: []
+  - m_Id: 138044203065344
+    m_Key: LevelStarGoal
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

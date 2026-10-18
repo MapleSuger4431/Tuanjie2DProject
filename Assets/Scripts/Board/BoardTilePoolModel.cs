@@ -61,6 +61,17 @@ namespace Game.Board
         /// </summary>
         public bool HasEffectPool => BoardTilePoolConfig.HasAnyEffect(_pool);
 
+        /// <summary>本关一个方块里最多能出现几格血色深渊（<see cref="TileType.Mountain" />）；0 = 不限制。</summary>
+        public int MaxAbyssPerPiece => _pool != null ? Mathf.Max(0, _pool.maxAbyssPerPiece) : 0;
+
+        /// <summary>本关整局最多能刷出几格血色深渊；0 = 完全刷不出（只有场地预置的那几个）。</summary>
+        public int MaxAbyssPerRun => _pool != null ? Mathf.Max(0, _pool.maxAbyssPerRun) : 0;
+
+        /// <summary>
+        /// 本关方块附带属性反转牌的概率；负数 = 没配，调用方应沿用 <see cref="PieceModel" /> 的默认值。
+        /// </summary>
+        public float InvertChance => _pool != null ? _pool.invertChance : -1f;
+
         /// <summary>
         /// 一口气抽 count 个效果（方块每一格独立抽）。没配效果表时返回全 null。
         /// </summary>

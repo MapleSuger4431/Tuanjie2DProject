@@ -24,6 +24,10 @@ namespace Game.Board
 
             // 右下角成就 / 消息小窗随关卡常驻：它只订阅 BoardTipModel，没消息时整块停用
             UIModule.Show<LevelTipPanel>(path: UIPaths.LevelTipPanel);
+
+            // 成就上报器现场挂上（不改场景）：把棋盘事件翻译成成就事件，解锁时弹小窗
+            if (gameObject.GetComponent<BoardAchievementReporter>() == null)
+                gameObject.AddComponent<BoardAchievementReporter>();
         }
     }
 }

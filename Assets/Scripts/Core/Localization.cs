@@ -61,6 +61,9 @@ namespace Game.Core
             /// <summary>关卡内 Play 按钮（出发）。</summary>
             LevelPlay,
 
+            /// <summary>右侧面板「第三星目标时间」行（{0} = 时限 mm:ss.d，且需捡到金币）。</summary>
+            LevelStarGoal,
+
             /// <summary>右侧面板「下一块」区块标题。</summary>
             LevelNextPiece,
 
@@ -153,6 +156,29 @@ namespace Game.Core
             var op = args == null || args.Length == 0
                 ? LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString())
                 : LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, key.ToString(), args);
+            return op.WaitForCompletion();
+        }
+
+        /// <summary>
+        /// 按**键名字符串**取文本：给数据驱动的文案用（如成就配置表里的 titleKey / descKey）——
+        /// 新增成就只加表条目，不需要往 <see cref="Key" /> 枚举里加项。
+        /// </summary>
+        public static string Get(string keyName)
+        {
+            if (string.IsNullOrEmpty(keyName)) return string.Empty;
+
+            var op = LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName);
+            return op.WaitForCompletion();
+        }
+
+        /// <summary>按键名字符串取带占位符的文本（{0}、{1} 由 args 依次填位）。</summary>
+        public static string Get(string keyName, params object[] args)
+        {
+            if (string.IsNullOrEmpty(keyName)) return string.Empty;
+
+            var op = args == null || args.Length == 0
+                ? LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName)
+                : LocalizationSettings.StringDatabase.GetLocalizedStringAsync(TableName, keyName, args);
             return op.WaitForCompletion();
         }
 

@@ -18,6 +18,7 @@ using UnityEngine.UI;
 ///    四按钮右下锚点 + 右中支点、右边缘距屏幕右缘 70px、y=502/379/257/134（开始=横幅底图、说明/设置=牌匾底图、退出=胶囊底图，均无字键控抠图成品 + Text 标签；继续游戏已并入开始游戏），
 ///    标题图按语言切换（中文 pieces/title.png「边际棋盘」、英文 pieces/title_en.png「Marginal Chessboard」，由 MainMenuPanel.ApplyLocalization 运行时换图并重算尺寸），
 ///    操作说明弹窗 760×560 + 全屏蒙版，设置面板 860×680）
+/// 3. 右下角版本号小字（VersionText，文本常量 VersionLabel，发版改常量后重跑）
 /// 3. 生成 Assets/Scenes/MainMenu.scene（主相机 + MainMenuBoot，Additive 方式不扰动当前打开场景）
 /// 4. 把 MainMenu.scene 登记进 Build Settings（Bootstrap 保持 index 0）
 /// </summary>
@@ -98,6 +99,12 @@ public static class MainMenuBuilder
 
     /// <summary>主菜单背景音乐（经 AudioModule 的 BGM 通道循环播放）。</summary>
     const string MainMenuBgmPath = "Assets/Art/Audio/背景音乐/MainMenuBgm_Placeholder.wav";
+
+    /// <summary>右下角版本号小字（发版时改这里后重跑重建；纯 ASCII，不进本地化表）。</summary>
+    const string VersionLabel = "v0.2.0";
+
+    /// <summary>版本号小字到屏幕右缘与下缘的间距（设计分辨率 1920×1080）。</summary>
+    const float VersionMargin = 28f;
 
     static string PanelPrefabPath => "Assets/Resources/" + UIPaths.MainMenuPanel + ".prefab";
 
@@ -422,12 +429,33 @@ public static class MainMenuBuilder
         var bookIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_book.png");
         var settingsIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_settings.png");
         var exitIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PiecesFolder + "/icon_exit.png");
+        var trophyIcon = AssetDatabase.LoadAssetAtPath<Sprite>(AchTrophyIconPath);
+        if (trophyIcon == null) Debug.LogError($"[MainMenuBuilder] 缺少成就按钮图标 {AchTrophyIconPath}");
         var buttonsRt = CreateRect(root, "Buttons");
         Stretch(buttonsRt);
+        // 成就图鉴排在按钮列最上方：下方四枚保持设计图原有间距（502→134），
+        // 往底部加会撞品牌区标语（slogan 中心 y=69）与右下角版本号
+        var achievements = CreateButton(buttonsRt, "BtnAchievements", "成就图鉴", new Vector2(-ButtonRightMargin, 620f), plaqueSprite, new Vector2(ButtonWidth, 70f), trophyIcon);
         var newGame = CreateButton(buttonsRt, "BtnNewGame", "开始游戏", new Vector2(-ButtonRightMargin, 502f), startSprite, new Vector2(459f, 98f), null);
         var help = CreateButton(buttonsRt, "BtnHelp", "玩法说明", new Vector2(-ButtonRightMargin, 379f), plaqueSprite, new Vector2(ButtonWidth, 70f), bookIcon);
         var settings = CreateButton(buttonsRt, "BtnSettings", "设置", new Vector2(-ButtonRightMargin, 257f), plaqueSprite, new Vector2(ButtonWidth, 70f), settingsIcon);
         var quit = CreateButton(buttonsRt, "BtnQuit", "退出游戏", new Vector2(-ButtonRightMargin, 134f), quitSprite, new Vector2(ButtonWidth, 70f), exitIcon);
+
+        // VersionText：右下角版本号小字（右对齐屏幕右下角，落在最低按钮之下，不拦截射线）。
+        // 建在按钮之后，保证最后绘制、不会被按钮底图或背景压住
+        var versionRt = CreateRect(root, "VersionText");
+        versionRt.anchorMin = new Vector2(1f, 0f);
+        versionRt.anchorMax = new Vector2(1f, 0f);
+        versionRt.pivot = new Vector2(1f, 0f);
+        versionRt.anchoredPosition = new Vector2(-VersionMargin, VersionMargin);
+        versionRt.sizeDelta = new Vector2(240f, 30f);
+        var versionText = versionRt.gameObject.AddComponent<Text>();
+        versionText.text = VersionLabel;
+        versionText.fontSize = 22;
+        versionText.alignment = TextAnchor.LowerRight;
+        versionText.color = new Color(1f, 1f, 1f, 0.55f);
+        versionText.raycastTarget = false;
+        versionText.font = GetLegacyFont();
 
         var panel = root.gameObject.AddComponent<MainMenuPanel>();
         var so = new SerializedObject(panel);
@@ -682,6 +710,13 @@ public static class MainMenuBuilder
             if (so.FindProperty("layer").intValue != (int)UILayer.Normal)
             {
                 failures.Add($"{PanelPrefabPath} layer 应为 Normal");
+            }
+
+            var versionNode = panelPrefab.transform.Find("VersionText");
+            var versionLabel = versionNode != null ? versionNode.GetComponent<Text>() : null;
+            if (versionLabel == null || string.IsNullOrEmpty(versionLabel.text))
+            {
+                failures.Add($"{PanelPrefabPath} 右下角版本号节点 VersionText 缺失或无文本");
             }
 
             if (AssetDatabase.LoadAssetAtPath<Sprite>(MenuBackground) == null)

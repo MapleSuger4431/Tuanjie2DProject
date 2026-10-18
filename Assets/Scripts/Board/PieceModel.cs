@@ -32,6 +32,12 @@ namespace Game.Board
         BoardModel _board;
         BoardTilePoolModel _pool;
 
+        /// <summary>本局已经刷出过几格血色深渊（关卡重开复位，见 <see cref="Reroll" />）。</summary>
+        int _spawnedAbyss;
+
+        /// <summary>本局已刷出的血色深渊格数（调试与验证用）。</summary>
+        public int SpawnedAbyssCount => _spawnedAbyss;
+
         public ObservableValue<TilePiece> Current => current;
 
         /// <summary>下一块预告（右侧面板预览的真源）。</summary>
@@ -85,6 +91,9 @@ namespace Game.Board
         {
             if (_shapes == null || _shapes.Length == 0) return;
 
+            // 重开本关：血色深渊的整局额度一起复位，否则第二局一块深渊都刷不出来
+            _spawnedAbyss = 0;
+
             next.Value = RandomPiece();
             RollNew();
         }
@@ -103,6 +112,10 @@ namespace Game.Board
                 ? _pool.RollTypes(count)
                 : BoardTilePoolConfig.DefaultTypes(count);
 
+            // 血色深渊的刷新上限（每块 ≤ N 格、整局 ≤ M 格）要在抽效果之前裁剪：
+            // 箭头发牌会跳过不可行走格，先裁后抽才不会把箭头钉到已被清掉的深渊格上
+            LimitAbyss(types);
+
             var effects = _pool != null && _pool.HasEffectPool
                 ? _pool.RollEffects(count)
                 : RollPieceEffects(count, types);
@@ -110,6 +123,43 @@ namespace Game.Board
             SanitizeInverts(effects, types);
 
             return new TilePiece(shape, types, effects);
+        }
+
+        /// <summary>
+        /// 血色深渊（<see cref="TileType.Mountain" />）的刷新上限（难度曲线的核心闸门）：
+        /// 一个方块里最多留 <c>MaxAbyssPerPiece</c> 格，整局累计不超过 <c>MaxAbyssPerRun</c> 格；
+        /// 超出的格一律回落成普通路（<see cref="TileType.Land" />）——不回落成空地，
+        /// 否则玩家凭空多出一块挡路的虚空，比深渊更难受。
+        /// <para>
+        /// 整局上限为 0 的关卡（第 1、2 关）凭这一道闸就绝不会刷出血色深渊，
+        /// 场上只会有关卡预置的那几个，配置资产里的山地权重不用再单独置 0。
+        /// </para>
+        /// </summary>
+        void LimitAbyss(TileType[] types)
+        {
+            if (types == null || types.Length == 0) return;
+
+            var perRun = _pool != null ? _pool.MaxAbyssPerRun : 0;
+            var perPiece = _pool != null ? _pool.MaxAbyssPerPiece : 1;
+
+            var allowed = perRun <= 0 ? 0 : Mathf.Max(0, perRun - _spawnedAbyss);
+            if (perPiece > 0) allowed = Mathf.Min(allowed, perPiece);
+
+            var kept = 0;
+            for (var i = 0; i < types.Length; i++)
+            {
+                if (types[i] != TileType.Mountain) continue;
+
+                if (kept < allowed)
+                {
+                    kept++;
+                    continue;
+                }
+
+                types[i] = TileType.Land;
+            }
+
+            _spawnedAbyss += kept;
         }
 
         /// <summary>
@@ -173,7 +223,12 @@ namespace Game.Board
         void MaybeRollInvert(TileEffect[] effects, TileType[] types)
         {
             if (effects == null || effects.Length == 0) return;
-            if (invertChance <= 0f || UnityEngine.Random.value > invertChance) return;
+
+            // 反转牌按关配（第 4 关才引入，第 1~3 关为 0）；该关没配就沿用本类的默认概率
+            var chance = invertChance;
+            if (_pool != null && _pool.InvertChance >= 0f) chance = _pool.InvertChance;
+
+            if (chance <= 0f || UnityEngine.Random.value > chance) return;
 
             var slots = new List<int>(effects.Length);
             for (var i = 0; i < effects.Length; i++)

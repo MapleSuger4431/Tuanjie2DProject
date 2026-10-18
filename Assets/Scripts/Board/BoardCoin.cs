@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Runestone.AesirArchitecture;
 using UnityEngine;
 
 namespace Game.Board
@@ -19,7 +20,7 @@ namespace Game.Board
     /// </para>
     /// </summary>
     [ExecuteAlways]
-    public sealed class BoardCoin : MonoBehaviour
+    public sealed class BoardCoin : MonoViewController<BoardContext>
     {
         const string IconName = "CoinIcon";
 

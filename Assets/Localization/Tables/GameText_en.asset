@@ -268,6 +268,10 @@ MonoBehaviour:
     m_Localized: Witch is now {0}
     m_Metadata:
       m_Items: []
+  - m_Id: 138044203065344
+    m_Localized: "\u2605 3rd star: clear + coin within {0}"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

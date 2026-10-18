@@ -41,7 +41,7 @@ namespace Game.Editor
         static void WirePanel(
             BoardRuntimePanel panel, GameObject root,
             RectTransform topBar, RectTransform bottomBar, RectTransform right, NextPieceView nextPieceView,
-            Text placedCount, Text timeText, Text aiState, Text hintText,
+            Text placedCount, Text timeText, Text goalText, Text aiState, Text hintText,
             Button playButton, Text playLabel, Text statusTitle, Text statusName, Text statusWalk, Text nextTitle,
             Text[] legendLabels,
             Button back, Text backLabel, Button restart, Text restartLabel)
@@ -53,6 +53,7 @@ namespace Game.Editor
             so.FindProperty("nextPieceView").objectReferenceValue = nextPieceView;
             so.FindProperty("placedCountText").objectReferenceValue = placedCount;
             so.FindProperty("timeText").objectReferenceValue = timeText;
+            so.FindProperty("goalText").objectReferenceValue = goalText;
             so.FindProperty("hintText").objectReferenceValue = hintText;
             so.FindProperty("boardFrame").objectReferenceValue = null;
             so.FindProperty("boardFrameSprite").objectReferenceValue = LoadSprite(BoardFramePath);

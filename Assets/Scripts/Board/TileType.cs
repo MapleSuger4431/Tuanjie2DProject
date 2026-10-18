@@ -135,10 +135,10 @@ namespace Game.Board
                 case TileType.Land: return "路";
                 case TileType.Fire: return "火";
                 case TileType.Ice: return "冰";
-                case TileType.Mountain: return "山地";
+                case TileType.Mountain: return "血色深渊";
                 case TileType.Start: return "起点";
                 case TileType.Goal: return "终点";
-                default: return "空";
+                default: return "深渊";
             }
         }
 
