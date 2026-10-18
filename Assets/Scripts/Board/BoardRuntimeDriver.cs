@@ -1,6 +1,7 @@
 using Game.Core;
 using Runestone.AesirModules;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Board
 {
@@ -15,6 +16,10 @@ namespace Game.Board
 
         void Start()
         {
+            // 逐关配置（方块上限 / 深渊上限 / 反转概率）只在 Context 首次初始化时按场景解析过；
+            // Context 跨场景常驻，进新关卡必须重绑本关随机表，否则会沿用上一关的配置。
+            BoardContext.Instance.GetModel<BoardTilePoolModel>().ApplyScene(SceneManager.GetActiveScene().name);
+
             // 每次进入关卡都重置运行态：BoardContext 跨场景常驻，重进同一关时 BoardRunModel 仍停在上一局的
             // Settled（阶段 / 结果 / 步数 / AI 位置），不重置则「Play」都点不动——进得去却玩不了。
             // 地形由场景自身的 ApplyPreset 重建，这里只管运行态与秒表。

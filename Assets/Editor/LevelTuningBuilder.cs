@@ -16,6 +16,7 @@ namespace Game.EditorTools
     /// <item>血色深渊（<see cref="TileType.Mountain" />）：场地预置 0/3/3/3/5 个，方块可刷出 0/0/1/3/3 个（每块最多 1 格）；</item>
     /// <item>金币：1/1/2/2/2 枚，第二颗星要求全部捡到；</item>
     /// <item>属性反转牌：第 4 关才引入（第 1~3 关概率 0，第 4/5 关 0.35 / 0.3）。</item>
+    /// <item>方块上限：50 / 60 / 70 / 80 / 90（第一关 50，往后每关 +10，用户 2026-10-18 拍板），写进随机表的 pieceLimit。</item>
     /// <item>初始路网：每关一套**固定**路网（改玩法不改路，方便刷分刷时间），可通行格（路/火/冰）≥30%，
     /// 用户 2026-10-18 拍板「不能一进关全是深渊」；路网含少量火/冰格。</item>
     /// </list>
@@ -133,7 +134,7 @@ namespace Game.EditorTools
             },
             new LevelSpec
             {
-                sceneName = "Level_05", size = 20, timeStarSeconds = 70,
+                sceneName = "Level_05", size = 20, timeStarSeconds = 70, pieceLimit = 90,
                 maxAbyssPerRun = 3, invertChance = 0.3f,
                 abyss = new[]
                 {
@@ -194,6 +195,7 @@ namespace Game.EditorTools
                 entry.FindPropertyRelative("maxAbyssPerPiece").intValue = spec.maxAbyssPerPiece;
                 entry.FindPropertyRelative("maxAbyssPerRun").intValue = spec.maxAbyssPerRun;
                 entry.FindPropertyRelative("invertChance").floatValue = spec.invertChance;
+                entry.FindPropertyRelative("pieceLimit").intValue = spec.pieceLimit;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -285,7 +287,7 @@ namespace Game.EditorTools
 
             Debug.Log($"[LevelTuning] {spec.sceneName}（{(existed ? "已存在·更新" : "新建")}）{spec.size}×{spec.size}，" +
                       $"预置血色深渊 {spec.abyss.Length} 个，金币 {spec.coins.Length} 枚，" +
-                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s");
+                      $"预置传送门 {spec.portals.Length} 格，三星时限 {spec.timeStarSeconds}s，方块上限 {spec.pieceLimit}");
         }
 
         /// <summary>

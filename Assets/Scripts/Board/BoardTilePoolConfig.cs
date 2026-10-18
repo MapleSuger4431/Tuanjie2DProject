@@ -66,6 +66,11 @@ namespace Game.Board
             [Tooltip("本关方块附带 1 个「属性反转牌」的概率（第 4 关才引入：0 = 不出反转牌，第 1~3 关一律 0）。" +
                      "留负数表示沿用 PieceModel.invertChance 的默认值")]
             [Range(-1f, 1f)] public float invertChance = -1f;
+
+            [Header("方块上限")]
+            [Tooltip("本关可放置方块的数量上限（五关难度曲线：50/60/70/80/90，用尽只停止发牌不判负）。" +
+                     "0 = 未配置，按棋盘尺寸线性插值兜底（10×10→30、20×20→50）")]
+            [Min(0)] public int pieceLimit;
         }
 
         [SerializeField] List<LevelPool> levels = new List<LevelPool>();
